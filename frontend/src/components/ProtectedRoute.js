@@ -26,7 +26,7 @@ const ProtectedRoute = ({ children }) => {
 
         <img
           src={doctorImage}
-          alt="Healthcare"
+          alt="Лекар"
           className="img-fluid mt-2"
           style={{ maxHeight: "250px" }}
         />

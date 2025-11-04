@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const RegisterForm = () => {
   const [formData, setFormData] = useState({
@@ -330,12 +331,12 @@ const RegisterForm = () => {
         <div className="text-center mt-2">
           <p className="text-muted">
             Вече имате акаунт?{" "}
-            <a
-              href="/login"
+            <Link
+              to="/login"
               className="text-success fw-semibold text-decoration-none"
             >
               Вход
-            </a>
+            </Link>
           </p>
         </div>
       </Form>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Form, Button, Container, Card, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -37,7 +38,7 @@ const LoginForm = () => {
     }
 
     setMessage("");
-    alert(`Logging in as: ${email}`);
+    alert(`Влезли сте като: ${email}`);
   };
 
   return (
@@ -107,12 +108,12 @@ const LoginForm = () => {
           <div className="text-center mt-3">
             <p className="text-muted">
               Все още нямате акаунт?{" "}
-              <a
-                href="/register"
+              <Link
+                to="/register"
                 className="text-success fw-semibold text-decoration-none"
               >
                 Регистрация
-              </a>
+              </Link>
             </p>
           </div>
         </Form>
