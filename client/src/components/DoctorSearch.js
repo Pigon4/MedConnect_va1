@@ -55,8 +55,8 @@ const DoctorSearch = ({ onSelectDoctor }) => {
     });
 
   return (
-    <Container className="py-5">
-      <h3 className="mb-4 text-success">Намери лекар</h3>
+    <Container className="py-3">
+      <h3 className="mb-4 text-success">Търсене на лекар</h3>
       <Form className="mb-4">
         <Row className="g-2 align-items-center">
           {/* Поле за търсене с иконка */}

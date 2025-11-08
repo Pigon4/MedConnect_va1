@@ -1,15 +1,18 @@
 import React from "react";
-import { Card } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 
 const SymptomCheck = () => {
   return (
-    <Card className="p-4 shadow-sm">
-      <h3 className="text-success mb-3">Проверка на симптоми</h3>
-      <p>
-        Тук пациентът ще може да въведе симптоми и системата ще му предложи
-        възможни диагнози или специалист.
-      </p>
-    </Card>
+    <>
+      <Container className="py-5">
+        <h3 className="text-success text-left mb-5">🩺 Проверка на симптоми</h3>{" "}
+        <iframe
+          title="Symptom Checker"
+          src=""
+          style={{ border: 0, width: "100%", height: "400px" }}
+        />
+      </Container>
+    </>
   );
 };
 
