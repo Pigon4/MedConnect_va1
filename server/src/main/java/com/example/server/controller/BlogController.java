@@ -14,16 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 public class BlogController {
 
 
-
     @GetMapping("/unrestricted")
     public ResponseEntity<?> getMessage() {
-        return new ResponseEntity<>("Hai this is a normal message..", HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("{\"message\": \"This is a normal message\"}");
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/restricted")
     public ResponseEntity<?> getRestrictedMessage() {
-        return new ResponseEntity<>("This is a restricted message", HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("{\"message\": \"This is a RESTRICTED message\"}");
     }
 
 

@@ -23,6 +23,7 @@ public class SecurityConfig {
 
 //        disable CSRF since we use fronted (any other port, not server side rendered app)
         http.csrf(AbstractHttpConfigurer::disable);
+        http.cors(Customizer.withDefaults()); // ✅ Enable the CORS config you defined
 
 //        permit specific request (3), other authenticated (using our JWT filter)
         http.authorizeHttpRequests(auth -> auth

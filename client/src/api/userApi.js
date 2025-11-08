@@ -1,0 +1,45 @@
+// test functions - no need to worry or delete :_)
+
+const API_BASE = "http://localhost:8080/api/user";
+const RESTRICTED_API = "http://localhost:8080/api/blog/restricted";
+
+let token;
+
+export const logIn = () => {
+  const params = {
+    username: "murtveca",
+    password: "gooner",
+  };
+  const options = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(params),
+    mode: "cors",
+  };
+  fetch(`${API_BASE}/login`, options)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data.token);
+      token = data.token;
+      localStorage.setItem("jwt-token", data.token);
+      testProtected();
+    });
+};
+
+
+export const testProtected = () => {
+
+  const options1 = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}` // ✅ send token
+    },
+    mode: "cors",
+  };
+  fetch(`${RESTRICTED_API}`, options1)
+    .then((response) => console.log(response))
+    
+};
