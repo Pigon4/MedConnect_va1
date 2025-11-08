@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Container, Table, Button, Form } from "react-bootstrap";
 import { FileDown, FileText, Printer } from "lucide-react";
 
@@ -9,6 +9,7 @@ const Storage = () => {
   });
 
   const [newFile, setNewFile] = useState(null);
+  const fileInputRef = useRef(null); // добавяме референция към input-а
 
   useEffect(() => {
     localStorage.setItem("patient_files", JSON.stringify(files));
@@ -28,6 +29,11 @@ const Storage = () => {
 
     setFiles([...files, fileEntry]);
     setNewFile(null);
+
+    // изчистваме input-а след качване
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
   const handleDownload = (file) => {
@@ -44,9 +50,13 @@ const Storage = () => {
 
   const handleRemove = (fileId) => {
     setFiles(files.filter((f) => f.id !== fileId));
+
+    // изчистваме input-а и тук, за да може да качим същия файл пак
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   };
 
-  // Проверка дали файлът може да се прегледа/принтира
   const isPreviewable = (type) =>
     type.startsWith("image/") || type === "application/pdf";
 
@@ -59,6 +69,7 @@ const Storage = () => {
       <Form className="mb-3 d-flex">
         <Form.Control
           type="file"
+          ref={fileInputRef} // добавяме референцията
           onChange={(e) => setNewFile(e.target.files[0])}
         />
         <Button
@@ -92,7 +103,6 @@ const Storage = () => {
                 <td>{(file.size / 1024).toFixed(2)} KB</td>
                 <td>{file.date}</td>
                 <td className="d-flex gap-2">
-                  {/* Изтегляне */}
                   <Button
                     variant="outline-primary"
                     onClick={() => handleDownload(file)}
@@ -101,29 +111,26 @@ const Storage = () => {
                     <FileDown size={16} />
                   </Button>
 
-                  {/* Преглед */}
                   {isPreviewable(file.type) && (
-                    <Button
-                      variant="outline-secondary"
-                      onClick={() => window.open(file.content, "_blank")}
-                      title="Преглед"
-                    >
-                      <FileText size={16} />
-                    </Button>
+                    <>
+                      <Button
+                        variant="outline-secondary"
+                        onClick={() => window.open(file.content, "_blank")}
+                        title="Преглед"
+                      >
+                        <FileText size={16} />
+                      </Button>
+
+                      <Button
+                        variant="outline-success"
+                        onClick={() => handlePrint(file)}
+                        title="Принтирай"
+                      >
+                        <Printer size={16} />
+                      </Button>
+                    </>
                   )}
 
-                  {/* Принтиране */}
-                  {isPreviewable(file.type) && (
-                    <Button
-                      variant="outline-success"
-                      onClick={() => handlePrint(file)}
-                      title="Принтирай"
-                    >
-                      <Printer size={16} />
-                    </Button>
-                  )}
-
-                  {/* Премахване */}
                   <Button
                     variant="outline-danger"
                     onClick={() => handleRemove(file.id)}
