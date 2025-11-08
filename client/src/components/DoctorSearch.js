@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Row, Col, InputGroup } from "react-bootstrap";
+import { Form, Row, Col, InputGroup, Container } from "react-bootstrap";
 import DoctorCard from "./DoctorCard";
 import doctor1 from "../images/doctor1.jpg";
 import doctor2 from "../images/doctor2.jpg";
@@ -55,7 +55,7 @@ const DoctorSearch = ({ onSelectDoctor }) => {
     });
 
   return (
-    <div>
+    <Container className="py-5">
       <h3 className="mb-4 text-success">Намери лекар</h3>
       <Form className="mb-4">
         <Row className="g-2 align-items-center">
@@ -128,7 +128,7 @@ const DoctorSearch = ({ onSelectDoctor }) => {
           <p className="text-muted mt-3">Няма намерени резултати.</p>
         )}
       </Row>
-    </div>
+    </Container>
   );
 };
 

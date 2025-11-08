@@ -1,7 +1,6 @@
-// src/components/DoctorReviews.js
 import React, { useState, useEffect } from "react";
 import { Form, Button, ListGroup } from "react-bootstrap";
-import { Star } from "lucide-react"; // иконки от lucide-react
+import { Star } from "lucide-react";
 
 const DoctorReviews = ({ doctorId }) => {
   const storageKey = `doctor_reviews_${doctorId}`;
@@ -24,16 +23,19 @@ const DoctorReviews = ({ doctorId }) => {
   const [newReview, setNewReview] = useState("");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
+  const [error, setError] = useState(""); // нов state за съобщение за грешка
 
-  // записваме всеки път, когато има промяна
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(reviews));
   }, [reviews, storageKey]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!newReview.trim() || rating === 0)
-      return alert("Моля, дайте оценка и напишете отзив.");
+
+    if (!newReview.trim() || rating === 0) {
+      setError("Моля, дайте оценка и напишете отзив.");
+      return;
+    }
 
     const newEntry = {
       id: Date.now(),
@@ -45,6 +47,7 @@ const DoctorReviews = ({ doctorId }) => {
     setReviews([...reviews, newEntry]);
     setNewReview("");
     setRating(0);
+    setError(""); // изчистваме грешката след успешно добавяне
   };
 
   return (
@@ -94,7 +97,7 @@ const DoctorReviews = ({ doctorId }) => {
           </div>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-2">
           <Form.Control
             as="textarea"
             rows={2}
@@ -103,6 +106,9 @@ const DoctorReviews = ({ doctorId }) => {
             onChange={(e) => setNewReview(e.target.value)}
           />
         </Form.Group>
+
+        {/* Покажи съобщението за грешка, ако има */}
+        {error && <div className="text-danger mb-3">{error}</div>}
 
         <Button type="submit" variant="success">
           Изпрати

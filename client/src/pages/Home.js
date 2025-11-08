@@ -30,7 +30,7 @@ const Home = () => {
             src={doctorImage}
             alt="Лекар"
             className="img-fluid"
-            style={{ maxHeight: "430px" }}
+            style={{ maxHeight: "430px", marginBottom: "-13px" }}
           />
         </Col>
       </Row>

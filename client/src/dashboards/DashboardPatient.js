@@ -10,6 +10,7 @@ import Subscriptions from "../modules/Patient/Subscriptions";
 import Prescriptions from "../modules/Patient/Prescriptions";
 import Appointments from "../modules/Patient/Appointments";
 import Storage from "../modules/Patient/Storage";
+import PaymentPage from "../modules/Patient/PaymentPage";
 import SymptomCheck from "../modules/Patient/SymptomCheck";
 import "../App.css";
 
@@ -88,6 +89,8 @@ const DashboardPatient = () => {
               element={<EditPersonalInformation />}
             />
             <Route path="subscriptions" element={<Subscriptions />} />
+            <Route path="subscriptions/payment" element={<PaymentPage />} />
+
             <Route path="prescriptions" element={<Prescriptions />} />
             <Route path="appointments" element={<Appointments />} />
             <Route path="storage" element={<Storage />} />
