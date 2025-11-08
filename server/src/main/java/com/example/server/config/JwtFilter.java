@@ -45,7 +45,7 @@ public class JwtFilter extends GenericFilterBean {
             return;
         }
 
-//        Cutting the Bearer s7m3tOk6Nh3r3
+//        Cutting the info since it's sant as Bearer s7m3tOk6Nh3r3
         String token = authHeader.substring(7);
 
         try {

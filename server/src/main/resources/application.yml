@@ -13,7 +13,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update     # safer than create-drop (keeps data between restarts)
+      ddl-auto: create-drop     # safer than create-drop (keeps data between restarts)
     show-sql: true         # optional: show generated SQL in logs
     properties:
       hibernate:

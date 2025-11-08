@@ -4,6 +4,8 @@ package com.example.server.controller;
 import com.example.server.config.JwtGeneratorInterface;
 import com.example.server.models.User;
 import com.example.server.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -51,6 +53,17 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
+    }
+
+//    Just remove the token from the client
+    @PostMapping("/logout")
+    public ResponseEntity<?> logoutUser(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Just acknowledge logout
+            return ResponseEntity.ok("User logged out — token discarded on client.");
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No token provided.");
     }
 
 

@@ -36,6 +36,7 @@ public class JwtGeneratorInterfaceImpl implements JwtGeneratorInterface{
 //                subject is put into the token - ACTUAL INFO IN IT
                 .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
+//                24 minutes xD
                 .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
                 .and()
 //                end of jwt builder back to main one

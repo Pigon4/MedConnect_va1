@@ -13,4 +13,5 @@ public interface UserService {
 
     public User getUserByNameAndPassword(String name, String password) throws UsernameNotFoundException;
 
+
 }
