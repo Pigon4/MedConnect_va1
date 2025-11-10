@@ -1,9 +1,26 @@
 import React, { useState } from "react";
+import { Form, Button, Alert } from "react-bootstrap";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { register } from "../api/userApi";
+
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 
+const transformFormToBackend = (form) => ({
+  email: form.email,
+  password: form.password,
+  name: `${form.fname} ${form.lname}`, // join first & last name
+  age: Number(form.age),
+  phoneNumber: form.phone,
+  role: { role: form.role.charAt(0).toUpperCase() + form.role.slice(1) } // "patient" -> "Patient"
+});
+
 const RegisterForm = () => {
   const navigate = useNavigate();
+
+  const goToHome = () => {
+    navigate("/home"); // redirects to /home
+  };
 
   const [formData, setFormData] = useState({
     fname: "",
@@ -176,6 +193,9 @@ const RegisterForm = () => {
     setMessage("Регистрацията беше успешна! Пренасочване към Вход...");
     setLoading(true);
 
+    const backendPayload = transformFormToBackend(formData);
+
+    register(backendPayload);
     setTimeout(() => {
       setLoading(false);
       navigate("/login"); // в момента пренасочваме към login
@@ -350,9 +370,125 @@ const RegisterForm = () => {
           </Form.Select>
         </Form.Group>
 
+        {/* Настойник – Детайли за пациента */}
+        {formData.role === "guardian" && (
+          <>
+            <h6 className="mt-3 text-secondary">Детайли за пациента</h6>
+            <Form.Group className="mb-3">
+              <Form.Label>Име на пациента</Form.Label>
+              <Form.Control
+                type="text"
+                name="patientFName"
+                placeholder="Въведете име на пациента"
+                value={formData.patientFName}
+                onChange={handleChange}
+                required
+              />
+              {patientfnameError && (
+                <p className="text-danger small mt-1">{patientfnameError}</p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Фамилия на пациента</Form.Label>
+              <Form.Control
+                type="text"
+                name="patientLName"
+                placeholder="Въведете фамилия на пациента"
+                value={formData.patientLName}
+                onChange={handleChange}
+                required
+              />
+              {patientlnameError && (
+                <p className="text-danger small mt-1">{patientlnameError}</p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Възраст на пациента</Form.Label>
+              <Form.Control
+                type="number"
+                name="patientAge"
+                placeholder="Въведете възрастта на пациента"
+                min="0"
+                max="120"
+                value={formData.patientAge}
+                onChange={handleChange}
+                required
+              />
+              {patientAgeError && (
+                <p className="text-danger small mt-1">{patientAgeError}</p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Пациент с увреждания</Form.Label>
+              <div>
+                <Form.Check
+                  inline
+                  type="radio"
+                  label="Да"
+                  name="hasDisability"
+                  value="yes"
+                  checked={formData.hasDisability === "yes"}
+                  onChange={handleChange}
+                />
+                <Form.Check
+                  inline
+                  type="radio"
+                  label="Не"
+                  name="hasDisability"
+                  value="no"
+                  checked={formData.hasDisability === "no"}
+                  onChange={handleChange}
+                />
+              </div>
+            </Form.Group>
+
+            {formData.hasDisability === "yes" && (
+              <Form.Group className="mb-3">
+                <Form.Label>Описание на заболяването</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={2}
+                  name="disabilityDetails"
+                  placeholder="Опишете заболяването или състоянието"
+                  value={formData.disabilityDetails}
+                  onChange={handleChange}
+                />
+              </Form.Group>
+            )}
+          </>
+        )}
+
+        {/* Лекар */}
+        {showDoctorFields && (
+          <>
+            <h6 className="mt-3 text-secondary">Детайли за лекар</h6>
+            <Form.Group className="mb-3">
+              <Form.Label>Специализация</Form.Label>
+              <Form.Control
+                type="text"
+                name="specialization"
+                placeholder="Въведете вашата специализация"
+                value={formData.specialization}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+          </>
+        )}
+
+        <Button
+          type="submit"
+          variant="success"
+          className="w-100"
+        >
         <Button type="submit" variant="success" className="w-100">
           Регистрация
         </Button>
+
+        <Button onClick={goToHome}>test button</Button>
 
         <div className="text-center mt-2">
           <p className="text-muted">
