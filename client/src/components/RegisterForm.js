@@ -12,7 +12,7 @@ const transformFormToBackend = (form) => ({
   name: `${form.fname} ${form.lname}`, // join first & last name
   age: Number(form.age),
   phoneNumber: form.phone,
-  role: { role: form.role.charAt(0).toUpperCase() + form.role.slice(1) } // "patient" -> "Patient"
+  role: { role: form.role.charAt(0).toUpperCase() + form.role.slice(1) }, // "patient" -> "Patient"
 });
 
 const RegisterForm = () => {
@@ -236,7 +236,6 @@ const RegisterForm = () => {
           />
           {fnameError && <p className="text-danger small mt-1">{fnameError}</p>}
         </Form.Group>
-
         <Form.Group className="mb-3">
           <Form.Label>Фамилия</Form.Label>
           <Form.Control
@@ -249,7 +248,6 @@ const RegisterForm = () => {
           />
           {lnameError && <p className="text-danger small mt-1">{lnameError}</p>}
         </Form.Group>
-
         {/* Възраст */}
         <Form.Group className="mb-3">
           <Form.Label>Възраст</Form.Label>
@@ -265,7 +263,6 @@ const RegisterForm = () => {
           />
           {ageError && <p className="text-danger small mt-1">{ageError}</p>}
         </Form.Group>
-
         {/* Имейл */}
         <Form.Group className="mb-3">
           <Form.Label>Имейл адрес</Form.Label>
@@ -279,7 +276,6 @@ const RegisterForm = () => {
           />
           {emailError && <p className="text-danger small mt-1">{emailError}</p>}
         </Form.Group>
-
         {/* Телефон */}
         <Form.Group className="mb-3">
           <Form.Label>Телефонен номер</Form.Label>
@@ -293,7 +289,6 @@ const RegisterForm = () => {
           />
           {phoneError && <p className="text-danger small mt-1">{phoneError}</p>}
         </Form.Group>
-
         {/* Парола */}
         <Form.Group className="mb-3">
           <Form.Label>Парола</Form.Label>
@@ -329,7 +324,6 @@ const RegisterForm = () => {
             )
           )}
         </Form.Group>
-
         {/* Потвърждение на паролата */}
         <Form.Group className="mb-3">
           <Form.Label>Потвърдете паролата</Form.Label>
@@ -355,7 +349,6 @@ const RegisterForm = () => {
             <p className="text-danger small mt-1">{confirmPasswordError}</p>
           )}
         </Form.Group>
-
         {/* Роля */}
         <Form.Group className="mb-3">
           <Form.Label>Роля</Form.Label>
@@ -406,6 +399,7 @@ const RegisterForm = () => {
 
             <Form.Group className="mb-3">
               <Form.Label>Възраст на пациента</Form.Label>
+
               <Form.Control
                 type="number"
                 name="patientAge"
@@ -433,6 +427,7 @@ const RegisterForm = () => {
                   checked={formData.hasDisability === "yes"}
                   onChange={handleChange}
                 />
+
                 <Form.Check
                   inline
                   type="radio"
@@ -479,17 +474,11 @@ const RegisterForm = () => {
           </>
         )}
 
-        <Button
-          type="submit"
-          variant="success"
-          className="w-100"
-        >
         <Button type="submit" variant="success" className="w-100">
           Регистрация
         </Button>
 
         <Button onClick={goToHome}>test button</Button>
-
         <div className="text-center mt-2">
           <p className="text-muted">
             Вече имате акаунт?{" "}
