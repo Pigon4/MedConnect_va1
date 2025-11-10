@@ -1,13 +1,15 @@
 import React, { useState } from "react";
-import { Form, Button, Container, Card, Alert } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Form, Button, Container, Card, Alert, Spinner } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 import { logIn } from "../api/userApi";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const validateEmail = (email) => {
     if (/[а-яА-Я]/.test(email))
@@ -25,12 +27,11 @@ const LoginForm = () => {
     return "";
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const emailError = validateEmail(email);
     const passwordError = validatePassword(password);
-
     setErrors({ email: emailError, password: passwordError });
 
     if (emailError || passwordError) {
@@ -39,9 +40,15 @@ const LoginForm = () => {
     }
 
     setMessage("");
-    alert(`Влезли сте като: ${email}`);
+    setLoading(true);
 
-    
+    // В момента можем да симулираме успешен вход
+    setMessage("Вход успешен! Пренасочване към Вашето табло...");
+
+    // След 2 секунди пренасочваме към patient dashboard
+    setTimeout(() => {
+      navigate("/dashboard/patient"); // тук може по-късно да бъде динамично спрямо ролята
+    }, 2000);
   };
 
   return (
@@ -62,7 +69,19 @@ const LoginForm = () => {
           Вход
         </h3>
 
-        {message && <Alert variant="info">{message}</Alert>}
+        {message && (
+          <Alert variant="info" className="d-flex align-items-center">
+            {loading && (
+              <Spinner
+                animation="border"
+                size="sm"
+                className="me-2"
+                role="status"
+              />
+            )}
+            <span>{message}</span>
+          </Alert>
+        )}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -106,9 +125,7 @@ const LoginForm = () => {
             className="w-100 mt-2"
             variant="success"
             style={{ backgroundColor: "#2E8B57", border: "none" }}
-
-            // Added this button for test
-            onClick={logIn}
+            disabled={loading}
           >
             Вход
           </Button>

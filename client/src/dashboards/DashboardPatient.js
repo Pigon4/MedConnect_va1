@@ -12,6 +12,7 @@ import Appointments from "../modules/Patient/Appointments";
 import Storage from "../modules/Patient/Storage";
 import PaymentPage from "../modules/Patient/PaymentPage";
 import SymptomCheck from "../modules/Patient/SymptomCheck";
+import Logout from "../modules/Patient/Logout";
 import "../App.css";
 
 const DashboardPatient = () => {
@@ -72,6 +73,11 @@ const DashboardPatient = () => {
                 Проверка на симптоми
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link as={NavLink} to={`${basePath}/logout`}>
+                Изход
+              </Nav.Link>
+            </Nav.Item>
           </Nav>
         </Col>
 
@@ -95,6 +101,7 @@ const DashboardPatient = () => {
             <Route path="appointments" element={<Appointments />} />
             <Route path="storage" element={<Storage />} />
             <Route path="symptom_check" element={<SymptomCheck />} />
+            <Route path="logout" element={<Logout />} />
             <Route path="*" element={<Navigate to="home" />} />
           </Routes>
         </Col>

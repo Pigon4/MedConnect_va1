@@ -1,0 +1,55 @@
+import React, { useState } from "react";
+import { Container, Button, Card, Spinner } from "react-bootstrap";
+import { useNavigate, useLocation } from "react-router-dom";
+
+const Logout = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [loading, setLoading] = useState(false);
+
+  const basePath = location.pathname.startsWith("/test")
+    ? "/test/patient"
+    : "/dashboard/patient";
+
+  const handleConfirmLogout = () => {
+    setLoading(true); // показваме spinner
+    localStorage.removeItem("token"); // изчистваме токени
+
+    // Симулираме кратка обработка (напр. API call)
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/"); // пренасочваме към главната страница
+    }, 2000);
+  };
+
+  const handleCancelLogout = () => {
+    navigate(`${basePath}/home`);
+  };
+
+  return (
+    <Container className="py-5">
+      <h3 className="text-success text-left mb-5">🔓 Изход</h3>
+      <Card className="p-4 text-center" style={{ maxWidth: "400px" }}>
+        <h4 className="text-success mb-4">Наистина ли искате да излезете?</h4>
+        {loading ? (
+          <div className="d-flex justify-content-center">
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Излизане...</span>
+            </Spinner>
+          </div>
+        ) : (
+          <div className="d-flex justify-content-around">
+            <Button variant="secondary" onClick={handleCancelLogout}>
+              Отказ
+            </Button>
+            <Button variant="danger" onClick={handleConfirmLogout}>
+              Изход
+            </Button>
+          </div>
+        )}
+      </Card>
+    </Container>
+  );
+};
+
+export default Logout;

@@ -3,6 +3,8 @@ import { Form, Button, Alert } from "react-bootstrap";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register } from "../api/userApi";
 
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Link, useNavigate } from "react-router-dom";
 
 const transformFormToBackend = (form) => ({
   email: form.email,
@@ -40,8 +42,8 @@ const RegisterForm = () => {
   const [showDoctorFields, setShowDoctorFields] = useState(false);
   const [passwordErrors, setPasswordErrors] = useState([]);
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // за основната парола
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // за потвърждението
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [ageError, setAgeError] = useState("");
   const [patientAgeError, setPatientAgeError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -51,6 +53,7 @@ const RegisterForm = () => {
   const [patientfnameError, setPatientFNameError] = useState("");
   const [patientlnameError, setPatientLNameError] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Валидация на паролата
   const validatePassword = (password) => {
@@ -186,17 +189,17 @@ const RegisterForm = () => {
     if (formData.password !== formData.confirmPassword)
       return setMessage("Паролите не съвпадат.");
 
-    if (formData.role === "doctor") {
-      setMessage(
-        "Регистрацията е изпратена. Профилът ще бъде прегледан от администратор."
-      );
-    } else {
-      setMessage("Регистрацията беше успешна! Можете да влезете в профила си.");
-    }
+    // Симулираме успешна регистрация
+    setMessage("Регистрацията беше успешна! Пренасочване към Вход...");
+    setLoading(true);
 
     const backendPayload = transformFormToBackend(formData);
 
     register(backendPayload);
+    setTimeout(() => {
+      setLoading(false);
+      navigate("/login"); // в момента пренасочваме към login
+    }, 2000);
   };
 
   return (
@@ -205,7 +208,19 @@ const RegisterForm = () => {
         Създайте своя MedConnect акаунт
       </h3>
 
-      {message && <Alert variant="info">{message}</Alert>}
+      {message && (
+        <Alert variant="info" className="d-flex align-items-center">
+          {loading && (
+            <Spinner
+              animation="border"
+              size="sm"
+              className="me-2"
+              role="status"
+            />
+          )}
+          <span>{message}</span>
+        </Alert>
+      )}
 
       <Form onSubmit={handleSubmit}>
         {/* Имена */}
@@ -279,7 +294,7 @@ const RegisterForm = () => {
           {phoneError && <p className="text-danger small mt-1">{phoneError}</p>}
         </Form.Group>
 
-        {/* Парола с око */}
+        {/* Парола */}
         <Form.Group className="mb-3">
           <Form.Label>Парола</Form.Label>
           <div className="d-flex">
@@ -300,15 +315,6 @@ const RegisterForm = () => {
               {showPassword ? "Скрий" : "Покажи"}
             </Button>
           </div>
-          <Form.Text muted>
-            Паролата трябва да съдържа поне:
-            <ul className="mb-1 mt-1">
-              <li>8 символа</li>
-              <li>1 главна буква</li>
-              <li>1 цифра</li>
-              <li>1 специален символ</li>
-            </ul>
-          </Form.Text>
           {passwordErrors.length > 0 ? (
             <ul className="text-danger small mt-1">
               {passwordErrors.map((err, idx) => (
@@ -324,7 +330,7 @@ const RegisterForm = () => {
           )}
         </Form.Group>
 
-        {/* Потвърждение на паролата с око */}
+        {/* Потвърждение на паролата */}
         <Form.Group className="mb-3">
           <Form.Label>Потвърдете паролата</Form.Label>
           <div className="d-flex">
@@ -478,6 +484,7 @@ const RegisterForm = () => {
           variant="success"
           className="w-100"
         >
+        <Button type="submit" variant="success" className="w-100">
           Регистрация
         </Button>
 
