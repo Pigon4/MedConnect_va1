@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button, Alert, Spinner } from "react-bootstrap";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { register } from "../api/userApi";
-
-import { Form, Button, Alert, Spinner } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
 
 const transformFormToBackend = (form) => ({
   email: form.email,
@@ -478,7 +475,8 @@ const RegisterForm = () => {
           Регистрация
         </Button>
 
-        <Button onClick={goToHome}>test button</Button>
+        {/* <Button onClick={goToHome}>test button</Button> */}
+
         <div className="text-center mt-2">
           <p className="text-muted">
             Вече имате акаунт?{" "}
