@@ -52,9 +52,7 @@ export const logIn = () => {
     .then((response) => {
         if (!response.code){
             console.log("Error here broski")
-        } else {
-            goToHome();
-        }
+        } 
         // console.log(response)
     })
 };*/
