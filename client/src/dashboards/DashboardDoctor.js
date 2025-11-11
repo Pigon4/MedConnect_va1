@@ -7,6 +7,7 @@ import DoctorHome from "../modules/Doctor/DoctorHome";
 import DoctorPersonalInformation from "../modules/Doctor/DoctorPersonalInformation";
 import DoctorAppointments from "../modules/Doctor/DoctorAppointments";
 import DoctorPatients from "../modules/Doctor/DoctorPatients";
+import DoctorReviews from "../modules/Doctor/DoctorReviews";
 
 const DashboardDoctor = () => {
 const location = useLocation();
@@ -52,6 +53,11 @@ return (
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
+              <Nav.Link as={NavLink} to={`${basePath}/doctor_reviews`}>
+                Отзиви
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
               <Nav.Link as={NavLink} to={`${basePath}/logout`}>
                 Изход
               </Nav.Link>
@@ -67,6 +73,7 @@ return (
             <Route path="personal_information" element={<DoctorPersonalInformation />} />
             <Route path="patients" element={<DoctorPatients />} />
             <Route path="doctor_appointments" element={<DoctorAppointments />} />
+            <Route path="doctor_reviews" element={<DoctorReviews />} />
             <Route path="*" element={<Navigate to="home" />} />
           </Routes>
         </Col>
