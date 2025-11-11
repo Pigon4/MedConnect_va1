@@ -1,10 +1,9 @@
-import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-import { register } from "../api/userApi";
-
+import { useState } from "react";
 import { Form, Button, Alert, Spinner } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
+import { logIn, register } from "../api/userApi";
+import RegisterInput from "./RegisterComponents/RegisterInput";
+import { useAuth } from "../context/AuthContext";
 
 const transformFormToBackend = (form) => ({
   email: form.email,
@@ -12,15 +11,12 @@ const transformFormToBackend = (form) => ({
   name: `${form.fname} ${form.lname}`, // join first & last name
   age: Number(form.age),
   phoneNumber: form.phone,
-  role: { role: form.role.charAt(0).toUpperCase() + form.role.slice(1) } // "patient" -> "Patient"
+  role: { role: form.role.charAt(0).toUpperCase() + form.role.slice(1) }, // "patient" -> "Patient"
 });
 
 const RegisterForm = () => {
   const navigate = useNavigate();
-
-  const goToHome = () => {
-    navigate("/home"); // redirects to /home
-  };
+  const {setToken} = useAuth();
 
   const [formData, setFormData] = useState({
     fname: "",
@@ -169,7 +165,7 @@ const RegisterForm = () => {
     if (name === "role") setShowDoctorFields(value === "doctor");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (passwordErrors.length > 0)
@@ -195,11 +191,26 @@ const RegisterForm = () => {
 
     const backendPayload = transformFormToBackend(formData);
 
-    register(backendPayload);
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/login"); // в момента пренасочваме към login
-    }, 2000);
+    try {
+      await register(backendPayload);
+      const loginRes = await logIn(backendPayload);
+      await logIn(backendPayload);
+
+      if (loginRes && loginRes.token) {
+        setToken(loginRes.token);
+        navigate("/");
+      } else {
+        setMessage("Login failed after registration.");
+      }
+
+    } catch (err) {
+      setMessage("Възникна грешка. Моля, опитайте отново.");
+    }
+
+    // setTimeout(() => {
+    //   setLoading(false);
+    //   navigate("/");
+    // }, 2000);
   };
 
   return (
@@ -223,76 +234,62 @@ const RegisterForm = () => {
       )}
 
       <Form onSubmit={handleSubmit}>
-        {/* Имена */}
-        <Form.Group className="mb-3">
-          <Form.Label>Име</Form.Label>
-          <Form.Control
-            type="text"
-            name="fname"
-            placeholder="Въведете вашето име"
-            value={formData.fname}
-            onChange={handleChange}
-            required
-          />
-          {fnameError && <p className="text-danger small mt-1">{fnameError}</p>}
-        </Form.Group>
+        {/* СОБСТВЕНО ИМЕ */}
+        <RegisterInput
+          label="Име"
+          name="fname"
+          placeholder="Въведете вашето име"
+          value={formData.fname}
+          onChange={handleChange}
+          error={fnameError}
+        />
 
-        <Form.Group className="mb-3">
-          <Form.Label>Фамилия</Form.Label>
-          <Form.Control
-            type="text"
-            name="lname"
-            placeholder="Въведете вашата фамилия"
-            value={formData.lname}
-            onChange={handleChange}
-            required
-          />
-          {lnameError && <p className="text-danger small mt-1">{lnameError}</p>}
-        </Form.Group>
+        {/* ФАМИЛИЯ */}
+        <RegisterInput
+          label="Фамилия"
+          type="text"
+          name="lname"
+          placeholder="Въведете вашата фамилия"
+          value={formData.lname}
+          onChange={handleChange}
+          error={lnameError}
+        />
 
-        {/* Възраст */}
-        <Form.Group className="mb-3">
-          <Form.Label>Възраст</Form.Label>
-          <Form.Control
-            type="number"
-            name="age"
-            placeholder="Въведете вашата възраст"
-            min="18"
-            max="120"
-            value={formData.age}
-            onChange={handleChange}
-            required
-          />
-          {ageError && <p className="text-danger small mt-1">{ageError}</p>}
-        </Form.Group>
+        {/* ВЪЗРАСТ */}
+        <RegisterInput
+          label="Възраст"
+          type="number"
+          name="age"
+          placeholder="Въведете вашата възраст"
+          value={formData.age}
+          onChange={handleChange}
+          min="18"
+          max="120"
+          error={ageError}
+        />
 
-        {/* Имейл */}
-        <Form.Group className="mb-3">
-          <Form.Label>Имейл адрес</Form.Label>
-          <Form.Control
-            type="email"
-            name="email"
-            placeholder="Въведете вашия имейл"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          {emailError && <p className="text-danger small mt-1">{emailError}</p>}
-        </Form.Group>
+        {/* ИМЕЙЛ */}
+        <RegisterInput
+          label="Имейл"
+          type="email"
+          name="email"
+          placeholder="Въведете вашия имейл"
+          value={formData.email}
+          onChange={handleChange}
+          error={emailError}
+        />
 
-        {/* Телефон */}
-        <Form.Group className="mb-3">
-          <Form.Label>Телефонен номер</Form.Label>
-          <Form.Control
-            type="text"
-            name="phone"
-            placeholder="Въведете вашия телефонен номер"
-            value={formData.phone}
-            onChange={handleChange}
-            required
-          />
-          {phoneError && <p className="text-danger small mt-1">{phoneError}</p>}
-        </Form.Group>
+        {/* ТЕЛЕФОН */}
+        <RegisterInput
+          label="Телефонен номер"
+          type="text"
+          name="phone"
+          placeholder="Въведете вашия телефонен номер"
+          value={formData.phone}
+          onChange={handleChange}
+          required
+          error={phoneError}
+        />
 
         {/* Парола */}
         <Form.Group className="mb-3">
@@ -306,6 +303,7 @@ const RegisterForm = () => {
               onChange={handleChange}
               required
             />
+
             <Button
               variant="outline-secondary"
               type="button"
@@ -315,6 +313,7 @@ const RegisterForm = () => {
               {showPassword ? "Скрий" : "Покажи"}
             </Button>
           </div>
+          
           {passwordErrors.length > 0 ? (
             <ul className="text-danger small mt-1">
               {passwordErrors.map((err, idx) => (
@@ -479,16 +478,9 @@ const RegisterForm = () => {
           </>
         )}
 
-        <Button
-          type="submit"
-          variant="success"
-          className="w-100"
-        >
         <Button type="submit" variant="success" className="w-100">
           Регистрация
         </Button>
-
-        <Button onClick={goToHome}>test button</Button>
 
         <div className="text-center mt-2">
           <p className="text-muted">

@@ -2,6 +2,7 @@ package com.example.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -36,12 +37,21 @@ public class SecurityConfig {
         http.cors(Customizer.withDefaults()); // ✅ Enable the CORS config you defined
 
 //        permit specific request (3), other authenticated (using our JWT filter)
+//        http.authorizeHttpRequests(auth -> auth
+//                .requestMatchers("/api/user/**",
+//                        "/api/user/register",
+//                        "/api/blog/unrestricted").permitAll()
+//                .anyRequest().authenticated()
+//        );
+
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/user/**",
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // ✅ CORS preflights allowed
+                .requestMatchers("/api/user/login",
                         "/api/user/register",
                         "/api/blog/unrestricted").permitAll()
                 .anyRequest().authenticated()
         );
+
 
 //        don't use sessions because again we use JWT
         http.sessionManagement(session ->

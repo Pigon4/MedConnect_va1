@@ -2,9 +2,17 @@ import React, { useState } from "react";
 import { Form, Button, Container, Card, Alert, Spinner } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { logIn } from "../api/userApi";
+import LoginInput from "./LoginComponents/LoginInput";
+import LoginButton from "./LoginComponents/LoginButton";
+import RegisterRedirect from "./LoginComponents/RegisterRedirect";
+import LoadingSpinner from "./LoginComponents/LoadingSpinner";
+import { useAuth } from "../context/AuthContext";
+
 
 const LoginForm = () => {
   const navigate = useNavigate();
+    const { setToken } = useAuth(); // 👈 get the setToken from context
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({ email: "", password: "" });
@@ -45,10 +53,25 @@ const LoginForm = () => {
     // В момента можем да симулираме успешен вход
     setMessage("Вход успешен! Пренасочване към Вашето табло...");
 
-    // След 2 секунди пренасочваме към patient dashboard
-    setTimeout(() => {
-      navigate("/dashboard/patient"); // тук може по-късно да бъде динамично спрямо ролята
-    }, 2000);
+    try {
+      const res = await logIn({ email, password });
+        console.log(res);
+        
+      if (res && res.token) {
+        setToken(res.token);
+        setMessage("Вход успешен! Пренасочване към таблото...");
+        setTimeout(() => {
+          navigate("/"); 
+        }, 1500);
+      } else {
+        setMessage("Грешен имейл или парола.");
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
+      setMessage("Възникна грешка при входа. Опитайте отново.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -71,76 +94,39 @@ const LoginForm = () => {
 
         {message && (
           <Alert variant="info" className="d-flex align-items-center">
-            {loading && (
-              <Spinner
-                animation="border"
-                size="sm"
-                className="me-2"
-                role="status"
-              />
-            )}
+            {loading && <LoadingSpinner />}
             <span>{message}</span>
           </Alert>
         )}
 
         <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3">
-            <Form.Label>Имейл адрес</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Въведете вашия имейл"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              isInvalid={!!errors.email}
-              required
-            />
-            {errors.email && (
-              <Form.Control.Feedback type="invalid">
-                {errors.email}
-              </Form.Control.Feedback>
-            )}
-          </Form.Group>
+          {/* Email input */}
+          <LoginInput
+            label={"Имейл адрес"}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
+          />
 
-          <Form.Group className="mb-3">
-            <Form.Label>Парола</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Въведете вашата парола"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              isInvalid={!!errors.password}
-              required
-            />
-            {errors.password && (
-              <Form.Control.Feedback type="invalid">
-                {errors.password}
-              </Form.Control.Feedback>
-            )}
-          </Form.Group>
+          {/* Password Input */}
+          <LoginInput
+            label={"Парола"}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
+          />
 
-        
+          {/* Login button */}
+          <LoginButton loading={loading} text={"Вход"} />
 
-          <Button
-            type="submit"
-            className="w-100 mt-2"
-            variant="success"
-            style={{ backgroundColor: "#2E8B57", border: "none" }}
-            disabled={loading}
-          >
-            Вход
-          </Button>
-
-          <div className="text-center mt-3">
-            <p className="text-muted">
-              Все още нямате акаунт?{" "}
-              <Link
-                to="/register"
-                className="text-success fw-semibold text-decoration-none"
-              >
-                Регистрация
-              </Link>
-            </p>
-          </div>
+          {/* Redirect if not created acc */}
+          <RegisterRedirect
+            textBefore="Все още нямате акаунт?"
+            linkText="Регистрация"
+            to="/register"
+          />
         </Form>
       </Card>
     </Container>
