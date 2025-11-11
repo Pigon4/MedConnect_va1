@@ -4,7 +4,9 @@ import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
 import DoctorHome from "../modules/Doctor/DoctorHome";
-
+import DoctorPersonalInformation from "../modules/Doctor/DoctorPersonalInformation";
+import DoctorAppointments from "../modules/Doctor/DoctorAppointments";
+import DoctorPatients from "../modules/Doctor/DoctorPatients";
 
 const DashboardDoctor = () => {
 const location = useLocation();
@@ -62,6 +64,9 @@ return (
           <Routes>
             <Route index element={<Navigate to="home" />} />
             <Route path="home" element={<DoctorHome />} />
+            <Route path="personal_information" element={<DoctorPersonalInformation />} />
+            <Route path="patients" element={<DoctorPatients />} />
+            <Route path="doctor_appointments" element={<DoctorAppointments />} />
             <Route path="*" element={<Navigate to="home" />} />
           </Routes>
         </Col>

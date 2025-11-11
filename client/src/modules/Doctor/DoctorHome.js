@@ -1,10 +1,87 @@
 import React from "react";
-import { Container } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { motion } from "framer-motion";
 
 const DoctorHome = () => {
+const userName = localStorage.getItem("userName") || "Доктор";
+  const reviewData = [
+    { week: "Week 1", rating: 4.5 },
+    { week: "Week 2", rating: 4.7 },
+    { week: "Week 3", rating: 4.8 },
+    { week: "Week 4", rating: 4.6 },
+  ];
 
 return(
-    <Container><div>home</div></Container>
+     <Container fluid className="p-4">
+      {/* Welcome Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="mb-4"
+      >
+        <h2 className="fw-semibold mb-1">Здравей, {userName} 👋</h2>
+        <p className="text-muted">Ето какво се случва с вашият бизнес днес.</p>
+      </motion.div>
+
+      {/* Summary Cards */}
+      <Row className="g-4 mb-4">
+        <Col xs={12} md={4}>
+          <Card className="shadow-sm h-100">
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Subtitle className="text-muted mb-1">Всички часове</Card.Subtitle>
+                <Card.Title className="fs-3 fw-bold">124</Card.Title>
+              </div>
+              <div style={{ fontSize: "1.8rem" }}>📅</div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={4}>
+          <Card className="shadow-sm h-100">
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Subtitle className="text-muted mb-1">Изпълнени</Card.Subtitle>
+                <Card.Title className="fs-3 fw-bold text-success">98</Card.Title>
+              </div>
+              <div style={{ fontSize: "1.8rem" }}>✅</div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col xs={12} md={4}>
+          <Card className="shadow-sm h-100">
+            <Card.Body className="d-flex justify-content-between align-items-center">
+              <div>
+                <Card.Subtitle className="text-muted mb-1">Отказани</Card.Subtitle>
+                <Card.Title className="fs-3 fw-bold text-danger">26</Card.Title>
+              </div>
+              <div style={{ fontSize: "1.8rem" }}>❌</div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Reviews Chart */}
+      <Card className="shadow-sm">
+        <Card.Header className="d-flex align-items-center">
+          <span style={{ fontSize: "1.3rem", marginRight: "0.5rem" }}>⭐</span>
+          <strong>Месечни ревюта</strong>
+        </Card.Header>
+        <Card.Body style={{ height: "300px" }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={reviewData} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="week" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip />
+              <Bar dataKey="rating" fill="#ffc107" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card.Body>
+      </Card>
+    </Container>
 );
 };
 

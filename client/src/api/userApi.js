@@ -54,7 +54,7 @@ export const register = (formData) => {
         if (!response.code){
             console.log("Error here broski")
         } else {
-            goToHome();
+            //goToHome();
         }
         // console.log(response)
     })
