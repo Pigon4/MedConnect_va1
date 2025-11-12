@@ -9,7 +9,7 @@ export const logIn = ({email,password}) => {
     body: JSON.stringify({ email, password }),
   };
 
-  return fetch(`${API_BASE}/login`, options)  
+  return fetch(`${API_BASE}/login`, options)
     .then((res) => {
       if (!res.ok) {
         throw new Error("Login failed");
@@ -20,7 +20,7 @@ export const logIn = ({email,password}) => {
       if (data.token) {
         localStorage.setItem("token", data.token);
       }
-      return data; 
+      return data;
     });
 };
 
@@ -38,7 +38,7 @@ export const register = (formData) => {
     .then((response) => response.json())
     .then((data) => {
       if (data.code) {
-        console.log("Error here broski", data); 
+        console.log("Error here broski", data);
       } else {
         console.log("Registration successful", data);
       }
