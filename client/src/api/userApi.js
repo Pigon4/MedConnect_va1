@@ -19,79 +19,72 @@ export const TEST_LOGIN_JSON = {
   password: "gooner",
 };
 
-// Функция за логин
-export const logIn = async () => {
-  const params = {
-    username: "test_user_new",
-    password: "test123A!",
-  };
+export const logIn = () => {
+  const { email, password } = TEST_LOGIN_JSON;  
 
   const options = {
     method: "POST",
     mode: "cors",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(params),
+    body: JSON.stringify({ email, password }),
   };
 
-  try {
-    const res = await fetch(`${API_BASE}/login`, options);
-    if (!res.ok) {
-      throw new Error("Login failed");
-    }
-    const data = await res.json();
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-    }
-    return data;
-  } catch (error) {
-    console.error("Error logging in:", error);
-  }
+  return fetch(`${API_BASE}/login`, options)  
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Login failed");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+      return data; 
+    });
 };
 
-// Функция за регистрация
-export const register = async (formData) => {
+export const register = (formData) => {
   const options = {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify(formData),
     mode: "cors",
   };
 
-  try {
-    const res = await fetch(`${API_BASE}/register`, options);
-    if (!res.ok) {
-      console.log("Error during registration");
-    } else {
-      console.log("Registration successful");
-    }
-    return await res.json();
-  } catch (error) {
-    console.error("Registration error:", error);
-  }
+  return fetch(`${API_BASE}/register`, options)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.code) {
+        console.log("Error here broski", data); 
+      } else {
+        console.log("Registration successful", data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error during registration:", error);
+    });
 };
 
-// Функция за тестване на защитен ресурс
-export const testProtected = async () => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("No token found");
-    return;
-  }
-
-  const options = {
+export const testProtected = () => {
+  const token = localStorage.getItem("token"); 
+  const options1 = {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${token}`, 
     },
     mode: "cors",
   };
 
-  try {
-    const res = await fetch(RESTRICTED_API, options);
-    const data = await res.json();
-    console.log("Protected data:", data);
-  } catch (error) {
-    console.error("Error fetching protected data:", error);
-  }
+  fetch(`${RESTRICTED_API}`, options1)
+    .then((response) => response.json())
+    .then((data) => {
+      console.log("Protected data:", data);
+    })
+    .catch((error) => {
+      console.error("Error fetching protected data:", error);
+    });
 };
