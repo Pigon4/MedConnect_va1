@@ -2,7 +2,8 @@ const API_BASE = "http://localhost:8080/api/user";
 const RESTRICTED_API = "http://localhost:8080/api/blog/restricted";
 const UNRESTRICTED_API = "http://localhost:8080/api/blog/unrestricted";
 
-const TEST_REGISTER_JSON = {
+// Примерни данни за тест
+export const TEST_REGISTER_JSON = {
   email: "new_user@example.com",
   password: "mypassword123",
   name: "New User",
@@ -13,7 +14,7 @@ const TEST_REGISTER_JSON = {
   },
 };
 
-const TEST_LOGIN_JSON = {
+export const TEST_LOGIN_JSON = {
   email: "murtveca@example.com",
   password: "gooner",
 };
