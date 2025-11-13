@@ -6,6 +6,7 @@ import {
 import { useAuth } from "./AuthContext";
 import { ProtectedRoute } from "./ProtectedRouteMine";
 import DashboardPatient from "../dashboards/DashboardPatient";
+import DashboardDoctor from "../dashboards/DashboardDoctor";
 import HomePage from "../pages/HomePage";
 import Logout from "../modules/Patient/Logout";
 import MainLayout from "../pages/MainLayout";
@@ -58,11 +59,18 @@ const Routes = () => {
           ),
         },
 
-         {
-          path: "restricted/some/",
+        {
+          path: "dashboard/doctor/*",
           element: (
-            <Some/>
+            <ProtectedRoute>
+              <DashboardDoctor />
+            </ProtectedRoute>
           ),
+        },
+
+        {
+          path: "restricted/some/",
+          element: <Some />,
         },
       ],
     },
