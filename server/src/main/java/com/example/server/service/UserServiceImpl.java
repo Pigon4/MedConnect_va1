@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void upgradeSubscription(String email, String planId) {
-        // Find the user
+
         Optional<User> optionalUser = Optional.ofNullable(userRepository.findByEmail(email));
         if (optionalUser.isEmpty()) {
             System.out.println("No user found with email: " + email);
@@ -82,20 +82,19 @@ public class UserServiceImpl implements UserService {
         LocalDate expiry;
 
         switch (planId) {
-            case "price_1SSFR9RTNyC3ef1LQhZ0VACG": // monthly plan
+            case "price_1SSFR9RTNyC3ef1LQhZ0VACG": // monthly
                 subscriptionStatus = "premium";
                 expiry = LocalDate.now().plusMonths(1);
                 break;
-            case "price_1SSFR9RTNyC3ef1L5o89uciw": // yearly plan
+            case "price_1SSFR9RTNyC3ef1L5o89uciw": // yearly
                 subscriptionStatus = "premium";
                 expiry = LocalDate.now().plusYears(1);
                 break;
             default:
-                subscriptionStatus = "free"; // fallback
+                subscriptionStatus = "free";
                 expiry = LocalDate.now().plusYears(100);
         }
 
-        // Update user subscription
         user.setSubscription(subscriptionStatus);
         user.setSubscriptionExpiry(expiry);
 
