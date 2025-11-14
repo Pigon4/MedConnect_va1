@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 
 import DoctorHome from "../modules/Doctor/DoctorHome";
 import DoctorPersonalInformation from "../modules/Doctor/DoctorPersonalInformation";
+import DoctorEditInformation from "../modules/Doctor/DoctorEditInformation";
 import DoctorPatients from "../modules/Doctor/DoctorPatients";
 import DoctorReviews from "../modules/Doctor/DoctorReviews";
 
@@ -37,7 +38,7 @@ const DashboardDoctor = () => {
             </Nav.Item>
             <Nav.Item>
               <Nav.Link as={NavLink} to={`${basePath}/personal_information`}>
-                Лична информация
+                Лични данни
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
@@ -61,6 +62,10 @@ const DashboardDoctor = () => {
             <Route
               path="personal_information"
               element={<DoctorPersonalInformation />}
+            />
+            <Route
+              path="personal_information/edit"
+              element={<DoctorEditInformation />}
             />
             <Route path="patients" element={<DoctorPatients />} />
             <Route path="doctor_reviews" element={<DoctorReviews />} />

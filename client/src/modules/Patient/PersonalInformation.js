@@ -1,4 +1,3 @@
-import React from "react";
 import { Container, Card, Row, Col, Image, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import profileImage from "../../images/profile.png";
@@ -26,7 +25,7 @@ const PersonalInformation = () => {
   return (
     <Container className="mt-4">
       <Card className="p-4 shadow-sm">
-        <h3 className="text-success text-left mb-4">Лична информация</h3>
+        <h3 className="text-success text-left mb-4">Лични данни</h3>
 
         <Row>
           {/* Фото */}
@@ -47,7 +46,7 @@ const PersonalInformation = () => {
             >
               <Image
                 src={userData.photo || profileImage}
-                alt="Patient"
+                alt="Пациент"
                 fluid
                 style={{
                   width: "150px",

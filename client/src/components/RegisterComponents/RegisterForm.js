@@ -32,7 +32,10 @@ const transformFormToBackend = (form) => ({
 //       return {
 //         ...baseUser,
 //         doctorProfile: {
-//           specialization: form.specialization,
+//           specialty: form.specialty,
+//           experience: form.experience,
+//           city: form.city,
+//           hospital: form.hospital,
 //         },
 //       };
 
@@ -69,7 +72,10 @@ const RegisterForm = () => {
     confirmPassword: "",
     phone: "",
     role: "patient",
-    specialization: "",
+    specialty: "",
+    experience: "",
+    city: "",
+    hospital: "",
     patientFName: "",
     patientLName: "",
     patientAge: "",
@@ -84,6 +90,7 @@ const RegisterForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [ageError, setAgeError] = useState("");
+  const [experienceError, setExperienceError] = useState("");
   const [patientAgeError, setPatientAgeError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -128,6 +135,17 @@ const RegisterForm = () => {
           setPatientAgeError("Максималната възможна стойност е 120 години.");
         else setPatientAgeError("");
       }
+    }
+
+    // Проверка опит
+    if (name === "experience") {
+      newValue = value.replace(/\D/g, "");
+      const num = parseInt(newValue, 10);
+
+      if (num < 1) setExperienceError("Опитът трябва да е поне 1 година.");
+      else if (num > 50)
+        setExperienceError("Максималната възможна стойност е 50 години.");
+      else setExperienceError("");
     }
 
     // Проверка имейл
@@ -222,7 +240,8 @@ const RegisterForm = () => {
       fnameError ||
       lnameError ||
       patientfnameError ||
-      patientlnameError
+      patientlnameError ||
+      experienceError
     )
       return setMessage("Моля, проверете въведените данни за грешки.");
 
@@ -453,12 +472,12 @@ const RegisterForm = () => {
 
             {formData.hasDisability === "yes" && (
               <Form.Group className="mb-3">
-                <Form.Label>Описание на заболяването</Form.Label>
+                <Form.Label>Описание на увреждането</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={2}
                   name="disabilityDetails"
-                  placeholder="Опишете заболяването или състоянието"
+                  placeholder="Опишете увреждането на пациента"
                   value={formData.disabilityDetails}
                   onChange={handleChange}
                 />
@@ -475,9 +494,50 @@ const RegisterForm = () => {
               <Form.Label>Специализация</Form.Label>
               <Form.Control
                 type="text"
-                name="specialization"
+                name="specialty"
                 placeholder="Въведете вашата специализация"
-                value={formData.specialization}
+                value={formData.specialty}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Опит (години)</Form.Label>
+              <Form.Control
+                type="number"
+                name="experience"
+                placeholder="Въведете вашите години опит"
+                value={formData.experience}
+                onChange={handleChange}
+                required
+                min="1"
+                max="50"
+              />
+              {experienceError && (
+                <p className="text-danger small mt-1">{experienceError}</p>
+              )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Град</Form.Label>
+              <Form.Control
+                type="text"
+                name="city"
+                placeholder="Въведете вашия град"
+                value={formData.city}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Работно място</Form.Label>
+              <Form.Control
+                type="text"
+                name="hospital"
+                placeholder="Въведете вашето работно място"
+                value={formData.hospital}
                 onChange={handleChange}
                 required
               />

@@ -58,7 +58,7 @@ const DoctorHome = () => {
 
       <GoogleCalendar />
       {/* Summary Cards */}
-      <Row className="g-4 mb-4">
+      <Row className="g-4 mt-2 mb-4">
         <Col xs={12} md={4}>
           <Card className="shadow-sm h-100">
             <Card.Body className="d-flex justify-content-between align-items-center">
