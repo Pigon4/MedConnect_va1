@@ -1,7 +1,6 @@
 const API_BASE = "http://localhost:8080/api/user";
 
-export const logIn = ({email,password}) => {
-
+export const logIn = ({ email, password }) => {
   const options = {
     method: "POST",
     mode: "cors",
@@ -38,7 +37,7 @@ export const logIn = ({email,password}) => {
 //     .then((response) => response.json())
 //     .then((data) => {
 //       if (data.code) {
-//         console.log("Error here broski", data); 
+//         console.log("Error here broski", data);
 //       } else {
 //         console.log("Registration successful", data);
 //       }
@@ -48,8 +47,7 @@ export const logIn = ({email,password}) => {
 //     });
 // };
 
-
-export const register = (formData) => {
+/*export const register = (formData) => {
   // choose the right endpoint based on the role
   let endpoint = `${API_BASE}/user/register`;
 
@@ -84,6 +82,49 @@ export const register = (formData) => {
         console.log("Registration successful", data);
       }
       return res.json();
+    })
+    .then((data) => {
+      console.log("Registration successful", data);
+      return data;
+    })
+    .catch((error) => {
+      console.error("Error during registration:", error);
+      throw error;
+    });
+};*/
+
+export const register = (formData) => {
+  // choose the right endpoint based on the role
+  let endpoint = `${API_BASE}/user/register`;
+
+  switch (formData.role) {
+    case "doctor":
+      endpoint = `${API_BASE}/doctor/register`;
+      break;
+    case "guardian":
+      endpoint = `${API_BASE}/guardian/register`;
+      break;
+    case "patient":
+      endpoint = `${API_BASE}/patient/register`;
+      break;
+    default:
+      console.warn("Unknown role, defaulting to /user/register");
+      break;
+  }
+
+  const options = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+    mode: "cors",
+  };
+
+  return fetch(endpoint, options)
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Registration failed");
+      }
+      return response.json();
     })
     .then((data) => {
       console.log("Registration successful", data);

@@ -59,7 +59,6 @@ import PasswordInput from "./PasswordInput";
 //   }
 // };
 
-
 // const transformFormToBackend = (form) => {
 //   const base = {
 //     email: form.email,
@@ -113,9 +112,7 @@ const transformFormToBackend = (form) => {
         wardAge: Number(form.patientAge),
         isWardDisabled: form.hasDisability === "yes",
         wardDisabilityDescription:
-          form.hasDisability === "yes"
-            ? form.disabilityDetails
-            : null,
+          form.hasDisability === "yes" ? form.disabilityDetails : null,
       };
 
     case "patient":
@@ -537,12 +534,12 @@ const RegisterForm = () => {
 
             {formData.hasDisability === "yes" && (
               <Form.Group className="mb-3">
-                <Form.Label>Описание на увреждането</Form.Label>
+                <Form.Label>Описание на уврежданията</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={2}
                   name="disabilityDetails"
-                  placeholder="Опишете увреждането на пациента"
+                  placeholder="Опишете уврежданията на пациента"
                   value={formData.disabilityDetails}
                   onChange={handleChange}
                 />

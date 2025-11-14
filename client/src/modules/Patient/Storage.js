@@ -63,7 +63,7 @@ const Storage = () => {
   return (
     <Container className="py-5">
       <h3 className="mb-4" style={{ color: "#2E8B57" }}>
-        📁 Моето хранилище
+        📁 Хранилище
       </h3>
 
       <Form className="mb-3 d-flex">
