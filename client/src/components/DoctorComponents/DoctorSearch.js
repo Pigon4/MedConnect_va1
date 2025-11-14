@@ -1,38 +1,49 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Row, Col, InputGroup, Container } from "react-bootstrap";
 import DoctorCard from "./DoctorCard";
-import doctor1 from "../images/doctor1.jpg";
-import doctor2 from "../images/doctor2.jpg";
-import doctor3 from "../images/doctor3.jpg";
+import doctor1 from "../../images/doctor1.jpg";
+import doctor2 from "../../images/doctor2.jpg";
+import doctor3 from "../../images/doctor3.jpg";
 
 const mockDoctors = [
   {
     id: 1,
     photo: doctor2,
-    name: "Д-р Иван Петров",
+    fname: "Иван",
+    lname: "Петров",
+    email: "drpetrov@example.com",
+    phone: "0887642143",
     specialty: "Кардиолог",
-    hospital: "Болница Пирогов",
-    rating: 4.8,
     city: "София",
+    hospital: "Болница Пирогов",
+    experience: 10,
+    rating: 4.8,
   },
   {
     id: 2,
     photo: doctor1,
-    name: "Д-р Мария Георгиева",
-
+    fname: "Мария",
+    lname: "Георгиева",
+    email: "drmg@example.com",
+    phone: "0887561422",
     specialty: "Невролог",
-    hospital: "Клиника Здраве",
-    rating: 4.6,
     city: "Пловдив",
+    hospital: "Клиника Здраве",
+    experience: 20,
+    rating: 4.6,
   },
   {
     id: 3,
     photo: doctor3,
-    name: "Д-р Николай Костов",
+    fname: "Николай",
+    lname: "Костов",
+    email: "nikkostov@example.com",
+    phone: "0888646913",
     specialty: "Дерматолог",
-    hospital: "Болница Света Анна",
-    rating: 4.9,
     city: "Варна",
+    hospital: "Болница Света Анна",
+    experience: 12,
+    rating: 4.9,
   },
 ];
 
@@ -43,7 +54,11 @@ const DoctorSearch = ({ onSelectDoctor }) => {
   const [sort, setSort] = useState("");
 
   const filteredDoctors = mockDoctors
-    .filter((doc) => doc.name.toLowerCase().includes(query.toLowerCase()))
+    .filter((doc) =>
+      ("Д-р " + doc.fname + " " + doc.lname)
+        .toLowerCase()
+        .includes(query.toLowerCase())
+    )
     .filter((doc) =>
       specialtyFilter ? doc.specialty === specialtyFilter : true
     )

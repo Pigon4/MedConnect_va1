@@ -36,17 +36,14 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults()); // ✅ Enable the CORS config you defined
 
-        // permit specific request (3), other authenticated (using our JWT filter)
-        http.authorizeHttpRequests(auth -> auth
-                .requestMatchers(
-                        "/api/user/**",
-                        "/api/user/register",
-                        "/api/blog/unrestricted",
-                        "/patient",
-                        "/api/user/doctors",
-                        "/api/user/users",
-
-                        "/api/user/guardians",
+                // permit specific request (3), other authenticated (using our JWT filter)
+                http.authorizeHttpRequests(auth -> auth
+                                .requestMatchers(
+                                                "/api/user/**",
+                                                "/api/user/register",
+                                                "/api/blog/unrestricted",
+                                                "/api/stripe/webhook",
+                                                "/api/stripe/**","/api/user/guardians",
                         "/api/user/patients",
                         "/api/user/doctors",
 
@@ -58,8 +55,12 @@ public class SecurityConfig {
                         "/guardians",
                         "/api/user/doctor/register",
                         "/api/stripe/**")
-                .permitAll()
-                .anyRequest().authenticated());
+                                .permitAll()
+                                .anyRequest().authenticated());
+
+                        
+                // .permitAll()
+                // .anyRequest().authenticated());
 
         // don't use sessions because again we use JWT
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

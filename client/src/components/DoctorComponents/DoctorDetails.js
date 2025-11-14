@@ -11,7 +11,7 @@ const DoctorDetails = ({ doctor, onBack }) => (
       {/* Снимка на лекаря */}
       <Image
         src={doctor.photo}
-        alt={doctor.name}
+        alt={"Д-р " + doctor.fname + " " + doctor.lname}
         rounded
         style={{
           width: "120px",
@@ -26,14 +26,18 @@ const DoctorDetails = ({ doctor, onBack }) => (
       />
 
       <div>
-        <h4>{doctor.name}</h4>
+        <h4>{"Д-р " + doctor.fname + " " + doctor.lname}</h4>
         <p>{doctor.specialty}</p>
         <p>⭐ {doctor.rating}</p>
         <p>📍 {doctor.city}</p>
         <p>🏥 {doctor.hospital}</p>
-        <p>🩺 Опит: 12 години</p>
+        <p>🩺 Опит: {doctor.experience} години</p>
         <p>
-          📞 Контакт: dr.{doctor.name.split(" ")[1].toLowerCase()}@medconnect.bg
+          📞 Контакти:
+          <br />
+          {doctor.email}
+          <br />
+          {doctor.phone}
         </p>
       </div>
     </div>

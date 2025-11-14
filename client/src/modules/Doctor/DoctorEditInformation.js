@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { useState } from "react";
 
-const EditPersonalInformation = () => {
+const DoctorEditInformation = () => {
   const [formData, setFormData] = useState({
     photo: null,
     fname: "",
@@ -21,17 +21,20 @@ const EditPersonalInformation = () => {
     age: "",
     email: "",
     phone: "",
-    allergies: "",
-    conditions: "",
+    speciality: "",
+    experience: "",
+    city: "",
+    hospital: "",
   });
   const navigate = useNavigate();
   const location = useLocation();
   const basePath = location.pathname.startsWith("/test")
-    ? "/test/patient"
-    : "/dashboard/patient";
+    ? "/test/doctor"
+    : "/dashboard/doctor";
 
   // Грешки
   const [ageError, setAgeError] = useState("");
+  const [experienceError, setExperienceError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
   const [fnameError, setFNameError] = useState("");
@@ -59,6 +62,17 @@ const EditPersonalInformation = () => {
       else if (num > 120)
         setAgeError("Възрастта не може да надвишава 120 години.");
       else setAgeError("");
+    }
+
+    // Проверка опит
+    if (name === "experience") {
+      newValue = value.replace(/\D/g, "");
+      const num = parseInt(newValue, 10);
+
+      if (num < 1) setExperienceError("Опитът трябва да е поне 1 година.");
+      else if (num > 50)
+        setExperienceError("Максималната възможна стойност е 50 години.");
+      else setExperienceError("");
     }
 
     // Имейл
@@ -142,10 +156,13 @@ const EditPersonalInformation = () => {
       age: "",
       email: "",
       phone: "",
-      allergies: "",
-      conditions: "",
+      speciality: "",
+      experience: "",
+      city: "",
+      hospital: "",
     });
     setAgeError("");
+    setExperienceError("");
     setEmailError("");
     setPhoneError("");
     setMessage("");
@@ -295,25 +312,50 @@ const EditPersonalInformation = () => {
 
           {/* Медицински детайли */}
           <Form.Group className="mb-3">
-            <Form.Label>Алергии</Form.Label>
+            <Form.Label>Специализация</Form.Label>
             <Form.Control
-              as="textarea"
-              rows={2}
-              name="allergies"
-              placeholder="Опишете известни алергии (по желание)"
-              value={formData.allergies}
+              type="text"
+              name="specialty"
+              placeholder="Въведете вашата специализация"
+              value={formData.speciality}
               onChange={handleChange}
             />
           </Form.Group>
 
           <Form.Group className="mb-3">
-            <Form.Label>Заболявания</Form.Label>
+            <Form.Label>Опит (години)</Form.Label>
             <Form.Control
-              as="textarea"
-              rows={2}
-              name="conditions"
-              placeholder="Опишете хронични заболявания (по желание)"
-              value={formData.conditions}
+              type="number"
+              name="experience"
+              placeholder="Въведете вашите години опит"
+              min="1"
+              max="50"
+              value={formData.experience}
+              onChange={handleChange}
+            />
+            {experienceError && (
+              <p className="text-danger small mt-1">{experienceError}</p>
+            )}
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Град</Form.Label>
+            <Form.Control
+              type="text"
+              name="city"
+              placeholder="Въведете вашия град"
+              value={formData.city}
+              onChange={handleChange}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Работно място</Form.Label>
+            <Form.Control
+              type="text"
+              name="hospital"
+              placeholder="Въведете вашето работно място"
+              value={formData.hospital}
               onChange={handleChange}
             />
           </Form.Group>
@@ -339,4 +381,4 @@ const EditPersonalInformation = () => {
   );
 };
 
-export default EditPersonalInformation;
+export default DoctorEditInformation;
