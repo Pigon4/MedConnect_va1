@@ -2,42 +2,37 @@ import { Button, Image, Table } from "react-bootstrap";
 import { FileDown, FileText, Printer } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Импортиране на всички изображения от src/images
+const importAllImages = (r) =>
+  r.keys().map((key, idx) => ({
+    id: idx + 1,
+    name: key.replace("./", ""),
+    type: "image/jpeg", // или определете MIME ако е нужно
+    size: 100000, // примерно 100 KB
+    date: "15.11.2025",
+    content: r(key),
+  }));
+
 const PatientDetails = ({ patient, onBack }) => {
   const [files, setFiles] = useState([]);
 
   useEffect(() => {
+    // Импортираме всички изображения динамично
+    const imageFiles = importAllImages(
+      require.context("../../images", false, /\.(png|jpe?g|gif)$/)
+    );
+    setFiles(imageFiles);
+
+    // Ако има нещо в localStorage, можеш да го обединиш
     const saved = localStorage.getItem("patient_files");
     if (saved) {
-      setFiles(JSON.parse(saved));
+      const savedFiles = JSON.parse(saved);
+      setFiles((prev) => [...prev, ...savedFiles]);
     }
   }, []);
 
-  useEffect(() => {
-    // Мок файлове
-    const mockFiles = [
-      {
-        id: 1,
-        name: "Epikriz.pdf",
-        type: "application/pdf",
-        size: 240000,
-        date: "15.11.2025",
-        content:
-          "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
-      },
-      {
-        id: 2,
-        name: "Napravlenie.docx",
-        type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        size: 120000,
-        date: "15.11.2025",
-        content: "",
-      },
-    ];
-
-    setFiles(mockFiles);
-  }, []);
-
   const handleDownload = (file) => {
+    if (!file.content) return;
     const link = document.createElement("a");
     link.href = file.content;
     link.download = file.name;
@@ -48,7 +43,6 @@ const PatientDetails = ({ patient, onBack }) => {
     try {
       let fileURL = file.content;
 
-      // Ако файлът е локален (Blob), създаваме обект URL
       if (!fileURL && file.rawFile) {
         fileURL = URL.createObjectURL(file.rawFile);
       }
