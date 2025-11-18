@@ -12,7 +12,7 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge }) => {
       fetch("/vaccines.json")
         .then((res) => res.json())
         .then((data) => {
-          const upcoming = data.filter((v) => v.age > patientAge);
+          const upcoming = data.filter((v) => v.age >= patientAge);
           setVaccines(upcoming);
         })
         .catch((err) => console.error("Failed to load vaccines:", err));
@@ -25,8 +25,22 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge }) => {
       fetch("/checks.json")
         .then((res) => res.json())
         .then((data) => {
-          const upcoming = data.filter((p) => p.age <= patientAge);
-          setProfilactics(upcoming);
+          let groupFiltered;
+
+          if (patientAge < 18) {
+            // само детски
+            groupFiltered = data.filter((p) => p.age < 18);
+          } else {
+            // само за възрастни
+            groupFiltered = data.filter((p) => p.age >= 18);
+          }
+
+          // втората проверка — да не показва бъдещи прегледи
+          const finalFiltered = groupFiltered.filter(
+            (p) => p.age <= patientAge
+          );
+
+          setProfilactics(finalFiltered);
         })
         .catch((err) => console.error("Failed to load profilactics:", err));
     }
