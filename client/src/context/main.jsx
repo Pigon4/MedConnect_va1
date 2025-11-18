@@ -15,6 +15,7 @@ import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { useEffect, useState } from "react";
 import Some from "../components/Some";
+import PaymentSuccess from "../pages/PaymentSuccess";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -81,6 +82,10 @@ const Routes = () => {
         {
           path: "restricted/some/",
           element: <Some />,
+        },
+        {
+          path: "payment-success",
+          element: <PaymentSuccess />,
         },
       ],
     },

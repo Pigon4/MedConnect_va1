@@ -1,24 +1,26 @@
 package com.example.server.controller.UserControllers;
 
 import com.example.server.models.Guardian;
+import com.example.server.models.User;
 import com.example.server.service.GuardianService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
-@RequestMapping("/api/user")
+@RequestMapping("/api/user/guardian")
 @RestController
 public class GuardianController {
 
     public final GuardianService guardianService;
 
-    public GuardianController(GuardianService guardianService){
+    public GuardianController(GuardianService guardianService) {
         this.guardianService = guardianService;
     }
 
-    @PostMapping("/guardian/register")
+    @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody Guardian guardian) {
 
         try {
@@ -30,9 +32,23 @@ public class GuardianController {
     }
 
     @GetMapping("/guardians")
-    public List<Guardian> getTestData(){
+    public List<Guardian> getTestData() {
         return guardianService.getAll();
     }
 
+    @GetMapping("/subscription")
+    public ResponseEntity<?> getUserSubscription(@RequestParam String email) {
+        User user = guardianService.getUserByEmail(email);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(Map.of("error", "User not found"));
+        }
+
+        String subscriptionStatus = user.getSubscription();
+
+        return ResponseEntity.ok(Map.of("subscriptionStatus", subscriptionStatus));
+
+    }
 
 }

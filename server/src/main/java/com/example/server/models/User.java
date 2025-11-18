@@ -8,8 +8,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import java.time.LocalDate;
-import java.util.Set;
-
 
 @Getter
 @Setter
@@ -38,13 +36,15 @@ public class User {
 
     @Column
     private String subscription = "free";
+
+    @Column
+    private String subscriptionType;
+
     @Column
     private LocalDate subscriptionExpiry;
 
     private LocalDate created_at = LocalDate.now();
 
     private String photoURL;
-
-
 
 }

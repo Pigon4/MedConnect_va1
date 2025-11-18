@@ -1,6 +1,5 @@
 package com.example.server.controller.UserControllers;
 
-
 import com.example.server.config.JwtGeneratorInterface;
 import com.example.server.models.User;
 import com.example.server.service.BaseUserService;
@@ -15,18 +14,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-//@RequestMapping("api/v1/user")
+// @RequestMapping("api/v1/user")
 @RequestMapping("api/user")
 public class UserController {
 
-//    CHANGED UserService -> BaseUserService
+    // CHANGED UserService -> BaseUserService
 
     private final BaseUserService<User> baseUserService;
     private final JwtGeneratorInterface jwtGeneratorInterface;
     private final PasswordEncoder passwordEncoder;
 
-
-    public UserController(BaseUserService<User> baseUserService, JwtGeneratorInterface jwtGeneratorInterface,PasswordEncoder passwordEncoder) {
+    public UserController(BaseUserService<User> baseUserService, JwtGeneratorInterface jwtGeneratorInterface,
+            PasswordEncoder passwordEncoder) {
         this.baseUserService = baseUserService;
         this.jwtGeneratorInterface = jwtGeneratorInterface;
         this.passwordEncoder = passwordEncoder;
@@ -55,7 +54,7 @@ public class UserController {
             if (userData == null) {
                 throw new UsernameNotFoundException("User with this username not registered");
             }
-            if (!passwordEncoder.matches(user.getPassword(), userData.getPassword())){
+            if (!passwordEncoder.matches(user.getPassword(), userData.getPassword())) {
                 throw new UsernameNotFoundException("Wrong PASSWORD");
             }
             return new ResponseEntity<>(jwtGeneratorInterface.generateToken(userData), HttpStatus.OK);
@@ -72,9 +71,10 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("No token provided.");
     }
-//
+
+    //
     @GetMapping("/users")
-    public List<User> getTestData(){
+    public List<User> getTestData() {
         return baseUserService.getAll();
     }
 
