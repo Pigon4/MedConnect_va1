@@ -2,9 +2,7 @@ package com.example.server.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -36,14 +34,14 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable);
         http.cors(Customizer.withDefaults()); // ✅ Enable the CORS config you defined
 
-                // permit specific request (3), other authenticated (using our JWT filter)
-                http.authorizeHttpRequests(auth -> auth
-                                .requestMatchers(
-                                                "/api/user/**",
-                                                "/api/user/register",
-                                                "/api/blog/unrestricted",
-                                                "/api/stripe/webhook",
-                                                "/api/stripe/**","/api/user/guardians",
+        // permit specific request (3), other authenticated (using our JWT filter)
+        http.authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                        "/api/user/**",
+                        "/api/user/register",
+                        "/api/blog/unrestricted",
+                        "/api/stripe/webhook",
+                        "/api/stripe/**", "/api/user/guardians",
                         "/api/user/patients",
                         "/api/user/doctors",
 
@@ -51,16 +49,14 @@ public class SecurityConfig {
                         "/api/user/patient/register",
                         "/api/user/guardian/register",
 
-
                         "/guardians",
                         "/api/user/doctor/register",
                         "/api/stripe/**")
-                                .permitAll()
-                                .anyRequest().authenticated());
+                .permitAll()
+                .anyRequest().authenticated());
 
-                        
-                // .permitAll()
-                // .anyRequest().authenticated());
+        // .permitAll()
+        // .anyRequest().authenticated());
 
         // don't use sessions because again we use JWT
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));

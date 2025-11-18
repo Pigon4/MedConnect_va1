@@ -55,6 +55,7 @@ const LoginForm = () => {
 
       if (res && res.token) {
         setToken(res.token);
+        localStorage.setItem("userEmail", email);
         setMessage("Вход успешен! Пренасочване към таблото...");
         setTimeout(() => {
           navigate("/");

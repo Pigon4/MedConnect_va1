@@ -269,6 +269,7 @@ const RegisterForm = () => {
 
       if (loginResponse && loginResponse.token) {
         setToken(loginResponse.token);
+        localStorage.setItem("userEmail", formData.email);
         navigate("/");
       } else {
         setMessage("Неуспешен вход след регистрация.");
