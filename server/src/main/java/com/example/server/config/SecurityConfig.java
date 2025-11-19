@@ -51,6 +51,11 @@ public class SecurityConfig {
                         "/api/user/patient/register",
                         "/api/user/guardian/register",
 
+                        "/google",
+                        "/google/callback",
+
+                        "/auth/me",
+
 
                         "/guardians",
                         "/api/user/doctor/register",

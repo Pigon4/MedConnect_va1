@@ -1,85 +1,51 @@
-// src/context/AuthContext.js
-/*import axios from "axios";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
-const AuthContext = createContext();
-
-const AuthProvider = ({ children }) => {
-  const [token, setToken_] = useState(null);
-  const [isReady, setIsReady] = useState(false);
-
-  useEffect(() => {
-    // Check for token in localStorage when app starts
-    const storedToken = localStorage.getItem("token");
-    if (storedToken) {
-      setToken_(storedToken);
-      axios.defaults.headers.common["Authorization"] = "Bearer " + storedToken;
-    }
-    setIsReady(true);
-  }, []);
-
-  const setToken = (newToken) => {
-    setToken_(newToken);
-    if (newToken) {
-      localStorage.setItem("token", newToken);
-      axios.defaults.headers.common["Authorization"] = "Bearer " + newToken;
-    } else {
-      localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
-    }
-  };
-
-  const contextValue = useMemo(() => ({ token, setToken, isReady }), [token, isReady]);
-
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>;
-};
-
-export const useAuth = () => useContext(AuthContext);
-export default AuthProvider;*/
-
-// src/context/AuthContext.js
 import axios from "axios";
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
-  const [token, setToken_] = useState(null);
+  const [token, setToken] = useState(null);
   const [isReady, setIsReady] = useState(false);
+  const [user, setUser] = useState(null);
+
 
   useEffect(() => {
-    // Check for token in localStorage when app starts
     let storedToken = localStorage.getItem("token");
+    let storedUser = localStorage.getItem("user");
 
-    if (!storedToken) {
-      // 💡 MOCK TOKEN за development — махни го, когато backend-a е готов
-      storedToken = "mock-token-dev-123";
-      localStorage.setItem("token", storedToken);
-      console.warn(
-        "⚠️ Using mock token for development. Remove this when backend auth is ready!"
-      );
+    if (storedToken) {
+      setToken(storedToken);
+      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
     }
 
-    setToken_(storedToken);
-    axios.defaults.headers.common["Authorization"] = "Bearer " + storedToken;
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+
     setIsReady(true);
   }, []);
 
-  const setToken = (newToken) => {
-    setToken_(newToken);
+  const setAuthData = (newToken, newUser) => {
+    setToken(newToken);
+    setUser(newUser);
+
     if (newToken) {
       localStorage.setItem("token", newToken);
-      axios.defaults.headers.common["Authorization"] = "Bearer " + newToken;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${newToken}`;
     } else {
       localStorage.removeItem("token");
-      delete axios.defaults.headers.common["Authorization"];
+      axios.defaults.headers.common["Authorization"] = null;
+    }
+
+    if (newUser) {
+      localStorage.setItem("user", JSON.stringify(newUser));
+    } else {
+      localStorage.removeItem("user");
     }
   };
 
-  const contextValue = useMemo(
-    () => ({ token, setToken, isReady }),
-    [token, isReady]
-  );
+    const contextValue = { token, user, isReady, setAuthData, setToken, setUser };
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

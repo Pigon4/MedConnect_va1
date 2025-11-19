@@ -4,7 +4,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import { ProtectedRoute } from "./ProtectedRouteMine";
+import { ProtectedRoute } from "./ProtectedRoutes";
 import DashboardPatient from "../dashboards/DashboardPatient";
 import DashboardDoctor from "../dashboards/DashboardDoctor";
 import DashboardGuardian from "../dashboards/DashboardGuardian";
@@ -14,7 +14,6 @@ import MainLayout from "../pages/MainLayout";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { useEffect, useState } from "react";
-import Some from "../components/Some";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -77,16 +76,10 @@ const Routes = () => {
             </ProtectedRoute>
           ),
         },
-
-        {
-          path: "restricted/some/",
-          element: <Some />,
-        },
       ],
     },
   ]);
 
-  // Provide the router configuration using RouterProvider
   return <RouterProvider router={router} />;
 };
 

@@ -7,7 +7,7 @@ const LogoutPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  const { setToken } = useAuth(); // 👈 use the same context function
+  const { setToken, setUser } = useAuth(); // 👈 use the same context function
 
   const basePath = location.pathname.startsWith("/test")
     ? "/test/patient"
@@ -15,9 +15,11 @@ const LogoutPage = () => {
 
   const handleConfirmLogout = () => {
     setLoading(true); // показваме spinner
-    // localStorage.removeItem("token"); // изчистваме токени
+    localStorage.removeItem("token"); // изчистваме токени
     setToken(null); // This will clear localStorage and axios headers
     navigate("/"); // пренасочваме към главната страница
+    localStorage.removeItem("user");
+    setUser(null);
 
     // Симулираме кратка обработка (напр. API call)
     // setTimeout(() => {

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Form, Container, Card, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { logIn } from "../../api/userApi";
+import { currentUser, logIn } from "../../api/userApi";
 import LoginInput from "./LoginInput";
 import LoginButton from "./LoginButton";
 import RegisterRedirect from "./RegisterRedirect";
@@ -10,7 +10,9 @@ import { useAuth } from "../../context/AuthContext";
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { setToken } = useAuth(); // get the setToken from context
+  //   const { setUser, setToken } = useAuth(); // get the setToken from context
+
+  const { setAuthData } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,17 +56,22 @@ const LoginForm = () => {
       console.log(res);
 
       if (res && res.token) {
-        setToken(res.token);
-        setMessage("Вход успешен! Пренасочване към таблото...");
+
+        try {
+          const currentUserData = await currentUser();
+          console.log("Current user data:", currentUserData);
+
+          setAuthData(res.token, currentUserData);
+        } catch (error) {
+          console.error("Error fetching current user data:", error);
+        }
+
         setTimeout(() => {
           navigate("/");
         }, 1500);
       } else {
-        setMessage("Грешен имейл или парола.");
       }
     } catch (error) {
-      console.error("Неуспешен вход:", error);
-      setMessage("Възникна грешка при входа. Опитайте отново.");
     } finally {
       setLoading(false);
     }
