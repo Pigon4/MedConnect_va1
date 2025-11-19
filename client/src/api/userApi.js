@@ -1,7 +1,6 @@
 const API_BASE = "http://localhost:8080/api/user";
 
-export const logIn = ({email,password}) => {
-
+export const logIn = ({ email, password }) => {
   const options = {
     method: "POST",
     mode: "cors",
@@ -23,7 +22,6 @@ export const logIn = ({email,password}) => {
       return data;
     });
 };
-
 
 export const register = (formData) => {
   let endpoint = `${API_BASE}/user/register`;

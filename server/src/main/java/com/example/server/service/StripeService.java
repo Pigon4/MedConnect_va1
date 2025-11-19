@@ -22,11 +22,13 @@ public class StripeService {
         Stripe.apiKey = stripeApiKey;
     }
 
-    public Session createCheckoutSession(String priceId) throws StripeException {
+    public Session createCheckoutSession(String priceId, String userEmail) throws StripeException {
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
-                .setSuccessUrl("http://localhost:3000/success")
-                .setCancelUrl("http://localhost:3000/cancel")
+                .putMetadata("userEmail", userEmail)
+                .putMetadata("planId", priceId)
+                .setSuccessUrl("http://localhost:3000/payment-success?session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl("http://localhost:3000/dashboard/patient/subscriptions")
                 .addLineItem(
                         SessionCreateParams.LineItem.builder()
                                 .setPrice(priceId)
