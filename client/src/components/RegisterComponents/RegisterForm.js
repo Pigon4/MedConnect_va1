@@ -268,7 +268,6 @@ const RegisterForm = () => {
       });
 
       if (loginResponse && loginResponse.token) {
-        
         const currentUserData = await currentUser();
 
         setAuthData(loginResponse.token, currentUserData);
@@ -361,17 +360,20 @@ const RegisterForm = () => {
           error={phoneError}
         />
 
-        <Form.Group className="mb-3">
-          <Form.Label>Профилна снимка</Form.Label>
-          <Form.Control
-            type="file"
-            accept="image/*"
-            name="photo"
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, photo: e.target.files[0] }))
-            }
-          />
-        </Form.Group>
+        {/* Профилна снимка — Показва се само ако НЕ е настойник */}
+        {formData.role !== "guardian" && (
+          <Form.Group className="mb-3">
+            <Form.Label>Профилна снимка</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              name="photo"
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, photo: e.target.files[0] }))
+              }
+            />
+          </Form.Group>
+        )}
 
         {/* PASSWORD */}
 
@@ -463,6 +465,18 @@ const RegisterForm = () => {
               {patientAgeError && (
                 <p className="text-danger small mt-1">{patientAgeError}</p>
               )}
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>Профилна снимка</Form.Label>
+              <Form.Control
+                type="file"
+                accept="image/*"
+                name="photo"
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, photo: e.target.files[0] }))
+                }
+              />
             </Form.Group>
 
             <Form.Group className="mb-3">

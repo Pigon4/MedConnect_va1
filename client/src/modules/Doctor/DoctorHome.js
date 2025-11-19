@@ -10,6 +10,7 @@ import {
 } from "recharts";
 import { motion } from "framer-motion";
 import welcomeImage from "../../images/hello_img.png";
+import { useAuth } from "../../context/AuthContext";
 
 const GoogleCalendar = () => (
   <iframe
@@ -20,7 +21,18 @@ const GoogleCalendar = () => (
 );
 
 const DoctorHome = () => {
-  const userName = localStorage.getItem("userName") || "Име";
+  const { user, isReady } = useAuth();
+  // Ако auth още не е готов → чакаме
+  if (!isReady) {
+    return <Container className="mt-4">Зареждане...</Container>;
+  }
+
+  // Ако няма потребител → грешка
+  if (!user) {
+    return <Container className="mt-4">Не е намерен потребител.</Container>;
+  }
+
+  const userName = user.firstName + " " + user.lastName;
   const reviewData = [
     { week: "Седмица 1", rating: 4.5 },
     { week: "Седмица 2", rating: 4.7 },

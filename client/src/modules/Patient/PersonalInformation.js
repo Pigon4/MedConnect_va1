@@ -2,6 +2,7 @@ import { Container, Card, Row, Col, Image, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import profileImage from "../../images/profile.png";
 import { useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 const PersonalInformation = () => {
   const navigate = useNavigate();
@@ -9,6 +10,17 @@ const PersonalInformation = () => {
   const basePath = location.pathname.startsWith("/test")
     ? "/test/patient"
     : "/dashboard/patient";
+
+  const { user, isReady } = useAuth();
+  // Ако auth още не е готов → чакаме
+  if (!isReady) {
+    return <Container className="mt-4">Зареждане...</Container>;
+  }
+
+  // Ако няма потребител → грешка
+  if (!user) {
+    return <Container className="mt-4">Не е намерен потребител.</Container>;
+  }
 
   // Примерни данни – по-късно ще идват от backend
   const userData = {
@@ -45,13 +57,13 @@ const PersonalInformation = () => {
               }}
             >
               <Image
-                src={userData.photo || profileImage}
+                src={user.photoURL || profileImage}
                 alt="Пациент"
                 fluid
                 style={{
                   width: "150px",
                   height: "150px",
-                  objectFit: "contain",
+                  objectFit: "cover",
                 }}
               />
             </div>
@@ -60,19 +72,19 @@ const PersonalInformation = () => {
           {/* Основни данни */}
           <Col md={8}>
             <p>
-              <strong>Име:</strong> {userData.fname || "—"}
+              <strong>Име:</strong> {user.firstName || "—"}
             </p>
             <p>
-              <strong>Фамилия:</strong> {userData.lname || "—"}
+              <strong>Фамилия:</strong> {user.lastName || "—"}
             </p>
             <p>
-              <strong>Възраст:</strong> {userData.age || "—"}
+              <strong>Възраст:</strong> {user.age || "—"}
             </p>
             <p>
-              <strong>Имейл:</strong> {userData.email || "—"}
+              <strong>Имейл:</strong> {user.email || "—"}
             </p>
             <p>
-              <strong>Телефон:</strong> {userData.phone || "—"}
+              <strong>Телефон:</strong> {user.phoneNumber || "—"}
             </p>
           </Col>
         </Row>
@@ -81,10 +93,10 @@ const PersonalInformation = () => {
 
         {/* Медицински детайли */}
         <p>
-          <strong>Алергии:</strong> {userData.allergies || "—"}
+          <strong>Алергии:</strong> {user.allergies || "—"}
         </p>
         <p>
-          <strong>Заболявания:</strong> {userData.diseases || "—"}
+          <strong>Заболявания:</strong> {user.diseases || "—"}
         </p>
 
         <div className="text-center mt-4">

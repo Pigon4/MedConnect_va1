@@ -11,16 +11,21 @@ const GuardianPersonalInformation = () => {
     ? "/test/guardian"
     : "/dashboard/guardian";
 
-  const { user } = useAuth();
+  const { user, isReady } = useAuth();
 
-  // Примерни данни – по-късно ще идват от backend
-  const userData = {
+  // Ако auth още не е готов → чакаме
+  if (!isReady) {
+    return <Container className="mt-4">Зареждане...</Container>;
+  }
+
+  // Ако няма потребител → грешка
+  if (!user) {
+    return <Container className="mt-4">Не е намерен потребител.</Container>;
+  }
+
+  // Примерни данни – само за пациента
+  const patientData = {
     photo: null,
-    fname: "Иван",
-    lname: "Петров",
-    age: 32,
-    email: "ivan.petrov@example.com",
-    phone: "+359888123456",
     patientFName: "Калоян",
     patientLName: "Георгиев",
     patientAge: 67,
@@ -52,65 +57,61 @@ const GuardianPersonalInformation = () => {
               }}
             >
               <Image
-                src={userData.photo || profileImage}
+                src={user.photoURL || profileImage}
                 alt="Пациент"
                 fluid
                 style={{
                   width: "150px",
                   height: "150px",
-                  objectFit: "contain",
+                  objectFit: "cover",
                 }}
               />
             </div>
           </Col>
 
-          {/* Основни данни */}
+          {/* Основни данни – ПАЦИЕНТ */}
           <Col md={8}>
             <p>
-              <strong>Име на пациент:</strong> {userData.patientFName || "—"}
-                {/* <p><strong>Име на пациент:</strong> {user.firstName}</p>  Coming from backend - TEST */}
-
+              <strong>Име на пациент:</strong> {user.wardFirstName || "—"}
             </p>
             <p>
-              <strong>Фамилия на пациент:</strong>{" "}
-              {userData.patientLName || "—"}
-              {/* <strong>Име на пациент:</strong> {user.lastName} Coming from the backend  */}
+              <strong>Фамилия на пациент:</strong> {user.wardLastName || "—"}
             </p>
             <p>
-              <strong>Възраст на пациент:</strong> {userData.patientAge || "—"}
+              <strong>Възраст на пациент:</strong> {user.wardAge || "—"}
             </p>
 
             {/* Медицински детайли */}
             <p>
-              <strong>Увреждания:</strong> {userData.disabilities || "—"}
+              <strong>Увреждания:</strong>{" "}
+              {user.wardDisabilityDescription || "—"}
             </p>
             <p>
-              <strong>Алергии:</strong> {userData.allergies || "—"}
+              <strong>Алергии:</strong> {user.wardAllergies || "—"}
             </p>
             <p>
-              <strong>Заболявания:</strong> {userData.diseases || "—"}
+              <strong>Заболявания:</strong> {user.wardDiseases || "—"}
             </p>
           </Col>
         </Row>
 
         <hr />
 
-        {/* Детайли за настойник */}
-
+        {/* Детайли за настойник – ДАННИТЕ ОТ BACKEND */}
         <p>
-          <strong>Име на настойник:</strong> {userData.fname || "—"}
+          <strong>Име на настойник:</strong> {user.firstName}
         </p>
         <p>
-          <strong>Фамилия на настойник:</strong> {userData.lname || "—"}
+          <strong>Фамилия на настойник:</strong> {user.lastName}
         </p>
         <p>
-          <strong>Възраст на настойник:</strong> {userData.age || "—"}
+          <strong>Възраст на настойник:</strong> {user.age}
         </p>
         <p>
-          <strong>Имейл:</strong> {userData.email || "—"}
+          <strong>Имейл:</strong> {user.email}
         </p>
         <p>
-          <strong>Телефон:</strong> {userData.phone || "—"}
+          <strong>Телефон:</strong> {user.phoneNumber || "—"}
         </p>
 
         <div className="text-center mt-4">

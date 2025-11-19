@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+/*import React, { useState } from 'react';
 import FullCalendar from '@fullcalendar/react';  // Import FullCalendar for React
 import dayGridPlugin from '@fullcalendar/daygrid';  // Plugin for monthly grid view
 import timeGridPlugin from '@fullcalendar/timegrid';  // Plugin for weekly/daily time grid view
@@ -45,4 +45,4 @@ const GoogleCalendarComponent = () => {
   );
 };
 
-export default GoogleCalendarComponent;
+export default GoogleCalendarComponent;*/

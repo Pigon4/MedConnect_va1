@@ -4,6 +4,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import { ProtectedRoleRoute } from "./ProtectedRoleRoute";
 import { ProtectedRoute } from "./ProtectedRoutes";
 import DashboardPatient from "../dashboards/DashboardPatient";
 import DashboardDoctor from "../dashboards/DashboardDoctor";
@@ -14,10 +15,11 @@ import MainLayout from "../pages/MainLayout";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import { useEffect, useState } from "react";
-import Some from "../components/Some";
+//import Some from "../components/Some";
 import PaymentSuccess from "../pages/PaymentSuccess";
 
 const Routes = () => {
+  const { user } = useAuth();
   const { token } = useAuth();
 
   // ✅ Add a small hydration delay so the router waits for AuthContext to initialize
@@ -51,38 +53,57 @@ const Routes = () => {
           element: token ? <LogoutPage /> : <Navigate to="/" replace />,
         },
 
+        {
+          path: "dashboard/*",
+          element: (
+            <ProtectedRoute>
+              {/* Redirect to role-specific dashboard */}
+              <Navigate
+                to={
+                  user?.role === "patient"
+                    ? "/dashboard/patient"
+                    : user?.role === "doctor"
+                    ? "/dashboard/doctor"
+                    : user?.role === "guardian"
+                    ? "/dashboard/guardian"
+                    : "/login"
+                }
+                replace
+              />
+            </ProtectedRoute>
+          ),
+        },
+
         // routes for only authenticated users
         {
           path: "dashboard/patient/*",
           element: (
-            <ProtectedRoute>
+            <ProtectedRoleRoute allowedRoles={["patient"]}>
               <DashboardPatient />
-            </ProtectedRoute>
+            </ProtectedRoleRoute>
           ),
         },
-
         {
           path: "dashboard/doctor/*",
           element: (
-            <ProtectedRoute>
+            <ProtectedRoleRoute allowedRoles={["doctor"]}>
               <DashboardDoctor />
-            </ProtectedRoute>
+            </ProtectedRoleRoute>
           ),
         },
-
         {
           path: "dashboard/guardian/*",
           element: (
-            <ProtectedRoute>
+            <ProtectedRoleRoute allowedRoles={["guardian"]}>
               <DashboardGuardian />
-            </ProtectedRoute>
+            </ProtectedRoleRoute>
           ),
         },
 
-        {
+        /*  {
           path: "restricted/some/",
           element: <Some />,
-        },
+        },*/
         {
           path: "payment-success",
           element: <PaymentSuccess />,
