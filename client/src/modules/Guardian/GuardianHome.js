@@ -1,6 +1,7 @@
-import { Image, Card } from "react-bootstrap";
+import { Image, Card, Container } from "react-bootstrap";
 import welcomeImage from "../../images/hello_img.png";
 import { motion } from "framer-motion";
+import { useAuth } from "../../context/AuthContext";
 
 const GoogleCalendar = () => (
   <iframe
@@ -11,7 +12,18 @@ const GoogleCalendar = () => (
 );
 
 const Home = () => {
-  const userName = localStorage.getItem("userName") || "Име";
+  const { user, isReady } = useAuth();
+
+  // Ако auth още не е готов → чакаме
+  if (!isReady) {
+    return <Container className="mt-4">Зареждане...</Container>;
+  }
+
+  // Ако няма потребител → грешка
+  if (!user) {
+    return <Container className="mt-4">Не е намерен потребител.</Container>;
+  }
+  const userName = user.firstName + " " + user.lastName;
 
   return (
     <div>
