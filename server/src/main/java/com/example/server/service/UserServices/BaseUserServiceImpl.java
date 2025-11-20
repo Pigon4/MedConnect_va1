@@ -1,8 +1,7 @@
-package com.example.server.service;
+package com.example.server.service.UserServices;
 
 import com.example.server.models.User;
 import com.example.server.repository.UserRepositories.BaseUserRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,11 @@ public abstract class BaseUserServiceImpl<T extends User> implements BaseUserSer
     }
 
     @Override
-    public T saveUser(T user) {
+    public T saveUser(T user) throws Exception {
 
-        if (repository.findByEmail(user.getEmail()) != null) {
-            throw new EntityExistsException("Entity already registered");
+        User existingUser = repository.findByEmail(user.getEmail());
+        if (existingUser != null){
+            throw new Exception("Username with tihs email aready exists");
         }
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -41,6 +41,23 @@ public abstract class BaseUserServiceImpl<T extends User> implements BaseUserSer
         return user;
 
     }
+
+    @Override
+    public T saveGoogleTokensToUser(T user) throws UsernameNotFoundException{
+
+        T existingUser = repository.findByEmail(user.getEmail());
+        if (existingUser != null) {
+
+            existingUser.setGoogleAccessToken(user.getGoogleAccessToken());
+            existingUser.setGoogleRefreshToken(user.getGoogleRefreshToken());
+            repository.save(existingUser);
+            return existingUser;
+        }
+
+        throw new UsernameNotFoundException("User not found");
+    }
+
+
 
     @Override
     public void upgradeSubscription(String email, String planId) {

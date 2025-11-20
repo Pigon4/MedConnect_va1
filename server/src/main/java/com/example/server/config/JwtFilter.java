@@ -1,7 +1,7 @@
 package com.example.server.config;
 
 import com.example.server.models.User;
-import com.example.server.service.BaseUserService;
+import com.example.server.service.UserServices.BaseUserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -57,8 +57,9 @@ public class JwtFilter extends GenericFilterBean {
                 servletPath.startsWith("/api/user/patient/register") ||
                 servletPath.startsWith("/api/user/guardian/register") ||
 
-                servletPath.equals("/google") ||
-                servletPath.equals("/google/callback") ||
+                servletPath.contains("/google") ||
+//                servletPath.equals("/google/callback") ||
+                                servletPath.startsWith("/events") ||
 
                 servletPath.equals("/auth/me") ||
 

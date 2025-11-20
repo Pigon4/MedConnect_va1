@@ -1,8 +1,9 @@
-import { Image, Card, Container } from "react-bootstrap";
+import { Image, Card, Container, Button } from "react-bootstrap";
 import welcomeImage from "../../images/hello_img.png";
 import { motion } from "framer-motion";
 import GoogleCalendarComponent from "../../dashboards/GoogleCalendar/GoogleCalendarComponent";
 import { useAuth } from "../../context/AuthContext";
+import { googleAuthorize, listEvents } from "../../api/googleApi";
 
 const Home = () => {
   const { user, isReady } = useAuth();
@@ -49,7 +50,19 @@ const Home = () => {
         </motion.div>
       </Card>
 
-      {/*<GoogleCalendarComponent />*/}
+
+
+    <Button onClick={googleAuthorize}>
+        press for google authorize /google 
+    </Button>
+
+    <Button onClick={listEvents}>
+        Press to get user's events
+    </Button>
+
+    <br/><br/><br/>
+
+      <GoogleCalendarComponent />
     </div>
   );
 };

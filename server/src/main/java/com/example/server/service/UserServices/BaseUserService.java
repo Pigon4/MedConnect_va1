@@ -1,4 +1,4 @@
-package com.example.server.service;
+package com.example.server.service.UserServices;
 
 import com.example.server.models.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -26,7 +26,9 @@ public interface BaseUserService<T extends User> {
     //
     // T getUserByEmail(String name) throws UsernameNotFoundException;
 
-    public T saveUser(T user);
+    public T saveUser(T user) throws  Exception;
+
+    public T saveGoogleTokensToUser(T user) throws UsernameNotFoundException;
 
     void upgradeSubscription(String email, String planId);
 

@@ -36,7 +36,7 @@ public class DataSeeder {
                 user1.setPassword(passwordEncoder.encode("gooner123!"));
                 user1.setAge(24);
                 user1.setPhoneNumber("123456789");
-                user1.setRole("Regular User");
+                user1.setRole("user");
 
 
                 User user2 = new User();
@@ -46,7 +46,7 @@ public class DataSeeder {
                 user2.setPassword(passwordEncoder.encode("password123"));
                 user2.setAge(30);
                 user2.setPhoneNumber("987654321");
-                user2.setRole("Regular User");
+                user2.setRole("user");
 
                 User user3 = new User();
                 user3.setFirstName("Stephen");
@@ -55,7 +55,7 @@ public class DataSeeder {
                 user3.setPassword(passwordEncoder.encode("doc123456"));
                 user3.setAge(40);
                 user3.setPhoneNumber("1122334455");
-                user3.setRole("Regular User");
+                user3.setRole("user");
 
                 // ----- Patient -----
                 Patient patient = new Patient();
@@ -65,7 +65,7 @@ public class DataSeeder {
                 patient.setPassword(passwordEncoder.encode("patient123"));
                 patient.setAge(22);
                 patient.setPhoneNumber("111222333");
-                patient.setRole("PATIENT");
+                patient.setRole("patient");
 
                 // ----- Doctor -----
                 Doctor doctor = new Doctor();
@@ -75,7 +75,7 @@ public class DataSeeder {
                     doctor.setPassword(passwordEncoder.encode("doc123456"));
                 doctor.setAge(45);
                 doctor.setPhoneNumber("125478963");
-                doctor.setRole("DOCTOR");
+                doctor.setRole("doctor");
                 doctor.setSpecialization("Neurology");
 
                 // ----- Guardian -----
@@ -86,7 +86,7 @@ public class DataSeeder {
                 guardian.setPassword(passwordEncoder.encode("guardian123"));
                 guardian.setAge(56);
                 guardian.setPhoneNumber("147852369");
-                guardian.setRole("GUARDIAN");
+                guardian.setRole("guardian");
                 guardian.setWardFirstName("Clark");
                 guardian.setWardLastName("Kent");
                 guardian.setWardAge(10);
