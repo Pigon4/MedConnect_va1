@@ -2,7 +2,7 @@ package com.example.server.controller.UserControllers;
 
 import com.example.server.models.Guardian;
 import com.example.server.models.User;
-import com.example.server.service.GuardianService;
+import com.example.server.service.UserServices.GuardianService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

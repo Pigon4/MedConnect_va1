@@ -1,4 +1,4 @@
-package com.example.server.service;
+package com.example.server.service.UserServices;
 
 import com.example.server.models.Guardian;
 import com.example.server.repository.UserRepositories.GuardianRepository;

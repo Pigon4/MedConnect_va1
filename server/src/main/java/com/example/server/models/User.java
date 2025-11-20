@@ -47,4 +47,8 @@ public class User {
 
     private String photoURL;
 
+    private String googleAccessToken;
+
+    private String googleRefreshToken;
+
 }

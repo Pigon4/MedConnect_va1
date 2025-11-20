@@ -2,14 +2,12 @@ package com.example.server.controller.UserControllers;
 
 
 import com.example.server.config.JwtGeneratorInterface;
-import com.example.server.dto.ExposedUserDTO.PatientDTO;
 import com.example.server.dto.ExposedUserDTO.UserDTO;
 import com.example.server.mappers.PatientMapper;
 import com.example.server.mappers.UserDtoFactory;
 import com.example.server.mappers.UserMapper;
-import com.example.server.models.Patient;
 import com.example.server.models.User;
-import com.example.server.service.BaseUserService;
+import com.example.server.service.UserServices.BaseUserService;
 //import com.example.server.service.UserService.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -21,7 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 //@RequestMapping("api/v1/user")
@@ -33,8 +30,6 @@ public class UserController {
     private final BaseUserService<User> baseUserService;
     private final JwtGeneratorInterface jwtGeneratorInterface;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper userMapper;
-    private final PatientMapper patientMapper;
     private final UserDtoFactory userDtoFactory;
 
 
@@ -42,8 +37,6 @@ public class UserController {
         this.baseUserService = baseUserService;
         this.jwtGeneratorInterface = jwtGeneratorInterface;
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
-        this.patientMapper = patientMapper;
         this.userDtoFactory = userDtoFactory;
     }
 
@@ -59,7 +52,7 @@ public class UserController {
         }
     }
 
-    /*@PostMapping("/login")
+    @PostMapping("/login")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
 
         try {
@@ -77,25 +70,7 @@ public class UserController {
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         }
-    }*/
-
-   @PostMapping("/login")
-public ResponseEntity<?> loginUser(@RequestBody User user) {
-    try {
-        if (user.getEmail() == null || user.getPassword() == null) {
-            throw new UsernameNotFoundException("UserName or Password is Empty");
-        }
-        User userData = baseUserService.getUserByEmail(user.getEmail());
-        if (!passwordEncoder.matches(user.getPassword(), userData.getPassword())) {
-            throw new UsernameNotFoundException("Wrong PASSWORD");
-        }
-
-        return new ResponseEntity<>(jwtGeneratorInterface.generateToken(userData), HttpStatus.OK);
-
-    } catch (Exception e) {
-        return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
     }
-}
 
 
     @PostMapping("/logout")

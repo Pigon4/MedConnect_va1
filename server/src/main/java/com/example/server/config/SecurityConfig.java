@@ -49,8 +49,14 @@ public class SecurityConfig {
                         "/api/user/patient/register",
                         "/api/user/guardian/register",
 
+//                        "/google",
+//                        "/google/callback",
+
                         "/google",
-                        "/google/callback",
+                        "/google/*",
+                        "/google/**",
+
+                        "/events",
 
                         "/auth/me",
 

@@ -1,19 +1,34 @@
-/*import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import FullCalendar from '@fullcalendar/react';  // Import FullCalendar for React
 import dayGridPlugin from '@fullcalendar/daygrid';  // Plugin for monthly grid view
 import timeGridPlugin from '@fullcalendar/timegrid';  // Plugin for weekly/daily time grid view
 import interactionPlugin from '@fullcalendar/interaction';  // Plugin for drag and drop, etc.
 import "./GoogleCalendarComponent.css";
+import { listEvents } from '../../api/googleApi';
+
+
+const convertGoogleEvent = (gEvent) => {
+  return {
+    title: gEvent.summary,
+    start: new Date(gEvent.start.dateTime.value).toISOString(),
+    end: new Date(gEvent.end.dateTime.value).toISOString(),
+  };
+};
 
 
 const GoogleCalendarComponent = () => {
-  const [events, setEvents] = useState([
-    { title: 'All Day Event', date: '2025-11-01' },
-    { title: 'Long Event', start: '2025-11-07', end: '2025-11-10' },
-    { title: 'Repeating Event', start: '2025-11-09T16:00:00' },
-    { title: 'Conference', start: '2025-11-12T10:30:00', end: '2025-11-12T12:30:00' },
-    { title: 'Birthday Party', start: '2025-11-18T07:00:00' },
-  ]);
+  const [events, setEvents] = useState([]);
+
+    useEffect(() => {
+    listEvents()
+      .then((data) => {
+        const converted = data?.map(ev => convertGoogleEvent(ev));
+
+        setEvents(converted);
+        console.log(converted);
+      })
+      .catch(err => console.error(err));
+  }, []);
 
   const handleEventDrop = (info) => {
     const newEventData = { ...info.event._def.extendedProps, start: info.event.startStr, end: info.event.endStr };
@@ -31,9 +46,9 @@ const GoogleCalendarComponent = () => {
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         events={events}
-        editable={true}
+        // editable={true}
         nowIndicator={true}
-        droppable={true}  
+        // droppable={true}  
         eventDrop={handleEventDrop}  
         headerToolbar={{
           left: 'prev,next today',
@@ -45,4 +60,4 @@ const GoogleCalendarComponent = () => {
   );
 };
 
-export default GoogleCalendarComponent;*/
+export default GoogleCalendarComponent;
