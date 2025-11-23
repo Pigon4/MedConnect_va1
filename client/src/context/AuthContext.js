@@ -9,6 +9,20 @@ const AuthProvider = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
   const [user, setUser] = useState(null);
 
+  const refreshUser = async () => {
+  if (!token) return;
+
+  const res = await fetch("http://localhost:8080/api/user/auth/me", {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
+
+  if (res.ok) {
+    const data = await res.json();
+    setAuthData(token, data);
+  }
+};
 
   useEffect(() => {
     let storedToken = localStorage.getItem("token");
@@ -45,7 +59,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-    const contextValue = { token, user, isReady, setAuthData, setToken, setUser };
+    const contextValue = { token, user, isReady, setAuthData, setToken, setUser, refreshUser };
 
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>

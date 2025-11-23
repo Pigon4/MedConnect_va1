@@ -4,12 +4,12 @@ import dayGridPlugin from "@fullcalendar/daygrid"; // Plugin for monthly grid vi
 import timeGridPlugin from "@fullcalendar/timegrid"; // Plugin for weekly/daily time grid view
 import interactionPlugin from "@fullcalendar/interaction"; // Plugin for drag and drop, etc.
 import "./GoogleCalendarComponent.css";
-import { listEvents } from "../../api/googleApi";
+import { listEvents } from '../../api/googleApi';
 
 const convertGoogleEvent = (gEvent) => {
   return {
     title: gEvent.summary,
-    start: new Date(gEvent.start.dateTime.value).toISOString(),
+    start: new Date(gEvent.start.dateTime.value).toISOString() || gEvent.start?.date,
     end: new Date(gEvent.end.dateTime.value).toISOString(),
   };
 };
