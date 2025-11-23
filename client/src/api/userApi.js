@@ -18,7 +18,9 @@ export const logIn = ({ email, password }) => {
     .then((data) => {
       if (data.token) {
         localStorage.setItem("token", data.token);
+        localStorage.setItem("userEmail", email);
       }
+
       return data;
     });
 };

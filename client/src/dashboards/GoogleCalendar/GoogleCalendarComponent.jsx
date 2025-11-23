@@ -6,15 +6,13 @@ import interactionPlugin from '@fullcalendar/interaction';  // Plugin for drag a
 import "./GoogleCalendarComponent.css";
 import { listEvents } from '../../api/googleApi';
 
-
 const convertGoogleEvent = (gEvent) => {
   return {
     title: gEvent.summary,
-    start: new Date(gEvent.start.dateTime.value).toISOString(),
+    start: new Date(gEvent.start.dateTime.value).toISOString() || gEvent.start?.date,
     end: new Date(gEvent.end.dateTime.value).toISOString(),
   };
 };
-
 
 const GoogleCalendarComponent = () => {
   const [events, setEvents] = useState([]);
