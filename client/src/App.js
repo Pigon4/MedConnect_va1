@@ -4,7 +4,7 @@ import Routes from "./context/Routes";
 function App() {
   return (
     <AuthProvider>
-        <Routes />
+      <Routes />
     </AuthProvider>
   );
 }

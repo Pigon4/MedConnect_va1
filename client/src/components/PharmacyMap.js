@@ -17,12 +17,6 @@ const pharmacyIcon = new L.Icon({
   iconAnchor: [12, 41],
 });
 
-const hospitalIcon = new L.Icon({
-  iconUrl: "https://cdn-icons-png.flaticon.com/512/2972/2972185.png", // пример болница
-  iconSize: [30, 30],
-  iconAnchor: [15, 30],
-});
-
 const PharmacyMap = () => {
   const [coords, setCoords] = useState({ lat: 42.6977, lng: 23.3219 }); // Default София
   const [pharmacies, setPharmacies] = useState([]);
@@ -154,7 +148,7 @@ const PharmacyMap = () => {
     }
   };
 
-  const FlyToMarker = ({ pos, zoom = 18 }) => {
+  const FlyToMarker = ({ pos, zoom = 16 }) => {
     const map = useMap();
     useEffect(() => {
       if (pos) map.flyTo([pos.lat, pos.lon], zoom);
@@ -316,7 +310,7 @@ const PharmacyMap = () => {
               <Marker
                 key={`h-${i}`}
                 position={[h.lat, h.lon]}
-                icon={hospitalIcon}
+                icon={pharmacyIcon}
               >
                 <Popup>
                   <strong>{h.display_name}</strong>
