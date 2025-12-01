@@ -54,6 +54,7 @@ public class PatientController {
 
         response.put("subscriptionStatus", user.getSubscription());
         response.put("subscriptionType", user.getSubscriptionType());
+        response.put("subscriptionExpiry", user.getSubscriptionExpiry().toString());
 
         return ResponseEntity.ok(response);
 

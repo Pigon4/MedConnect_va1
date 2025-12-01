@@ -14,7 +14,6 @@ const DEFAULT_START = "09:00:00";
 const DEFAULT_END = "17:00:00";
 const DOCTOR_ID = 2; // DR. Gregory House
 
-
 const GoogleCalendarComponent = () => {
   const [dayEvents, setDayEvents] = useState([]);
   const [nonWorkingDaysEvents, setNonWorkingDaysEvents] = useState([]);

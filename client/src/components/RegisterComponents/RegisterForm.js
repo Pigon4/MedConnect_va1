@@ -99,6 +99,8 @@ const RegisterForm = () => {
     if (!/[0-9]/.test(password)) errors.push("Поне една цифра");
     if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password))
       errors.push("Поне един специален символ");
+    if (/[а-яА-Я]/.test(password))
+      errors.push("Паролата не трябва да съдържа кирилица");
     return errors;
   };
 
@@ -566,7 +568,7 @@ const RegisterForm = () => {
             </Form.Group>
 
             <Form.Group className="mb-3">
-              <Form.Label>Работно място</Form.Label>
+              <Form.Label>Кабинет</Form.Label>
               <Form.Control
                 type="text"
                 name="hospital"

@@ -47,6 +47,47 @@ import { getDoctors } from "../../api/doctorApi";
 //     rating: 4.9,
 //   },
 // ];
+const mockDoctors = [
+  {
+    id: 1,
+    photo: doctor2,
+    fname: "Иван",
+    lname: "Петров",
+    email: "drpetrov@example.com",
+    phone: "0887642143",
+    specialty: "Кардиолог",
+    city: "София",
+    hospital: "Болница Пирогов",
+    experience: 10,
+    rating: 4.8,
+  },
+  {
+    id: 2,
+    photo: doctor1,
+    fname: "Мария",
+    lname: "Георгиева",
+    email: "drmg@example.com",
+    phone: "0887561422",
+    specialty: "Невролог",
+    city: "Пловдив",
+    hospital: "Клиника Медикус Алфа",
+    experience: 20,
+    rating: 4.6,
+  },
+  {
+    id: 3,
+    photo: doctor3,
+    fname: "Николай",
+    lname: "Костов",
+    email: "nikkostov@example.com",
+    phone: "0888646913",
+    specialty: "Дерматолог",
+    city: "Варна",
+    hospital: "Болница Света Анна",
+    experience: 12,
+    rating: 4.9,
+  },
+];
 
 const DoctorSearch = ({ onSelectDoctor }) => {
   const [query, setQuery] = useState("");

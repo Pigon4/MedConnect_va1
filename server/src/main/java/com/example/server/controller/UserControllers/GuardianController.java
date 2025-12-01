@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -45,9 +46,13 @@ public class GuardianController {
                     .body(Map.of("error", "User not found"));
         }
 
-        String subscriptionStatus = user.getSubscription();
+        Map<String, String> response = new HashMap<>();
 
-        return ResponseEntity.ok(Map.of("subscriptionStatus", subscriptionStatus));
+        response.put("subscriptionStatus", user.getSubscription());
+        response.put("subscriptionType", user.getSubscriptionType());
+        response.put("subscriptionExpiry", user.getSubscriptionExpiry().toString());
+
+        return ResponseEntity.ok(response);
 
     }
 
