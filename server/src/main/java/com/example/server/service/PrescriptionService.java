@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.example.server.models.Prescription;
-import com.example.server.models.User;
+import com.example.server.models.UserModels.User;
 import com.example.server.repository.PrescriptionRepository;
 import com.example.server.repository.UserRepositories.UserRepository;
 

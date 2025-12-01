@@ -56,11 +56,13 @@ const Home = () => {
 
       <Button onClick={listEvents}>Натиснете за събитията</Button>
 
-      <br />
-      <br />
-      <br />
+    <Button onClick={googleAuthorize}>
+        press for google authorize /google 
+    </Button>
 
-      <GoogleCalendarComponent />
+    <br/><br/><br/>
+
+      {/* <GoogleCalendarComponent /> */}
     </div>
   );
 };

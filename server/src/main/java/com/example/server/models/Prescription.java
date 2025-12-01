@@ -3,6 +3,7 @@ package com.example.server.models;
 import java.time.LocalDate;
 
 import com.example.server.dto.ExposedUserDTO.UserDTO;
+import com.example.server.models.UserModels.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
