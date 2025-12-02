@@ -3,36 +3,87 @@ import { Container, Table, Button, Form } from "react-bootstrap";
 import { FileDown, FileText, Printer } from "lucide-react";
 
 const Storage = () => {
+  const [isDragging, setIsDragging] = useState(false);
+  const [droppedFilesNames, setDroppedFilesNames] = useState([]);
+  const [dropSuccess, setDropSuccess] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0); // 0–100%
+
   const [files, setFiles] = useState(() => {
     const saved = localStorage.getItem("patient_files");
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [newFile, setNewFile] = useState(null);
-  const fileInputRef = useRef(null); // добавяме референция към input-а
+  const [newFiles, setNewFiles] = useState([]);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     localStorage.setItem("patient_files", JSON.stringify(files));
   }, [files]);
 
   const handleUpload = () => {
-    if (!newFile) return;
+    if (!newFiles || newFiles.length === 0) return;
 
-    const fileEntry = {
-      id: Date.now(),
-      name: newFile.name,
-      size: newFile.size,
-      type: newFile.type,
-      date: new Date().toLocaleDateString(),
-      content: URL.createObjectURL(newFile),
-    };
+    const filesArray = Array.from(newFiles);
+    const totalFiles = filesArray.length;
+    let completedFiles = 0;
 
-    setFiles([...files, fileEntry]);
-    setNewFile(null);
+    filesArray.forEach((file) => {
+      const id = Date.now() + Math.random();
 
-    // изчистваме input-а след качване
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      const interval = setInterval(() => {
+        setUploadProgress((prev) => {
+          const newValue = Math.min(prev + 10 / totalFiles, 100);
+
+          if (newValue >= ((completedFiles + 1) / totalFiles) * 100) {
+            clearInterval(interval);
+            completedFiles++;
+
+            const entry = {
+              id,
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              date: new Date().toLocaleDateString(),
+              content: URL.createObjectURL(file),
+            };
+            setFiles((prevFiles) => [...prevFiles, entry]);
+            setNewFiles([]);
+            if (fileInputRef.current) fileInputRef.current.value = "";
+
+            // ако всички файлове са качени, изчисти прогрес бара
+            if (completedFiles === totalFiles) {
+              setTimeout(() => setUploadProgress(0), 300);
+            }
+          }
+
+          return newValue;
+        });
+      }, 120);
+    });
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsDragging(false);
+
+    const droppedFiles = e.dataTransfer.files;
+
+    if (droppedFiles.length > 0) {
+      setNewFiles(droppedFiles);
+
+      setDroppedFilesNames(Array.from(droppedFiles).map((f) => f.name));
+
+      setDropSuccess(true);
+      setTimeout(() => setDropSuccess(false), 800);
     }
   };
 
@@ -47,7 +98,6 @@ const Storage = () => {
     try {
       let fileURL = file.content;
 
-      // Ако файлът е локален (Blob), създаваме обект URL
       if (!fileURL && file.rawFile) {
         fileURL = URL.createObjectURL(file.rawFile);
       }
@@ -65,7 +115,6 @@ const Storage = () => {
   const handleRemove = (fileId) => {
     setFiles(files.filter((f) => f.id !== fileId));
 
-    // изчистваме input-а и тук, за да може да качим същия файл пак
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -80,21 +129,91 @@ const Storage = () => {
         📁 Хранилище
       </h3>
 
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        style={{
+          border: "3px dashed #2E8B57",
+          padding: "30px",
+          borderRadius: "10px",
+          textAlign: "center",
+          backgroundColor: dropSuccess
+            ? "rgba(46, 139, 87, 0.25)"
+            : isDragging
+            ? "rgba(46, 139, 87, 0.12)"
+            : "white",
+          cursor: "pointer",
+          transition: "0.3s",
+          marginBottom: "20px",
+          boxShadow: dropSuccess
+            ? "0 0 12px rgba(46,139,87,0.9)"
+            : isDragging
+            ? "0 0 6px rgba(46,139,87,0.4)"
+            : "none",
+        }}
+      >
+        {isDragging ? (
+          <h5 style={{ color: "#2E8B57" }}>Пуснете файловете тук…</h5>
+        ) : dropSuccess ? (
+          <h5 style={{ color: "#2E8B57" }}>Успешно добавени!</h5>
+        ) : droppedFilesNames.length > 0 ? (
+          <>
+            <h5 style={{ color: "#2E8B57" }}>Добавени файлове:</h5>
+            <ul style={{ listStyle: "none", padding: 0 }}>
+              {droppedFilesNames.map((name, i) => (
+                <li key={i} style={{ color: "#2E8B57", fontSize: "14px" }}>
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <h5 style={{ color: "#2E8B57" }}>
+            Издърпайте файлове дотук или използвайте бутона за избор
+          </h5>
+        )}
+      </div>
+
       <Form className="mb-3 d-flex">
         <Form.Control
           type="file"
-          ref={fileInputRef} // добавяме референцията
-          onChange={(e) => setNewFile(e.target.files[0])}
+          multiple
+          ref={fileInputRef}
+          onChange={(e) => setNewFiles(e.target.files)}
         />
         <Button
           variant="success"
           className="ms-2"
           onClick={handleUpload}
-          disabled={!newFile}
+          disabled={!newFiles || newFiles.length === 0}
         >
           Качване
         </Button>
       </Form>
+
+      {uploadProgress > 0 && (
+        <div className="mb-4">
+          <h6>Качване... {Math.round(uploadProgress)}%</h6>
+          <div
+            style={{
+              height: "10px",
+              background: "#dcdcdc",
+              borderRadius: "6px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              style={{
+                width: `${uploadProgress}%`,
+                height: "100%",
+                background: "#2E8B57",
+                transition: "0.2s",
+              }}
+            />
+          </div>
+        </div>
+      )}
 
       {files.length === 0 ? (
         <p>Все още няма документи.</p>
@@ -116,7 +235,7 @@ const Storage = () => {
                 <td>{file.type}</td>
                 <td>{(file.size / 1024).toFixed(2)} KB</td>
                 <td>{file.date}</td>
-                <td className="d-flex gap-2">
+                <td className="d-flex gap-2 align-items-center">
                   <Button
                     variant="outline-primary"
                     onClick={() => handleDownload(file)}
@@ -157,6 +276,66 @@ const Storage = () => {
             ))}
           </tbody>
         </Table>
+      )}
+
+      {/* Галерия за изображения */}
+      {files.some((file) => file.type.startsWith("image/")) && (
+        <div style={{ marginTop: "40px" }}>
+          <h4 style={{ color: "#2E8B57", marginBottom: "20px" }}>🖼️ Галерия</h4>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))",
+              gap: "15px",
+            }}
+          >
+            {files
+              .filter((f) => f.type.startsWith("image/"))
+              .map((img) => (
+                <div
+                  key={img.id}
+                  style={{
+                    border: "1px solid #ddd",
+                    padding: "5px",
+                    borderRadius: "10px",
+                    background: "white",
+                    cursor: "pointer",
+                    transition: "0.3s",
+                  }}
+                  onClick={() => window.open(img.content, "_blank")}
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.boxShadow =
+                      "0 0 10px rgba(46,139,87,0.4)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.boxShadow = "none")
+                  }
+                >
+                  <img
+                    src={img.content}
+                    alt={img.name}
+                    style={{
+                      width: "100%",
+                      height: "120px",
+                      objectFit: "cover",
+                      borderRadius: "8px",
+                    }}
+                  />
+                  <p
+                    style={{
+                      fontSize: "12px",
+                      textAlign: "center",
+                      marginTop: "5px",
+                      color: "#2E8B57",
+                    }}
+                  >
+                    {img.name}
+                  </p>
+                </div>
+              ))}
+          </div>
+        </div>
       )}
     </Container>
   );
