@@ -31,11 +31,6 @@ public class DoctorController{
         }
     }
 
-//    @GetMapping("/doctors")
-//    public List<Doctor> getTestData(){
-//        return doctorService.getAll();
-//    }
-
     @GetMapping("/doctors")
     public List<DoctorDTO> getAllDoctorsDTO(){
         return doctorService.getAllDoctorsDTO();
