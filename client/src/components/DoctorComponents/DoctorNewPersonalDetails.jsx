@@ -25,6 +25,8 @@ export const DoctorNewPersonalDetails = () => {
   const [calendar, setCalendar] = useState([]); // Store the doctor's workdays
   const [loading, setLoading] = useState(false);
 
+  const doctorId = 2;
+
   // Търси координати на кабинета
   useEffect(() => {
     if (!doctor?.hospital || !doctor?.city) return;
@@ -54,7 +56,7 @@ export const DoctorNewPersonalDetails = () => {
   };
 
   const refreshCalendar = async () => {
-    const updatedDays = await getAllWorkDays();
+    const updatedDays = await getAllWorkDays(doctorId);
     setCalendar(updatedDays);
   };
 

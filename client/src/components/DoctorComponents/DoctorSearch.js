@@ -6,129 +6,39 @@ import doctor2 from "../../images/doctor2.jpg";
 import doctor3 from "../../images/doctor3.jpg";
 import { getDoctors } from "../../api/doctorApi";
 
-// const mockDoctors = [
-//   {
-//     id: 1,
-//     photo: doctor2,
-//     fname: "Иван",
-//     lname: "Петров",
-//     email: "drpetrov@example.com",
-//     phone: "0887642143",
-//     specialty: "Кардиолог",
-//     city: "София",
-//     hospital: "Болница Пирогов",
-//     experience: 10,
-//     rating: 4.8,
-//   },
-//   {
-//     id: 2,
-//     photo: doctor1,
-//     fname: "Мария",
-//     lname: "Георгиева",
-//     email: "drmg@example.com",
-//     phone: "0887561422",
-//     specialty: "Невролог",
-//     city: "Пловдив",
-//     hospital: "Клиника Здраве",
-//     experience: 20,
-//     rating: 4.6,
-//   },
-//   {
-//     id: 3,
-//     photo: doctor3,
-//     fname: "Николай",
-//     lname: "Костов",
-//     email: "nikkostov@example.com",
-//     phone: "0888646913",
-//     specialty: "Дерматолог",
-//     city: "Варна",
-//     hospital: "Болница Света Анна",
-//     experience: 12,
-//     rating: 4.9,
-//   },
-// ];
-const mockDoctors = [
-  {
-    id: 1,
-    photo: doctor2,
-    fname: "Иван",
-    lname: "Петров",
-    email: "drpetrov@example.com",
-    phone: "0887642143",
-    specialty: "Кардиолог",
-    city: "София",
-    hospital: "Болница Пирогов",
-    experience: 10,
-    rating: 4.8,
-  },
-  {
-    id: 2,
-    photo: doctor1,
-    fname: "Мария",
-    lname: "Георгиева",
-    email: "drmg@example.com",
-    phone: "0887561422",
-    specialty: "Невролог",
-    city: "Пловдив",
-    hospital: "Клиника Медикус Алфа",
-    experience: 20,
-    rating: 4.6,
-  },
-  {
-    id: 3,
-    photo: doctor3,
-    fname: "Николай",
-    lname: "Костов",
-    email: "nikkostov@example.com",
-    phone: "0888646913",
-    specialty: "Дерматолог",
-    city: "Варна",
-    hospital: "Болница Света Анна",
-    experience: 12,
-    rating: 4.9,
-  },
-];
-
 const DoctorSearch = ({ onSelectDoctor }) => {
   const [query, setQuery] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [sort, setSort] = useState("");
-  const [mockDoctors, setMockDoctors] = useState([]);
+  const [doctors, setdoctors] = useState([]);
 
+  const fetchDoctors = async () => {
+    try {
+      setdoctors(await getDoctors());
+    } catch (error) {
+      console.error("Error fetching doctors:", error);
+    }
+  };
 
-      useEffect(() => {
-    // Make getDoctors() call asynchronous and set mockDoctors correctly
-    const fetchDoctors = async () => {
-      try {
-        const doctors = await getDoctors(); // Get the doctor data from the API
-        setMockDoctors(doctors); // Update the state with the fetched doctors
-      } catch (error) {
-        console.error("Error fetching doctors:", error);
-        setMockDoctors([]); // Handle the error by setting an empty array if the fetch fails
-      }
-    };
+  useEffect(() => {
+    fetchDoctors();
+  }, []);
 
-    fetchDoctors(); // Call the function to fetch doctors
-  }, []); // Empty dependency array to run only once when the component mounts
-
-
-//   const filteredDoctors = mockDoctors
-//     .filter((doc) =>
-//       ("Д-р " + doc.fname + " " + doc.lname)
-//         .toLowerCase()
-//         .includes(query.toLowerCase())
-//     )
-//     .filter((doc) =>
-//       specialtyFilter ? doc.specialty === specialtyFilter : true
-//     )
-//     .filter((doc) => (cityFilter ? doc.city === cityFilter : true))
-//     .sort((a, b) => {
-//       if (sort === "rating") return b.rating - a.rating;
-//       if (sort === "fname") return a.fname.localeCompare(b.fname);
-//       if (sort === "lname") return a.lname.localeCompare(b.lname);
-//       return 0;
-//     });
+  const filteredDoctors = doctors
+    .filter((doc) =>
+      `${doc.firstName} ${doc.lastName}`.toLowerCase().includes(query.toLowerCase())
+    )
+    .filter((doc) =>
+      specialtyFilter ? doc.specialization === specialtyFilter : true
+    )
+    .filter((doc) => (cityFilter ? doc.city === cityFilter : true))
+    .sort((a, b) => {
+      if (sort === "rating") return b.rating - a.rating;
+      if (sort === "fname") return a.firstName.localeCompare(b.firstName);
+      if (sort === "lname") return a.lastName.localeCompare(b.lastName);
+      return 0;
+    });
 
   return (
     <Container className="py-3">
@@ -191,36 +101,17 @@ const DoctorSearch = ({ onSelectDoctor }) => {
         </Row>
       </Form>
 
-      {/* <Row>
-        {mockDoctors.length > 0 ? (
-          mockDoctors.map((doctor) => (
+      <Row>
+        {filteredDoctors?.length > 0 ? (
+          filteredDoctors.map((doctor) => (
             <Col md={4} key={doctor.id} className="mb-3">
-              <DoctorCard
-                doctor={doctor}
-                // onSelect={() => onSelectDoctor(doctor)}
-              />
-            </Col>
-          ))
-        ) : (
-          <p className="text-muted mt-3">Няма намерени резултати.</p>
-         )}
-      </Row> */}
-
-         <Row>
-        {mockDoctors?.length > 0 ? (
-          mockDoctors.map((doctor) => (
-            <Col md={4} key={doctor.id} className="mb-3">
-              <DoctorCard
-                doctor={doctor}
-                // onSelect={() => onSelectDoctor(doctor)}
-              />
+              <DoctorCard doctor={doctor} />
             </Col>
           ))
         ) : (
           <p className="text-muted mt-3">Няма намерени резултати.</p>
         )}
       </Row>
-      
     </Container>
   );
 };

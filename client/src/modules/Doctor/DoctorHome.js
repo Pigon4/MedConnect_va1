@@ -17,15 +17,6 @@ import { getAllWorkDays } from "../../api/doctorApi";
 import { useState } from "react";
 
 
-// TEST CALENDAR
-// const GoogleCalendar = () => (
-//   <iframe
-//     title="Google Calendar"
-//     src="https://calendar.google.com/calendar/embed?src=bg.bulgarian%23holiday%40group.v.calendar.google.com"
-//     style={{ border: 0, width: "100%", height: "400px" }}
-//   />
-// );
-
 const DoctorHome = () => {
   const { user, isReady } = useAuth();
   // Ако auth още не е готов → чакаме

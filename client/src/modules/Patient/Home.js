@@ -50,7 +50,7 @@ const Home = () => {
         </motion.div>
       </Card>
 
-      <Button onClick={googleAuthorize} style={{ marginRight: "10px" }}>
+      {/* <Button onClick={googleAuthorize} style={{ marginRight: "10px" }}>
         Натиснете за Google оторизация
       </Button>
 
@@ -58,7 +58,7 @@ const Home = () => {
 
     <Button onClick={googleAuthorize}>
         press for google authorize /google 
-    </Button>
+    </Button> */}
 
     <br/><br/><br/>
 
