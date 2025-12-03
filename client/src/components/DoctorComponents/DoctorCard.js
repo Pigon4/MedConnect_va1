@@ -1,12 +1,9 @@
 import { Card, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
-
-
 const DoctorCard = ({ doctor }) => {
   const navigate = useNavigate();
 
-  
   const handleSelect = () => {
     navigate(`/doctor/${doctor.slug}`);
   };

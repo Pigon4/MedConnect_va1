@@ -27,7 +27,9 @@ const DoctorSearch = ({ onSelectDoctor }) => {
 
   const filteredDoctors = doctors
     .filter((doc) =>
-      `${doc.firstName} ${doc.lastName}`.toLowerCase().includes(query.toLowerCase())
+      `${doc.firstName} ${doc.lastName}`
+        .toLowerCase()
+        .includes(query.toLowerCase())
     )
     .filter((doc) =>
       specialtyFilter ? doc.specialization === specialtyFilter : true
