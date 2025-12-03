@@ -1,4 +1,4 @@
-import { Button, Image } from "react-bootstrap";
+import { Button, Image, Container } from "react-bootstrap";
 import DoctorReviews from "./DoctorReviews";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -139,7 +139,7 @@ export const DoctorNewPersonalDetails = () => {
   }
 
   return (
-    <>
+    <Container className="py-3">
       <Button variant="secondary" className="mb-3" onClick={handleBack}>
         ← Назад към търсачката
       </Button>
@@ -227,6 +227,6 @@ export const DoctorNewPersonalDetails = () => {
       )}
 
       <DoctorReviews doctorId={doctor.id} />
-    </>
+    </Container>
   );
 };

@@ -6,39 +6,48 @@ import doctor2 from "../../images/doctor2.jpg";
 import doctor3 from "../../images/doctor3.jpg";
 import { getDoctors } from "../../api/doctorApi";
 
-const DoctorSearch = ({ onSelectDoctor }) => {
+const DoctorSearch = () => {
   const [query, setQuery] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [sort, setSort] = useState("");
-  const [doctors, setdoctors] = useState([]);
+  const [doctors, setDoctors] = useState([]);
 
   const fetchDoctors = async () => {
     try {
-      setdoctors(await getDoctors());
+      setDoctors(await getDoctors());
     } catch (error) {
       console.error("Error fetching doctors:", error);
     }
   };
 
   useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const data = await getDoctors();
+        setDoctors(data);
+      } catch (err) {
+        console.error("Error fetching doctors:", err);
+        setDoctors([]);
+      }
+    };
     fetchDoctors();
   }, []);
 
   const filteredDoctors = doctors
     .filter((doc) =>
-      `${doc.firstName} ${doc.lastName}`
+      ("Д-р " + doc.fname + " " + doc.lname)
         .toLowerCase()
         .includes(query.toLowerCase())
     )
     .filter((doc) =>
-      specialtyFilter ? doc.specialization === specialtyFilter : true
+      specialtyFilter ? doc.specialty === specialtyFilter : true
     )
     .filter((doc) => (cityFilter ? doc.city === cityFilter : true))
     .sort((a, b) => {
       if (sort === "rating") return b.rating - a.rating;
-      if (sort === "fname") return a.firstName.localeCompare(b.firstName);
-      if (sort === "lname") return a.lastName.localeCompare(b.lastName);
+      if (sort === "fname") return a.fname.localeCompare(b.fname);
+      if (sort === "lname") return a.lname.localeCompare(b.lname);
       return 0;
     });
 
@@ -68,8 +77,8 @@ const DoctorSearch = ({ onSelectDoctor }) => {
           {/* Филтър по специалност */}
           <Col md={3}>
             <Form.Select
-            //   value={specialtyFilter}
-            //   onChange={(e) => setSpecialtyFilter(e.target.value)}
+              value={specialtyFilter}
+              onChange={(e) => setSpecialtyFilter(e.target.value)}
             >
               <option value="">Всички специалности</option>
               <option value="Кардиолог">Кардиолог</option>
@@ -81,8 +90,8 @@ const DoctorSearch = ({ onSelectDoctor }) => {
           {/* Филтър по град */}
           <Col md={3}>
             <Form.Select
-            //   value={cityFilter}
-            //   onChange={(e) => setCityFilter(e.target.value)}
+              value={cityFilter}
+              onChange={(e) => setCityFilter(e.target.value)}
             >
               <option value="">Всички градове</option>
               <option value="София">София</option>
@@ -104,7 +113,7 @@ const DoctorSearch = ({ onSelectDoctor }) => {
       </Form>
 
       <Row>
-        {filteredDoctors?.length > 0 ? (
+        {filteredDoctors.length > 0 ? (
           filteredDoctors.map((doctor) => (
             <Col md={4} key={doctor.id} className="mb-3">
               <DoctorCard doctor={doctor} />

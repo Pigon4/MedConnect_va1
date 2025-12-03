@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Row, Col, Button, Card } from "react-bootstrap";
-
+import { ChevronLeft, ChevronRight } from "lucide-react"; // или друга икона
 import { splitInTwo, normalizeDate } from "../../utils/calendarUtils";
 import { createAppointmentRequest } from "../../api/appointmentApi";
 
@@ -117,21 +117,6 @@ export const WorkingHoursGrid = ({ days, onSelect, refreshCalendar }) => {
         </div>
       )}
 
-      {/* Header Controls */}
-      <Row className="mb-2 align-items-center">
-        <Col xs="auto">
-          <Button variant="link" onClick={prev}>
-            ←
-          </Button>
-        </Col>
-
-        <Col xs="auto">
-          <Button variant="link" onClick={next}>
-            →
-          </Button>
-        </Col>
-      </Row>
-
       {/* Day Columns */}
       <Row className="g-3 flex-nowrap overflow-auto">
         {visibleDays.map((day) => {
@@ -193,6 +178,31 @@ export const WorkingHoursGrid = ({ days, onSelect, refreshCalendar }) => {
             </Col>
           );
         })}
+      </Row>
+
+      {/* Header Controls */}
+      <Row className="mt-3">
+        <Col xs="auto">
+          <Button
+            variant="success"
+            onClick={prev}
+            className="d-flex align-items-center justify-content-center rounded-circle"
+            style={{ width: "40px", height: "40px", padding: 0 }}
+          >
+            <ChevronLeft size={20} color="white" />
+          </Button>
+        </Col>
+
+        <Col xs="auto">
+          <Button
+            variant="success"
+            onClick={next}
+            className="d-flex align-items-center justify-content-center rounded-circle"
+            style={{ width: "40px", height: "40px", padding: 0 }}
+          >
+            <ChevronRight size={20} color="white" />
+          </Button>
+        </Col>
       </Row>
     </div>
   );

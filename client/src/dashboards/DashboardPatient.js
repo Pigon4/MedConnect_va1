@@ -1,6 +1,7 @@
 import { Container, Row, Col, Nav } from "react-bootstrap";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import { DoctorNewPersonalDetails } from "../components/DoctorComponents/DoctorNewPersonalDetails";
 
 import Home from "../modules/Patient/Home";
 import PersonalInformation from "../modules/Patient/PersonalInformation";
@@ -107,6 +108,11 @@ const DashboardPatient = () => {
 
             <Route path="prescriptions" element={<Prescriptions />} />
             <Route path="appointments" element={<Appointments />} />
+            {/* НОВО: детайли на доктор */}
+            <Route
+              path="appointments/doctor/:slug"
+              element={<DoctorNewPersonalDetails />}
+            />
             <Route path="storage" element={<Storage userId={user?.id} />} />
             <Route path="symptom_check" element={<SymptomCheck />} />
             <Route
