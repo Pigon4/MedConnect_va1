@@ -327,26 +327,31 @@ public class DataSeeder {
                 // ===========================
 
 
-                List<WeeklyScheduleTemplate> week = new ArrayList<>();
+                List<Doctor> allDoctors = doctorRepository.findAll();
+                List<WeeklyScheduleTemplate> allSchedules = new ArrayList<>();
 
-                for (DayOfWeek dow : DayOfWeek.values()) {
-                    WeeklyScheduleTemplate t = new WeeklyScheduleTemplate();
-                    t.setDoctor(doctor1);
-                    t.setDayOfWeek(dow);
+                for (Doctor doctor : allDoctors) {
 
-                    if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
-                        t.setWorking(false);
-                    } else {
-                        t.setWorking(true);
-                        t.setStartTime(LocalTime.of(9, 0));
-                        t.setEndTime(LocalTime.of(17, 0));
-                        t.setSlotDurationMinutes(30);
+                    for (DayOfWeek dow : DayOfWeek.values()) {
+
+                        WeeklyScheduleTemplate t = new WeeklyScheduleTemplate();
+                        t.setDoctor(doctor);
+                        t.setDayOfWeek(dow);
+
+                        if (dow == DayOfWeek.SATURDAY || dow == DayOfWeek.SUNDAY) {
+                            t.setWorking(false);
+                        } else {
+                            t.setWorking(true);
+                            t.setStartTime(LocalTime.of(9, 0));
+                            t.setEndTime(LocalTime.of(17, 0));
+                            t.setSlotDurationMinutes(30);
+                        }
+
+                        allSchedules.add(t);
                     }
-
-                    week.add(t);
                 }
 
-                weeklyRepo.saveAll(week);
+                weeklyRepo.saveAll(allSchedules);
 
 
 // ===========================
@@ -471,6 +476,51 @@ public class DataSeeder {
                 a11.setComment("Follow-up consultation. Symptoms improving. Scheduled next visit.");
 // No feedback → eligible for review
                 appointmentRepo.save(a11);
+
+                Appointment a12 = new Appointment();
+                a12.setDoctor(doctor1);
+                a12.setPatient(patient2);
+                a12.setStartingTime(LocalDateTime.of(2025, 11, 18, 9, 30));
+                a12.setDurationInMinutes(30L);
+                a12.setStatus(Appointment.Status.Completed);
+                a12.setComment("General consultation, recommended follow-up.");
+                appointmentRepo.save(a12);
+
+                Appointment a13 = new Appointment();
+                a13.setDoctor(doctor1);
+                a13.setPatient(patient3);
+                a13.setStartingTime(LocalDateTime.of(2025, 11, 19, 10, 0));
+                a13.setDurationInMinutes(30L);
+                a13.setStatus(Appointment.Status.Completed);
+                a13.setComment("Headache complaints, prescribed medication.");
+                appointmentRepo.save(a13);
+
+                Appointment a14 = new Appointment();
+                a14.setDoctor(doctor1);
+                a14.setPatient(patient4);
+                a14.setStartingTime(LocalDateTime.of(2025, 11, 20, 13, 30));
+                a14.setDurationInMinutes(30L);
+                a14.setStatus(Appointment.Status.Completed);
+                a14.setComment("Routine check-up, all normal.");
+                appointmentRepo.save(a14);
+
+                Appointment a15 = new Appointment();
+                a15.setDoctor(doctor2);
+                a15.setPatient(patient5);
+                a15.setStartingTime(LocalDateTime.of(2025, 11, 21, 15, 0));
+                a15.setDurationInMinutes(30L);
+                a15.setStatus(Appointment.Status.Completed);
+                a15.setComment("Mild flu symptoms, provided treatment plan.");
+                appointmentRepo.save(a15);
+
+                Appointment a16 = new Appointment();
+                a16.setDoctor(doctor2);
+                a16.setPatient(patient6);
+                a16.setStartingTime(LocalDateTime.of(2025, 11, 22, 11, 45));
+                a16.setDurationInMinutes(30L);
+                a16.setStatus(Appointment.Status.Completed);
+                a16.setComment("Skin irritation, recommended ointment.");
+                appointmentRepo.save(a16);
 
                 appointmentRepo.save(a1);
                 appointmentRepo.save(a2);

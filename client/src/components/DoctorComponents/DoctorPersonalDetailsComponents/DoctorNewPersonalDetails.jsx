@@ -3,31 +3,38 @@ import DoctorReviews from "./DoctorReviews";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getAllWorkDays, getDoctorBySlug } from "../../../api/doctorApi";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import L from "leaflet";
 
-import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
-import markerIcon from "leaflet/dist/images/marker-icon.png";
-import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { AppointmentsSwiper } from "./AppointmentsSwiper";
 import { DoctorMapLocation } from "./DoctorMapLocation";
 import { DoctorDetailsCard } from "./DoctorDetailsCard";
 import PersonalReview from "./PersonalReview";
 
 export const DoctorNewPersonalDetails = () => {
-  const [coords, setCoords] = useState(null); //   doctor will be loaded through slug
+  const [coords, setCoords] = useState(null);
   const { slug } = useParams();
   const [doctor, setDoctor] = useState(null);
-  const [calendar, setCalendar] = useState([]); // Store the doctor's workdays
+  const [calendar, setCalendar] = useState([]);
   const [loading, setLoading] = useState(false);
-
   const [refreshReviewsTrigger, setRefreshReviewsTrigger] = useState(0);
 
   const refreshDoctorReviews = () => {
-  setRefreshReviewsTrigger(prev => prev + 1);
-};
+    setRefreshReviewsTrigger((prev) => prev + 1);
+  };
 
-  const doctorId = 6;
+  const formatDate = (date) => {
+    return date.toISOString().split("T")[0]; // Splitting at "T" and returning the date part
+  };
+
+  const getDateRange = () => {
+    const today = new Date();
+    const future = new Date();
+    future.setMonth(today.getMonth() + 2); // Set the future date to 2 months from today
+
+    return {
+      from: formatDate(today),
+      to: formatDate(future),
+    };
+  };
 
   useEffect(() => {
     if (!doctor?.hospital || !doctor?.city) return;
@@ -51,7 +58,8 @@ export const DoctorNewPersonalDetails = () => {
   }, [doctor]);
 
   const refreshCalendar = async () => {
-    const updatedDays = await getAllWorkDays(doctorId);
+    const { from, to } = getDateRange();
+    const updatedDays = await getAllWorkDays(doctor.id, from, to);
     setCalendar(updatedDays);
   };
 
@@ -116,8 +124,11 @@ export const DoctorNewPersonalDetails = () => {
         const doctorData = await getDoctorBySlug(slug);
         setDoctor(doctorData);
 
+        console.log(doctorData.id);
+
+        const { from, to } = getDateRange();
         // 2. Load calendar automatically
-        const workdays = await getAllWorkDays();
+        const workdays = await getAllWorkDays(doctorData.id, from, to);
         setCalendar(workdays);
       } catch (err) {
         console.error("Error loading page:", err);
@@ -144,7 +155,7 @@ export const DoctorNewPersonalDetails = () => {
           paddingTop: "50px", // Add upper padding of 50px
           paddingBottom: "50px",
           borderRadius: "10px",
-        marginBottom: "30px",
+          marginBottom: "30px",
           backgroundColor: "#f8f9fa",
         }}
       >
@@ -192,12 +203,21 @@ export const DoctorNewPersonalDetails = () => {
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
           }}
         >
-          <DoctorReviews refreshTrigger={refreshReviewsTrigger}/>
+          <DoctorReviews
+            refreshTrigger={refreshReviewsTrigger}
+            doctorId={doctor.id}
+          />
         </div>
-{/* 
-          <Button onClick={() => console.log(doctor)}>
 
-          </Button> */}
+        {/* <Button
+          onClick={() => {
+            console.log(doctor);
+            console.log(user);
+            console.log(token);
+          }}
+        >
+          Show doctor
+        </Button> */}
 
         {/* Right Column (TimeScheduler - Swiper) */}
         <div
@@ -214,12 +234,15 @@ export const DoctorNewPersonalDetails = () => {
             <AppointmentsSwiper
               days={transformedCalendar}
               refreshCalendar={refreshCalendar}
+              doctorId={doctor.id}
             />
           )}
         </div>
       </div>
-
-      <PersonalReview onFeedbackSubmitted={refreshDoctorReviews}/>
+      <PersonalReview
+        onFeedbackSubmitted={refreshDoctorReviews}
+        doctorId={doctor.id}
+      />
     </>
   );
 };

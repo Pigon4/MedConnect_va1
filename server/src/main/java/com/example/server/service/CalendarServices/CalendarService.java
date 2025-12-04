@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -128,6 +130,16 @@ public class CalendarService {
         Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new IllegalArgumentException("Doctor not found with ID: " + doctorId));
         WorkDayException existingException = exceptionRepo.findByDoctorIdAndDate(doctorId, date);
 
+        LocalDateTime startOfDay = date.atStartOfDay();
+        LocalDateTime endOfDay = date.atTime(23, 59, 59, 999999999);
+
+        List<Appointment> appointments = appointmentRepo.findByDoctorIdAndStartingTimeBetween(
+                doctorId, startOfDay, endOfDay);
+
+        if (!appointments.isEmpty()) {
+            // If there are appointments during this period, throw an exception and do not allow setting the day off
+            throw new RuntimeException("Cannot set the day off because there are existing appointments between 00:00 AM and 12:00 PM.");
+        }
 
         if (existingException != null) {
             // If an exception already exists, set it as "off"
@@ -149,10 +161,29 @@ public class CalendarService {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new IllegalArgumentException("Doctor not found"));
         // Get the existing WorkDayException (this assumes you're passing the doctor's ID and date in the request)
+
         WorkDayException existingException = exceptionRepo.findByDoctorIdAndDate(doctorId, workDayExceptionDTO.getDate());
 
-        // Check if the existing exception is found
+        // Convert the given date and start/end times to LocalDateTime
+        LocalDate date = workDayExceptionDTO.getDate();
+
+        LocalTime newStartTime = workDayExceptionDTO.getOverrideStartTime();
+        LocalTime newEndTime = workDayExceptionDTO.getOverrideEndTime();
+
+        LocalTime startOfWorkingDay = LocalTime.of(9, 0);
+        LocalTime endOfWorkingDay = LocalTime.of(17, 0);
+
+        LocalDateTime newStartDateTime = newStartTime != null ? date.atTime(newStartTime) : null;
+        LocalDateTime newEndDateTime = newEndTime != null ? date.atTime(newEndTime) : null;
+
+
+
+
+// Debugging the combined LocalDateTime values
+
+// Check if the existing exception is found
         if (existingException != null) {
+            // Debugging the existing exception times
 
             // Update only the fields that are non-null and have changed
             if (workDayExceptionDTO.getWorking() != null) {
@@ -172,6 +203,15 @@ public class CalendarService {
         } else {
             // If the exception does not exist, create a new one
 
+            if (isAppointmentInRange(doctorId, startOfWorkingDay.atDate(date), newStartDateTime)) {
+                throw new RuntimeException("Cannot set the new working hours because there are existing appointments before the new start time.");
+            }
+
+            // Check for appointments between the new end time and 5 PM
+            if (isAppointmentInRange(doctorId, newEndDateTime, endOfWorkingDay.atDate(date))) {
+                throw new RuntimeException("Cannot set the new working hours because there are existing appointments after the new end time.");
+            }
+
             WorkDayException newException = new WorkDayException();
             newException.setDate(workDayExceptionDTO.getDate());
             newException.setWorking(workDayExceptionDTO.getWorking() != null ? workDayExceptionDTO.getWorking() : false);
@@ -181,6 +221,16 @@ public class CalendarService {
 
             exceptionRepo.save(newException);
         }
+    }
+
+    private boolean isAppointmentInRange(Long doctorId, LocalDateTime start, LocalDateTime end) {
+        if (start == null || end == null) {
+            return false;
+        }
+
+        // Check for appointments within the specified range
+        List<Appointment> appointments = appointmentRepo.findByDoctorIdAndStartingTimeBetween(doctorId, start, end);
+        return !appointments.isEmpty();
     }
 
 }

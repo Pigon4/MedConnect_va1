@@ -5,40 +5,34 @@ import {
   fetchPastAppointmentsForReview,
   submitFeedback,
 } from "../../../api/appointmentApi";
+import { useAuth } from "../../../context/AuthContext";
 
-export const PersonalReview = ({ onFeedbackSubmitted }) => {
-  const [appointments, setAppointments] = useState([]);
+export const PersonalReview = ({ onFeedbackSubmitted,doctorId }) => {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [appointmentsToReview, setAppointmentsToReview] = useState([]);
   const [feedbackError, setFeedbackError] = useState("");
+  const { user, token } = useAuth();
 
   const isFeedbackValid = feedback.trim().length > 0;
 
   const handleAppointmentSelect = (appointment) => {
     setSelectedAppointment(appointment);
-    setFeedback(""); // reset input
+    setFeedback("");
   };
 
   const handleFeedbackSubmit = async () => {
     if (!selectedAppointment) return;
 
-    // BASIC VALIDATION
-    if (!feedback || !feedback.trim()) {
-      setFeedbackError("Моля въведете текст преди да изпратите отзив.");
-      return;
-    }
-
-    setFeedbackError(""); // Clear error if valid
+    setFeedbackError("");
 
     try {
       setLoading(true);
 
       await submitFeedback(selectedAppointment.id, feedback.trim(), token);
 
-      // Update UI locally
       setAppointmentsToReview((prev) =>
         prev.filter((a) => a.id !== selectedAppointment.id)
       );
@@ -55,12 +49,7 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
       setLoading(false);
     }
   };
-
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-  const doctorId = 6; // You can dynamically fetch this as well
-  const userId = 10;
-
+  
   useEffect(() => {
     if (!doctorId || !token) return;
 
@@ -68,7 +57,7 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
       try {
         const result = await fetchPastAppointmentsForReview(
           doctorId,
-          userId,
+          user.id,
           token
         );
         setAppointmentsToReview(result);
@@ -78,7 +67,7 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
     }
 
     loadAppointments();
-  }, [doctorId, userId, token]);
+  }, [doctorId, user.id, token]);
 
   return (
     <div
@@ -86,17 +75,24 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
       style={{
         padding: "20px",
         width: "80%",
-        margin: "50px auto", // Centers the section
-        backgroundColor: "#ffffff", // White background
-        borderRadius: "10px", // Rounded corners
-        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", // Box shadow for clean design
+        margin: "50px auto", 
+        backgroundColor: "#ffffff", 
+        borderRadius: "10px", 
+        boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)", 
       }}
     >
+      <Button
+        onClick={() => {
+          console.log(doctorId);
+        }}
+      >
+        TEST
+      </Button>
+
       <h4 style={{ paddingTop: "20px", textAlign: "center" }}>
         Make a Difference
       </h4>
 
-      {/* Appointments list */}
       {loading ? (
         <p>Loading appointments...</p>
       ) : error ? (
@@ -116,13 +112,13 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
                 style={{
                   cursor: "pointer",
                   marginBottom: "15px",
-                  border: "2px solid #2E8B57", // Border for each item
+                  border: "2px solid #2E8B57", 
                   borderRadius: "8px",
                   padding: "10px",
-                  backgroundColor: "#f9f9f9", // Light gray background for each card
-                  width: "80%", // Ensures the cards are centered with fixed width
+                  backgroundColor: "#f9f9f9", 
+                  width: "80%", 
                 }}
-                onClick={() => handleAppointmentSelect(appointment)} // Uncomment this for selecting appointments
+                onClick={() => handleAppointmentSelect(appointment)} 
               >
                 <Card>
                   <Card.Body>
@@ -153,7 +149,7 @@ export const PersonalReview = ({ onFeedbackSubmitted }) => {
                     as="textarea"
                     rows={4}
                     value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)} // Uncomment this to enable feedback input
+                    onChange={(e) => setFeedback(e.target.value)} 
                     placeholder="Write your feedback here..."
                   />
                 </Form.Group>

@@ -47,8 +47,10 @@ export const getDoctorBySlug = async (slug) => {
 
 export const getAllWorkDays = async (doctorId, startDate, endDate) => {
   try {
-    const response = await fetch(DOCTOR_ALL_WORKDAYS); // Wait for fetch to resolve
-    const data = await response.json(); // Wait for the data to be parsed
+    const url = `http://localhost:8080/api/calendar/doctor?doctorId=${doctorId}&from=${startDate}&to=${endDate}`;
+
+    const response = await fetch(url); 
+    const data = await response.json(); 
     console.log("Fetched Work Days:", data);
     return data;
   } catch (error) {

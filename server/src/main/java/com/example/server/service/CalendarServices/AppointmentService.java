@@ -31,11 +31,21 @@ public class AppointmentService {
 
     public Appointment createAppointment(AppointmentCreateDTO dto) {
 
+
         Doctor doctor = doctorRepository.findById(dto.getDoctorId())
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
         Patient patient = patientRepository.findById(dto.getPatientId())
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
+
+        LocalDateTime startingTime = LocalDateTime.of(dto.getDate(), dto.getStart());
+
+
+        boolean appointmentExists = appointmentRepository.existsByDoctorIdAndStartingTime(dto.getDoctorId(),startingTime);
+
+        if (appointmentExists) {
+            throw new RuntimeException("Appointment already exists at this time.");
+        }
 
         Appointment appt = new Appointment();
 
