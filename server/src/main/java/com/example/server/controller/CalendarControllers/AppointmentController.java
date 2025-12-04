@@ -4,7 +4,9 @@ import com.example.server.dto.CalendarDTO.AppointmentCreateDTO;
 import com.example.server.dto.CalendarDTO.AppointmentFilterDTO;
 import com.example.server.models.CalendarModels.Appointment;
 import com.example.server.service.CalendarServices.AppointmentService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +23,19 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public ResponseEntity<Appointment> createAppointment(@RequestBody AppointmentCreateDTO dto) {
-        Appointment appt = service.createAppointment(dto);
-        return ResponseEntity.ok(appt);
+    public ResponseEntity<?> createAppointment(@RequestBody AppointmentCreateDTO dto) {
+
+        try {
+            Appointment appt = service.createAppointment(dto);
+            return ResponseEntity.ok(appt);
+
+        } catch (Exception e) {
+            // Create a response with the error message and status BAD_REQUEST (400)
+            // You can structure the error response as an object with message and details
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)  // HTTP status 400
+                    .body(e.getMessage());
+        }
     }
 
     @GetMapping("/doctor")

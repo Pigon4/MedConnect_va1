@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Card, ListGroup } from "react-bootstrap";
 import { fetchDoctorAppointments } from "../../../api/appointmentApi";
+import { useAuth } from "../../../context/AuthContext";
 
-const DoctorReviews = ({refreshTrigger}) => {
+const DoctorReviews = ({ refreshTrigger, doctorId }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { token } = useAuth();
 
-  const doctorId = 6;
   const status = "Completed";
-  const token = localStorage.getItem("token");
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -50,7 +50,7 @@ const DoctorReviews = ({refreshTrigger}) => {
                 style={{
                   marginBottom: "15px",
                   borderRadius: "8px",
-                  border: "2px solid #000000ff", // Thicker border with a custom color
+                  border: "2px solid #000000ff",
                 }}
               >
                 <Card.Body>

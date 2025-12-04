@@ -4,15 +4,21 @@ import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import "./GoogleCalendarComponent.css";
-import { getAllWorkDays, updateWorkingHours, setDayOff } from "../../api/doctorApi";
+import {
+  getAllWorkDays,
+  updateWorkingHours,
+  setDayOff,
+} from "../../api/doctorApi";
 import { PatientAccourdion } from "./PatientAccourdion";
 import { transformWorkDayToEvents } from "../../utils/calendarUtils";
-
+import { useAuth } from "../../context/AuthContext";
 
 // Default start and end of working day
 const DEFAULT_START = "09:00:00";
 const DEFAULT_END = "17:00:00";
-const DOCTOR_ID = 2; // DR. Gregory House
+const DOCTOR_ID = 6;
+const CALENDAR_START_RENDER_DATE = "2025-09-01";
+const CALENDAR_END_RENDER_DATE = "2026-01-31";
 
 const GoogleCalendarComponent = () => {
   const [dayEvents, setDayEvents] = useState([]);
@@ -21,27 +27,40 @@ const GoogleCalendarComponent = () => {
   const [changedScheduleEvents, setChangedScheduleEvents] = useState([]);
   const [events2, setEvents2] = useState([]);
   const [allWorkDays, setAllWorkDays] = useState([]);
+  const [calendarKey, setCalendarKey] = useState(0);
+
+  const { user } = useAuth();
 
   const loadData = async () => {
-    const data = await getAllWorkDays();
-    setAllWorkDays(data);
+    const data = await getAllWorkDays(
+      user.id,
+      CALENDAR_START_RENDER_DATE,
+      CALENDAR_END_RENDER_DATE
+    );
+    setAllWorkDays([...data]);
 
     // loads all days in the calendar
     const allEvents = data.flatMap((wd) => transformWorkDayToEvents(wd));
-    setEvents2(allEvents);
+    setEvents2([...allEvents]);
 
     // filtering of non working days - weekends or custom setted
     const nonWorking = data
       .filter((wd) => wd.working === false)
-      .map((wd) => ({
-        start: wd.date,
-        end: wd.date,
-        display: "background",
-        backgroundColor: "#ED9A8A",
-        allDay: true,
-        id: `nonworking-${wd.date}`,
-      }));
-    setNonWorkingDaysEvents(nonWorking);
+      .map((wd) => {
+        const start = wd.date;
+        const end = new Date(wd.date);
+        end.setDate(end.getDate() + 1);
+
+        return {
+          start,
+          end: end.toISOString().split("T")[0], // ✅ MUST be next day
+          display: "background",
+          backgroundColor: "#ED9A8A",
+          allDay: true,
+          id: `nonworking-${wd.date}`,
+        };
+      });
+    setNonWorkingDaysEvents([...nonWorking]);
 
     // working days with changed schedule (Ex. 11AM - 15PM)
     const changedSchedule = data
@@ -61,7 +80,9 @@ const GoogleCalendarComponent = () => {
         id: `changed-${wd.date}`,
       }));
 
-    setChangedScheduleEvents(changedSchedule);
+    setChangedScheduleEvents([...changedSchedule]);
+
+    setCalendarKey((prev) => prev + 1);
   };
 
   //   fetcs all events from DB
@@ -69,10 +90,10 @@ const GoogleCalendarComponent = () => {
     loadData();
   }, []);
 
-    useEffect(() => {
+  useEffect(() => {
     console.log("Fetched/Updated Events:", events2); // log events when they change
     console.log("All Work Days Updated:", allWorkDays); // log all work days when they change
-  }, [events2, allWorkDays]); 
+  }, [events2, allWorkDays]);
 
   //   handles clicking on day in the calendar
   //   as results plots all events of this day under the calendar if so
@@ -107,46 +128,51 @@ const GoogleCalendarComponent = () => {
   };
 
   const handleSetDayOff = async () => {
-  if (!selectedDate) {
-    alert("Select a date first!");
-    return;
-  }
+    if (!selectedDate) {
+      alert("Select a date first!");
+      return;
+    }
 
-  try {
-    await setDayOff(DOCTOR_ID, selectedDate);
-    await loadData(); // reload calendar after update
-    alert(`Marked ${selectedDate} as a day off.`);
-  } catch (err) {
-    console.error(err);
-    alert("Failed to set day off.");
-  }
-};
+    try {
+      await setDayOff(user.id, selectedDate);
+      await loadData();
+      alert(`Marked ${selectedDate} as a day off.`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to set day off.");
+    }
+  };
 
-// changes the working hours of the selected day
-const handleChangeWorkingHours = async () => {
-  if (!selectedDate) {
-    alert("Select a date first!");
-    return;
-  }
+  // changes the working hours of the selected day
+  const handleChangeWorkingHours = async () => {
+    if (!selectedDate) {
+      alert("Select a date first!");
+      return;
+    }
 
-  const start = prompt("Enter start time (HH:MM):", "10:00");
-  const end = prompt("Enter end time (HH:MM):", "15:00");
+    const start = prompt("Enter start time (HH:MM):", "10:00");
+    const end = prompt("Enter end time (HH:MM):", "15:00");
 
-  if (!start || !end) return;
+    if (!start || !end) return;
 
-  try {
-    // Call the updated API method
-    await updateWorkingHours(DOCTOR_ID, selectedDate, `${start}:00`, `${end}:00`);
+    try {
+      // Call the updated API method
+      await updateWorkingHours(
+        user.id,
+        selectedDate,
+        `${start}:00`,
+        `${end}:00`
+      );
 
-    // Reload the data to refresh the calendar
-    await loadData(); // reload calendar after update
+      // Reload the data to refresh the calendar
+      await loadData(); // reload calendar after update
 
-    alert(`Updated working hours for ${selectedDate}`);
-  } catch (err) {
-    console.error(err);
-    alert("Failed to update working hours.");
-  }
-};
+      alert(`Updated working hours for ${selectedDate}`);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to update working hours.");
+    }
+  };
 
   //   calendar itself
   return (
@@ -159,6 +185,7 @@ const handleChangeWorkingHours = async () => {
       }}
     >
       <FullCalendar
+        key={calendarKey}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         headerToolbar={{
           start: "dayGridMonth,timeGridWeek,timeGridDay custom1",

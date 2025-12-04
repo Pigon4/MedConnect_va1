@@ -67,9 +67,9 @@ const DoctorHome = () => {
 
       {/* <GoogleCalendar /> */}
 
-      <Button onClick={googleAuthorize}>
+      {/* <Button onClick={googleAuthorize}>
         press for google authorize /google
-      </Button>
+      </Button> */}
 
       {/* <Button onClick={async () => {
         await getAllWorkDays(setWorkingDays)

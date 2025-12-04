@@ -6,14 +6,14 @@ import { Navigation } from "swiper/modules";
 import { Row, Col, Button, Card } from "react-bootstrap";
 import { ChevronLeft, ChevronRight } from "lucide-react"; // или друга икона
 import { createAppointmentRequest } from "../../../api/appointmentApi";
-import { splitInTwo,normalizeDate } from "../../../utils/calendarUtils";
+import { splitInTwo, normalizeDate } from "../../../utils/calendarUtils";
+import { useAuth } from "../../../context/AuthContext";
 
 
-
-export const AppointmentsSwiper = ({ days, refreshCalendar }) => {
+export const AppointmentsSwiper = ({ days, refreshCalendar, doctorId }) => {
   const [selected, setSelected] = useState(null); // Track the selected date and time
   const [comment, setComment] = useState(""); // Track the comment entered by the user
-  const token = localStorage.getItem("token");
+  const {user,token} = useAuth();
 
   // Handle hour selection
   const handleHourClick = (date, hour) => {
@@ -23,8 +23,8 @@ export const AppointmentsSwiper = ({ days, refreshCalendar }) => {
   const createAppointment = async () => {
     try {
       const payload = {
-        doctorId: 6, // example doctorId
-        patientId: 5, // example patientId
+        doctorId, // example doctorId
+        patientId: user.id, // example patientId
         date: normalizeDate(selected.date),
         start: selected.hour,
         comment: comment,
