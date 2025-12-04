@@ -2,6 +2,7 @@ import { Container, Row, Col, Nav } from "react-bootstrap";
 import { Routes, Route, NavLink, Navigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 
+
 import Home from "../modules/Patient/Home";
 import PersonalInformation from "../modules/Patient/PersonalInformation";
 import EditPersonalInformation from "../modules/Patient/EditPersonalInformation";
@@ -14,12 +15,16 @@ import SymptomCheck from "../modules/Patient/SymptomCheck";
 import PharmacyMap from "../modules/Patient/Pharmacies";
 import "../App.css";
 import VaccinesAndProfilactics from "../modules/Patient/VaccinesAndProfilactics";
+import { useAuth } from "../context/AuthContext";
+import { DoctorNewPersonalDetails } from "../components/DoctorComponents/DoctorPersonalDetailsComponents/DoctorNewPersonalDetails";
 
 const DashboardPatient = () => {
   const location = useLocation();
   const basePath = location.pathname.startsWith("/test")
     ? "/test/patient"
     : "/dashboard/patient";
+
+  const { user } = useAuth();
 
   return (
     <Container fluid className="mt-3">
@@ -104,14 +109,20 @@ const DashboardPatient = () => {
 
             <Route path="prescriptions" element={<Prescriptions />} />
             <Route path="appointments" element={<Appointments />} />
-            <Route path="storage" element={<Storage />} />
+            {/* НОВО: детайли на доктор */}
+            <Route
+              path="appointments/doctor/:slug"
+              element={<DoctorNewPersonalDetails />}
+            />
+            <Route path="storage" element={<Storage userId={user?.id} />} />
             <Route path="symptom_check" element={<SymptomCheck />} />
             <Route
               path="vaccines_profilactics"
               element={
                 <VaccinesAndProfilactics
                   isPremium={true} // за development
-                  patientAge={20}
+                  patientAge={user?.age}
+                  userId={user?.id}
                 />
               }
             />

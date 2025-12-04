@@ -1,7 +1,11 @@
 // src/modules/Patient/Appointments.js
 import { useState } from "react";
 import DoctorSearch from "../../components/DoctorComponents/DoctorSearch";
-import DoctorDetails from "../../components/DoctorComponents/DoctorDetails";
+import { Routes, Route } from "react-router-dom";
+import { DoctorNewPersonalDetails } from "../../components/DoctorComponents/DoctorPersonalDetailsComponents/DoctorNewPersonalDetails";
+
+DoctorNewPersonalDetails
+
 const Appointments = () => {
   const [selectedDoctor, setSelectedDoctor] = useState(null);
 
@@ -14,13 +18,13 @@ const Appointments = () => {
   };
 
   return (
-    <div className="container mt-4">
-      {!selectedDoctor ? (
-        <DoctorSearch onSelectDoctor={handleSelectDoctor} />
-      ) : (
-        <DoctorDetails doctor={selectedDoctor} onBack={handleBack} />
-      )}
-    </div>
+    <Routes>
+      {/* Страница с търсене на лекари */}
+      <Route index element={<DoctorSearch />} />
+
+      {/* Страница с детайли на избрания лекар */}
+      <Route path="doctor/:slug" element={<DoctorNewPersonalDetails />} />
+    </Routes>
   );
 };
 

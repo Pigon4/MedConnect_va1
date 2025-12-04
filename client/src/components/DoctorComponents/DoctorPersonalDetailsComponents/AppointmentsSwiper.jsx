@@ -4,15 +4,16 @@ import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Row, Col, Button, Card } from "react-bootstrap";
+import { ChevronLeft, ChevronRight } from "lucide-react"; // или друга икона
 import { createAppointmentRequest } from "../../../api/appointmentApi";
-import { normalizeDate } from "../../../utils/calendarUtils";
+import { splitInTwo,normalizeDate } from "../../../utils/calendarUtils";
+
 
 
 export const AppointmentsSwiper = ({ days, refreshCalendar }) => {
   const [selected, setSelected] = useState(null); // Track the selected date and time
   const [comment, setComment] = useState(""); // Track the comment entered by the user
   const token = localStorage.getItem("token");
-
 
   // Handle hour selection
   const handleHourClick = (date, hour) => {

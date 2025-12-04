@@ -6,19 +6,19 @@ import doctor2 from "../../images/doctor2.jpg";
 import doctor3 from "../../images/doctor3.jpg";
 import { getDoctors } from "../../api/doctorApi";
 
-const DoctorSearch = ({ onSelectDoctor }) => {
+const DoctorSearch = () => {
   const [query, setQuery] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [cityFilter, setCityFilter] = useState("");
   const [sort, setSort] = useState("");
-  const [doctors, setdoctors] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [cities, setCities] = useState([]); // New state for cities
   const [specialties, setSpecialties] = useState([]); // State for doctor specializations
 
   const fetchDoctors = async () => {
     try {
       const doctorsData = await getDoctors();
-      setdoctors(doctorsData);
+      setDoctors(doctorsData);
       const topCities = [
         ...new Set(doctorsData.map((doc) => doc.city).filter((city) => city)), // Remove any null or undefined cities
       ];
@@ -87,7 +87,7 @@ const DoctorSearch = ({ onSelectDoctor }) => {
               value={specialtyFilter}
               onChange={(e) => setSpecialtyFilter(e.target.value)}
             >
-              <option value="">Всички градове</option>
+              <option value="">Всички специалности</option>
               {specialties.map((speciality, index) => (
                 <option key={index} value={speciality}>
                   {speciality}
@@ -99,7 +99,6 @@ const DoctorSearch = ({ onSelectDoctor }) => {
             </Form.Select>
           </Col>
 
-          {/* <Button onClick={() => console.log(specialties)}>press to test</Button> */}
 
           {/* Филтър по град */}
           <Col md={3}>
@@ -130,7 +129,7 @@ const DoctorSearch = ({ onSelectDoctor }) => {
       </Form>
 
       <Row>
-        {filteredDoctors?.length > 0 ? (
+        {filteredDoctors.length > 0 ? (
           filteredDoctors.map((doctor) => (
             <Col md={4} key={doctor.id} className="mb-3">
               <DoctorCard doctor={doctor} />

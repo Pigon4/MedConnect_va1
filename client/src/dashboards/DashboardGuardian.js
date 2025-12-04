@@ -14,12 +14,15 @@ import SymptomCheck from "../modules/Patient/SymptomCheck";
 import PharmacyMap from "../modules/Patient/Pharmacies";
 import "../App.css";
 import VaccinesAndProfilactics from "../modules/Patient/VaccinesAndProfilactics";
+import { useAuth } from "../context/AuthContext";
 
 const DashboardGuardian = () => {
   const location = useLocation();
   const basePath = location.pathname.startsWith("/test")
     ? "/test/guardian"
     : "/dashboard/guardian";
+
+  const { user } = useAuth();
 
   return (
     <Container fluid className="mt-3">
@@ -104,14 +107,15 @@ const DashboardGuardian = () => {
 
             <Route path="prescriptions" element={<Prescriptions />} />
             <Route path="appointments" element={<Appointments />} />
-            <Route path="storage" element={<Storage />} />
+            <Route path="storage" element={<Storage userId={user?.id} />} />
             <Route path="symptom_check" element={<SymptomCheck />} />
             <Route
               path="vaccines_profilactics"
               element={
                 <VaccinesAndProfilactics
                   isPremium={false} // за development
-                  patientAge={20}
+                  patientAge={user?.wardAge}
+                  userId={user?.id}
                 />
               }
             />

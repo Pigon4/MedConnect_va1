@@ -1,4 +1,4 @@
-import { Button, Image } from "react-bootstrap";
+import { Button, Image, Container } from "react-bootstrap";
 import DoctorReviews from "./DoctorReviews";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
