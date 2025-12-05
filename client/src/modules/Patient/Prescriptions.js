@@ -11,16 +11,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
-const daysOfWeek = [
-  "Понеделник",
-  "Вторник",
-  "Сряда",
-  "Четвъртък",
-  "Петък",
-  "Събота",
-  "Неделя",
-];
-
 const Prescriptions = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,7 +24,8 @@ const Prescriptions = () => {
     medicine: "",
     dosage: "",
     doctor: "",
-    days: [],
+    startDate: "",
+    endDate: "",
     times: [""],
   });
 
@@ -82,14 +73,6 @@ const Prescriptions = () => {
   // ----------------------------
   // Функции за формата
   // ----------------------------
-  const handleDayToggle = (day) => {
-    setFormData((prev) => ({
-      ...prev,
-      days: prev.days.includes(day)
-        ? prev.days.filter((d) => d !== day)
-        : [...prev.days, day],
-    }));
-  };
 
   const handleTimeChange = (index, value) => {
     // Проверка дали този час вече съществува (на друго място)
@@ -111,7 +94,8 @@ const Prescriptions = () => {
       medicine: "",
       dosage: "",
       doctor: "",
-      days: [],
+      startDate: "",
+      endDate: "",
       times: [""],
     });
     setMessage(""); // ако искате да изчистите и съобщенията
@@ -139,7 +123,7 @@ const Prescriptions = () => {
       return;
     }
 
-    if (!formData.days.length) {
+    if (!formData.startDate || !formData.endDate) {
       setMessage("❌ Моля, изберете поне един ден.");
       return;
     }
@@ -152,7 +136,8 @@ const Prescriptions = () => {
     const payload = {
       medicationName: formData.medicine,
       dosage: formData.dosage,
-      frequency: formData.days.join(", "),
+      startDate: formData.startDate,
+      endDate: formData.endDate,
       prescribingDoctor: formData.doctor || "Не е посочен",
       takingHour: formData.times.join(", "),
     };
@@ -189,7 +174,7 @@ const Prescriptions = () => {
     }
   };
 
-  return (
+    return (
     <Container className="mt-4">
       <Card className="p-4 shadow-sm">
         <h3 className="text-success mb-4">💊 Добавяне на предписание</h3>
@@ -203,9 +188,6 @@ const Prescriptions = () => {
           </Alert>
         )}
 
-        {/* ------------------------------------ */}
-        {/* FORM */}
-        {/* ------------------------------------ */}
         <Form onSubmit={handleSubmit}>
           <Row>
             <Col md={6}>
@@ -249,26 +231,34 @@ const Prescriptions = () => {
                 />
               </Form.Group>
             </Col>
+
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Начална дата</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={formData.startDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, startDate: e.target.value })
+                  }
+                />
+              </Form.Group>
+            </Col>
+
+            <Col md={6}>
+              <Form.Group className="mb-3">
+                <Form.Label>Крайна дата</Form.Label>
+                <Form.Control
+                  type="date"
+                  value={formData.endDate}
+                  onChange={(e) =>
+                    setFormData({ ...formData, endDate: e.target.value })
+                  }
+                />
+              </Form.Group>
+            </Col>
           </Row>
 
-          {/* ДНИ */}
-          <Form.Group className="mb-3">
-            <Form.Label>Изберете дни на прием</Form.Label>
-            <Row>
-              {daysOfWeek.map((day) => (
-                <Col xs={6} md={3} key={day}>
-                  <Form.Check
-                    type="checkbox"
-                    label={day}
-                    checked={formData.days.includes(day)}
-                    onChange={() => handleDayToggle(day)}
-                  />
-                </Col>
-              ))}
-            </Row>
-          </Form.Group>
-
-          {/* ЧАСОВЕ */}
           <Form.Group className="mb-3">
             <Form.Label>Часове на прием</Form.Label>
             {formData.times.map((time, index) => (
@@ -317,9 +307,6 @@ const Prescriptions = () => {
         </Form>
       </Card>
 
-      {/* ------------------------------------ */}
-      {/* 📌 СПИСЪК С ПРЕДПИСАНИЯ */}
-      {/* ------------------------------------ */}
       <h4 className="mt-5 mb-3">📋 Вашите предписания</h4>
 
       {loading ? (
@@ -339,7 +326,11 @@ const Prescriptions = () => {
                   </p>
 
                   <p>
-                    <strong>Дни:</strong> {item.frequency}
+                    <strong>Начална дата:</strong> {item.startDate}
+                  </p>
+
+                  <p>
+                    <strong>Крайна дата:</strong> {item.endDate}
                   </p>
 
                   <p>
