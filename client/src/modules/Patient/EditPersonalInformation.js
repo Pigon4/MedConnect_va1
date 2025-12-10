@@ -11,7 +11,6 @@ import {
 import profileImage from "../../images/profile.png";
 import { useNavigate } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-// ТРЯБВА ДА ИМПОРТИРАШ useEffect
 import { useState, useEffect } from "react"; 
 import { useAuth } from "../../context/AuthContext";
 
@@ -24,7 +23,6 @@ const EditPersonalInformation = () => {
     ? "/test/patient"
     : "/dashboard/patient";
 
-  // Първоначален State (може да е стар, но useEffect ще го поправи веднага)
   const [formData, setFormData] = useState({
     photo: user.photoURL,
     fname: user.firstName,
@@ -36,7 +34,6 @@ const EditPersonalInformation = () => {
     diseases: user.diseases,
   });
 
-  // Грешки
   const [ageError, setAgeError] = useState("");
   const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -44,9 +41,6 @@ const EditPersonalInformation = () => {
   const [lnameError, setLNameError] = useState("");
   const [message, setMessage] = useState("");
 
-  // -------------------------------------------------------------
-  // 👇 ТОВА Е ЛИПСВАЩАТА ЧАСТ! БЕЗ НЕЯ ВИЖДАШ СТАРИ ДАННИ 👇
-  // -------------------------------------------------------------
   useEffect(() => {
     const fetchLatestData = async () => {
       const token = localStorage.getItem("token");
@@ -63,7 +57,6 @@ const EditPersonalInformation = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Данни, заредени от DB:", data); 
 
           setFormData((prev) => ({
             ...prev,
@@ -83,11 +76,9 @@ const EditPersonalInformation = () => {
     };
 
     fetchLatestData();
-  }, [user.id]); // Изпълнява се всеки път, когато заредиш този компонент
-  // -------------------------------------------------------------
+  }, [user.id]); 
 
 
-  // Смяна на снимка (Локален преглед)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -95,12 +86,10 @@ const EditPersonalInformation = () => {
     }
   };
 
-  // Промяна на полета с валидации
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newValue = value;
 
-    // Възраст
     if (name === "age") {
       newValue = value.replace(/\D/g, ""); 
       const num = parseInt(newValue, 10);
@@ -109,7 +98,6 @@ const EditPersonalInformation = () => {
       else setAgeError("");
     }
 
-    // Имейл
     if (name === "email") {
       const latinOnly = /^[A-Za-z0-9@._-]+$/;
       const emailFormat = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -118,7 +106,6 @@ const EditPersonalInformation = () => {
       else setEmailError("");
     }
 
-    // Телефон
     if (name === "phone") {
       const onlyDigitsOrPlus = /^[0-9+]+$/;
       const bgMobileRegex = /^(\+359|0)8[7-9][0-9]{7}$/;
@@ -131,7 +118,6 @@ const EditPersonalInformation = () => {
       }
     }
 
-    // Имена
     const namePattern = /^[А-Я][а-я]+(-[А-Я][а-я]+)?$/;
     if (name === "fname") {
       if (value && !namePattern.test(value)) {
@@ -151,7 +137,6 @@ const EditPersonalInformation = () => {
     setFormData((prev) => ({ ...prev, [name]: newValue }));
   };
 
-  // Запазване
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -162,7 +147,6 @@ const EditPersonalInformation = () => {
     }
 
     const payload = {
-      // photoURL: formData.photo, // Снимката не я пращаме за сега, както поиска
       firstName: formData.fname,
       lastName: formData.lname,
       age: formData.age,
@@ -188,9 +172,7 @@ const EditPersonalInformation = () => {
         }
         
         const updatedUser = await response.json();
-        console.log("Успешно обновен потребител:", updatedUser);
 
-        // Обновяваме localStorage
         const newUserData = { ...user, ...updatedUser };
         localStorage.setItem("user", JSON.stringify(newUserData));
 
@@ -204,7 +186,6 @@ const EditPersonalInformation = () => {
     }
   };
 
-  // Изчистване
   const handleClear = () => {
     setFormData({
       photo: null,
@@ -240,7 +221,6 @@ const EditPersonalInformation = () => {
 
         <Form onSubmit={handleSubmit}>
           <Row>
-            {/* Фото */}
             <Col md={4} className="text-center mb-3 mt-4">
               <div className="d-flex flex-column align-items-center">
                 <div
@@ -286,7 +266,6 @@ const EditPersonalInformation = () => {
               </div>
             </Col>
 
-            {/* Основни данни */}
             <Col md={8}>
               <Form.Group className="mb-3">
                 <Form.Label>Име</Form.Label>
@@ -364,7 +343,6 @@ const EditPersonalInformation = () => {
 
           <hr />
 
-          {/* Медицински детайли */}
           <Form.Group className="mb-3">
             <Form.Label>Алергии</Form.Label>
             <Form.Control
@@ -389,7 +367,6 @@ const EditPersonalInformation = () => {
             />
           </Form.Group>
 
-          {/* Бутони */}
           <div className="text-center">
             <Button variant="success" type="submit" className="px-4 me-2">
               💾 Запази

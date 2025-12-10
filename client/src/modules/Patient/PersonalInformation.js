@@ -32,7 +32,6 @@ const PersonalInformation = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Пресни данни за профила:", data);
           
           setDisplayUser(data);
         }
