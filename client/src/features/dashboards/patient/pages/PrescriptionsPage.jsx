@@ -35,7 +35,6 @@ const Prescriptions = () => {
     start: "",
     end: "",
   });
-
   const [message, setMessage] = useState("");
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);

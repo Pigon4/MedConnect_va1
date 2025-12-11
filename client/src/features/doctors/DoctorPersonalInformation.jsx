@@ -11,6 +11,38 @@ const DoctorPersonalInformation = () => {
     : "/dashboard/doctor";
 
   const { user } = useAuth();
+  const [displayUser, setDisplayUser] = useState(user || {});
+
+  useEffect(() => {
+    const fetchLatestData = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!user?.id || !token) return;
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/user/patient/${user.id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+
+          setDisplayUser(data);
+        }
+      } catch (error) {
+        console.error("Грешка при зареждане на профила:", error);
+      }
+    };
+
+    fetchLatestData();
+  }, [user?.id]);
 
   return (
     <Container className="mt-4">
