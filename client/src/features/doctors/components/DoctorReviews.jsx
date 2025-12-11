@@ -3,8 +3,6 @@ import { Card, ListGroup } from "react-bootstrap";
 import { fetchDoctorAppointments } from "../../../api/appointmentApi";
 import { useAuth } from "../../../context/AuthContext";
 
-
-
 const DoctorReviews = ({ refreshTrigger, doctorId }) => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -29,8 +27,6 @@ const DoctorReviews = ({ refreshTrigger, doctorId }) => {
         setLoading(false);
       }
     };
-
-
 
     fetchAppointments();
   }, [refreshTrigger]);
