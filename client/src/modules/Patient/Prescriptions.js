@@ -20,6 +20,8 @@ const Prescriptions = () => {
     ? "/test/patient"
     : "/dashboard/patient";
 
+  const today = new Date().toISOString().split("T")[0];
+
   const [formData, setFormData] = useState({
     medicine: "",
     dosage: "",
@@ -29,10 +31,15 @@ const Prescriptions = () => {
     times: [""],
   });
 
+  const [dateErrors, setDateErrors] = useState({
+    start: "",
+    end: "",
+  });
+
   const [message, setMessage] = useState("");
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const[ editingPrescription, setEditingPrescription] = useState(null);
+  const [editingPrescription, setEditingPrescription] = useState(null);
 
   const loadPrescriptions = async () => {
     try {
@@ -64,8 +71,33 @@ const Prescriptions = () => {
     if (user?.id) loadPrescriptions();
   }, [user]);
 
+  const handleStartDateChange = (value) => {
+    let error = "";
+
+    if (value < today) {
+      error = "Началната дата не може да е в миналото.";
+    }
+
+    if (formData.endDate && value > formData.endDate) {
+      error = "Началната дата не може да е след крайната.";
+    }
+
+    setDateErrors((prev) => ({ ...prev, start: error }));
+    setFormData({ ...formData, startDate: value });
+  };
+
+  const handleEndDateChange = (value) => {
+    let error = "";
+
+    if (value < formData.startDate) {
+      error = "Крайната дата не може да е преди началната.";
+    }
+
+    setDateErrors((prev) => ({ ...prev, end: error }));
+    setFormData({ ...formData, endDate: value });
+  };
+
   const handleTimeChange = (index, value) => {
-    
     if (formData.times.includes(value)) {
       setMessage("❌ Този час вече е добавен!");
       return;
@@ -75,7 +107,7 @@ const Prescriptions = () => {
     updatedTimes[index] = value;
 
     setFormData({ ...formData, times: updatedTimes });
-    setMessage(""); 
+    setMessage("");
   };
 
   const handleReset = () => {
@@ -87,6 +119,7 @@ const Prescriptions = () => {
       endDate: "",
       times: [""],
     });
+    setDateErrors({ start: "", end: "" });
     setMessage("");
   };
 
@@ -104,13 +137,18 @@ const Prescriptions = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (dateErrors.start || dateErrors.end) {
+      setMessage("❌ Поправете грешките в датите.");
+      return;
+    }
+
     if (!formData.medicine || !formData.dosage) {
       setMessage("❌ Моля, въведете лекарство и доза.");
       return;
     }
 
     if (!formData.startDate || !formData.endDate) {
-      setMessage("❌ Моля, изберете поне един ден.");
+      setMessage("❌ Моля, изберете начална и крайна дата.");
       return;
     }
 
@@ -133,26 +171,22 @@ const Prescriptions = () => {
       let url = "";
       let method = "";
 
-      if(!editingPrescription) {
+      if (!editingPrescription) {
         url = `http://localhost:8080/api/prescriptions/user/${user.id}`;
         method = "POST";
-      }
-      else{
+      } else {
         url = `http://localhost:8080/api/prescriptions/${editingPrescription.id}`;
         method = "PATCH";
       }
 
-      const res = await fetch(
-        url,
-        {
-          method,
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(payload),
-        }
-      );
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
 
       const data = await res.json();
 
@@ -161,7 +195,11 @@ const Prescriptions = () => {
         throw new Error(data.message || "Грешка при запис в базата");
       }
 
-      setMessage(editingPrescription ? "✅ Предписанието е актуализирано успешно!" : "✅ Предписанието е добавено успешно!");
+      setMessage(
+        editingPrescription
+          ? "✅ Предписанието е актуализирано успешно!"
+          : "✅ Предписанието е добавено успешно!"
+      );
 
       setEditingPrescription(null);
       handleReset();
@@ -180,39 +218,41 @@ const Prescriptions = () => {
       doctor: prescription.prescribingDoctor,
       startDate: prescription.startDate,
       endDate: prescription.endDate,
-      times: prescription.takingHour ? prescription.takingHour.split(", ").map(t => t.trim())
-      : [""],
+      times: prescription.takingHour
+        ? prescription.takingHour.split(", ").map((t) => t.trim())
+        : [""],
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const handleDelete = async (id) => {
-    if(!window.confirm("Сигурни ли сте, че искате да изтриете това предписание?")) return;
+    if (
+      !window.confirm("Сигурни ли сте, че искате да изтриете това предписание?")
+    )
+      return;
 
     try {
-    const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
 
-    const res = await fetch(`http://localhost:8080/api/prescriptions/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+      const res = await fetch(`http://localhost:8080/api/prescriptions/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) {
-      throw new Error("Грешка при изтриване");
+      if (!res.ok) {
+        throw new Error("Грешка при изтриване");
+      }
+
+      await loadPrescriptions();
+    } catch (err) {
+      console.error(err);
+      setMessage("❌ Грешка при изтриване.");
     }
+  };
 
-    await loadPrescriptions();
-
-  } catch (err) {
-    console.error(err);
-    setMessage("❌ Грешка при изтриване.");
-  }
-  }
-
-
-    return (
+  return (
     <Container className="mt-4">
       <Card className="p-4 shadow-sm">
         <h3 className="text-success mb-4">💊 Добавяне на предписание</h3>
@@ -276,10 +316,15 @@ const Prescriptions = () => {
                 <Form.Control
                   type="date"
                   value={formData.startDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, startDate: e.target.value })
-                  }
+                  min={today}
+                  onChange={(e) => handleStartDateChange(e.target.value)}
+                  isInvalid={!!dateErrors.start}
                 />
+                {dateErrors.start && (
+                  <div style={{ color: "red", marginTop: "5px" }}>
+                    {dateErrors.start}
+                  </div>
+                )}
               </Form.Group>
             </Col>
 
@@ -289,10 +334,15 @@ const Prescriptions = () => {
                 <Form.Control
                   type="date"
                   value={formData.endDate}
-                  onChange={(e) =>
-                    setFormData({ ...formData, endDate: e.target.value })
-                  }
+                  min={formData.startDate || today}
+                  onChange={(e) => handleEndDateChange(e.target.value)}
+                  isInvalid={!!dateErrors.end}
                 />
+                {dateErrors.end && (
+                  <div style={{ color: "red", marginTop: "5px" }}>
+                    {dateErrors.end}
+                  </div>
+                )}
               </Form.Group>
             </Col>
           </Row>
@@ -372,7 +422,7 @@ const Prescriptions = () => {
                     <strong>Крайна дата:</strong>{" "}
                     {new Date(item.endDate).toLocaleDateString("bg-BG")}
                   </p>
-                  
+
                   <p>
                     <strong>Часове:</strong> {item.takingHour}
                   </p>
@@ -381,12 +431,16 @@ const Prescriptions = () => {
                     <strong>Лекар:</strong> {item.prescribingDoctor}
                   </p>
 
-                  <Button className = "px-2 mx-5"
-                  onClick = {() => handleEdit (item)}>
+                  <Button
+                    className="px-2 mx-5"
+                    onClick={() => handleEdit(item)}
+                  >
                     <strong>Редактирай</strong>
                   </Button>
-                  <Button variant="danger"
-                  onClick = {() => handleDelete (item.id)}>
+                  <Button
+                    variant="danger"
+                    onClick={() => handleDelete(item.id)}
+                  >
                     <strong>Изтрий</strong>
                   </Button>
                 </Card.Body>
