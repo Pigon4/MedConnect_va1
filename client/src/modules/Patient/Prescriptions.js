@@ -30,16 +30,10 @@ const Prescriptions = () => {
   });
 
   const [message, setMessage] = useState("");
-
-  // ----------------------------
-  // Нови state-ове
-  // ----------------------------
   const [prescriptions, setPrescriptions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const[ editingPrescription, setEditingPrescription] = useState(null);
 
-  // ----------------------------
-  // Зареждане на предписания
-  // ----------------------------
   const loadPrescriptions = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -70,12 +64,8 @@ const Prescriptions = () => {
     if (user?.id) loadPrescriptions();
   }, [user]);
 
-  // ----------------------------
-  // Функции за формата
-  // ----------------------------
-
   const handleTimeChange = (index, value) => {
-    // Проверка дали този час вече съществува (на друго място)
+    
     if (formData.times.includes(value)) {
       setMessage("❌ Този час вече е добавен!");
       return;
@@ -85,10 +75,9 @@ const Prescriptions = () => {
     updatedTimes[index] = value;
 
     setFormData({ ...formData, times: updatedTimes });
-    setMessage(""); // изчистваме стара грешка
+    setMessage(""); 
   };
 
-  // Добавете тази функция в компонентa Prescriptions
   const handleReset = () => {
     setFormData({
       medicine: "",
@@ -98,7 +87,7 @@ const Prescriptions = () => {
       endDate: "",
       times: [""],
     });
-    setMessage(""); // ако искате да изчистите и съобщенията
+    setMessage("");
   };
 
   const addTimeField = () => {
@@ -112,9 +101,6 @@ const Prescriptions = () => {
     });
   };
 
-  // ----------------------------
-  // Submit на ново предписание
-  // ----------------------------
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -144,11 +130,22 @@ const Prescriptions = () => {
 
     try {
       const token = localStorage.getItem("token");
+      let url = "";
+      let method = "";
+
+      if(!editingPrescription) {
+        url = `http://localhost:8080/api/prescriptions/user/${user.id}`;
+        method = "POST";
+      }
+      else{
+        url = `http://localhost:8080/api/prescriptions/${editingPrescription.id}`;
+        method = "PATCH";
+      }
 
       const res = await fetch(
-        `http://localhost:8080/api/prescriptions/user/${user.id}`,
+        url,
         {
-          method: "POST",
+          method,
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
@@ -164,15 +161,56 @@ const Prescriptions = () => {
         throw new Error(data.message || "Грешка при запис в базата");
       }
 
-      setMessage("✅ Предписанието е успешно запазено!");
+      setMessage(editingPrescription ? "✅ Предписанието е актуализирано успешно!" : "✅ Предписанието е добавено успешно!");
 
-      // Обновяване на списъка след добавяне
-      await loadPrescriptions();
+      setEditingPrescription(null);
+      handleReset();
+      loadPrescriptions();
     } catch (err) {
       console.error("Fetch error:", err);
       setMessage("❌ Грешка при запис в базата.");
     }
   };
+
+  const handleEdit = (prescription) => {
+    setEditingPrescription(prescription);
+    setFormData({
+      medicine: prescription.medicationName,
+      dosage: prescription.dosage,
+      doctor: prescription.prescribingDoctor,
+      startDate: prescription.startDate,
+      endDate: prescription.endDate,
+      times: prescription.takingHour ? prescription.takingHour.split(", ").map(t => t.trim())
+      : [""],
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDelete = async (id) => {
+    if(!window.confirm("Сигурни ли сте, че искате да изтриете това предписание?")) return;
+
+    try {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(`http://localhost:8080/api/prescriptions/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!res.ok) {
+      throw new Error("Грешка при изтриване");
+    }
+
+    await loadPrescriptions();
+
+  } catch (err) {
+    console.error(err);
+    setMessage("❌ Грешка при изтриване.");
+  }
+  }
+
 
     return (
     <Container className="mt-4">
@@ -342,6 +380,15 @@ const Prescriptions = () => {
                   <p>
                     <strong>Лекар:</strong> {item.prescribingDoctor}
                   </p>
+
+                  <Button className = "px-2 mx-5"
+                  onClick = {() => handleEdit (item)}>
+                    <strong>Редактирай</strong>
+                  </Button>
+                  <Button variant="danger"
+                  onClick = {() => handleDelete (item.id)}>
+                    <strong>Изтрий</strong>
+                  </Button>
                 </Card.Body>
               </Card>
             </Col>
