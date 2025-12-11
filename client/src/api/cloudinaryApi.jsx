@@ -1,4 +1,3 @@
-<<<<<<< HEAD:client/src/api/cloudinaryApi.js
 // TODO: download contend in cloudinary
 
 export async function uploadToCloudinary(file) {
@@ -29,7 +28,7 @@ export async function uploadToCloudinary(file) {
     console.error("Upload failed:", error.message);
     return null; // Return null or any other value indicating failure
   }
-=======
+}
 export async function uploadToCloudinary(file) {
   const data = new FormData();
   data.append("file", file);
@@ -45,5 +44,5 @@ export async function uploadToCloudinary(file) {
 
   const json = await res.json();
   return json.secure_url;
->>>>>>> 83e2849 (Folder restructure with file changes):client/src/api/cloudinaryApi.jsx
 }
+
