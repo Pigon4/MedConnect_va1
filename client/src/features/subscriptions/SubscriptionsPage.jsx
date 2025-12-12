@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { SubscriptionPageLayout } from "./components/SubscriptionsPageLayout.jsx";
-import paymentImg from "../../images/payment.png"; 
+import paymentImg from "../../images/payment.png";
 
 const SubscriptionPage = () => {
   const location = useLocation();
@@ -135,7 +135,10 @@ const SubscriptionPage = () => {
               if (data.checkoutUrl) {
                 window.location.href = data.checkoutUrl;
               } else {
-                alert("Грешка при създаване на Stripe сесия: " + (data.error || "Непозната грешка"));
+                alert(
+                  "Грешка при създаване на Stripe сесия: " +
+                    (data.error || "Непозната грешка")
+                );
               }
             } catch (error) {
               console.error("Payment error:", error);
@@ -150,9 +153,10 @@ const SubscriptionPage = () => {
   const subscriptionPlans = [
     {
       key: "free",
-      title: "MedConnect",
+      title: "MedConnect+",
       price: "0 лв / месец",
-      description: "Основна функционалност: записване на часове при лекари, напомняния и достъп до личен архив с ограничено място.",
+      description:
+        "Основна функционалност: записване на часове при лекари, напомняния и достъп до личен архив с ограничено място.",
       buttonText: "Избери безплатен план",
       buttonVariant: "outline-success",
       isActive: subscriptionStatus === "free",
@@ -160,26 +164,29 @@ const SubscriptionPage = () => {
     },
     {
       key: "monthly",
-      title: "MedConnect+",
+      title: "MedConnect+ Premium",
       price: "19.99 лв / месец",
-      description: "Пълният пакет: неограничено хранилище, проверка на симптоми, СМС съобщения",
+      description:
+        "Пълният пакет: неограничено хранилище, проверка на симптоми, СМС съобщения",
       buttonText: "Избери месечен план",
       buttonVariant: "success",
       backgroundColor: "#000000",
       textColor: "#ffffff",
-      isActive: subscriptionStatus === "premium" && subscriptionType === "monthly",
+      isActive:
+        subscriptionStatus === "premium" && subscriptionType === "monthly",
       onClick: () => handlePremiumPlanClick("monthly"),
     },
     {
       key: "yearly",
-      title: "MedConnect+",
+      title: "MedConnect+ Premium",
       price: "220.00 лв / година",
       description: "Всички Premium функции плюс 1 безплатен месец.",
       buttonText: "Избери годишен план",
       buttonVariant: "success",
       backgroundColor: "#111111",
       textColor: "#ffffff",
-      isActive: subscriptionStatus === "premium" && subscriptionType === "yearly",
+      isActive:
+        subscriptionStatus === "premium" && subscriptionType === "yearly",
       onClick: () => handlePremiumPlanClick("yearly"),
     },
   ];
