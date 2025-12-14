@@ -3,11 +3,14 @@ package com.example.server.service.CalendarServices;
 
 import com.example.server.dto.CalendarDTO.AppointmentDTO;
 import com.example.server.dto.CalendarDTO.CalendarDayDTO;
+import com.example.server.dto.CalendarDTO.PatientCalendarDTO;
 import com.example.server.dto.CalendarDTO.WorkDayExceptionDTO;
+import com.example.server.dto.ExposedUserDTO.PatientDTO;
 import com.example.server.models.CalendarModels.Appointment;
 import com.example.server.models.CalendarModels.WeeklyScheduleTemplate;
 import com.example.server.models.CalendarModels.WorkDayException;
 import com.example.server.models.UserModels.Doctor;
+import com.example.server.models.UserModels.Patient;
 import com.example.server.repository.CalendarRepositories.AppointmentRepository;
 import com.example.server.repository.CalendarRepositories.WeeklyScheduleTemplateRepository;
 import com.example.server.repository.CalendarRepositories.WorkDayExceptionRepository;
@@ -107,13 +110,26 @@ public class CalendarService {
             LocalDate finalD = d;
             List<AppointmentDTO> appointmentDTOs = appointments.stream()
                     .filter(a -> a.getStartingTime().toLocalDate().equals(finalD))
-                    .map(a -> new AppointmentDTO(
-                            a.getStartingTime().toLocalTime(),
-                            a.getEndTime().toLocalTime(),
-                            a.getStatus().name(),
-                            a.getPatient(),
-                            a.getComment()
-                    ))
+                    .map(a -> {
+
+                        Patient p = a.getPatient();
+
+                        PatientCalendarDTO patientDTO = new PatientCalendarDTO();
+                        patientDTO.setId(p.getId());
+                        patientDTO.setFirstName(p.getFirstName());
+                        patientDTO.setLastName(p.getLastName());
+                        patientDTO.setPhoneNumber(p.getPhoneNumber());
+                        patientDTO.setAllergies(p.getAllergies());
+                        patientDTO.setDiseases(p.getDiseases());
+
+                        return new AppointmentDTO(
+                                a.getStartingTime().toLocalTime(),
+                                a.getEndTime().toLocalTime(),
+                                a.getStatus().name(),
+                                patientDTO, // ✅ DTO, not entity
+                                a.getComment()
+                        );
+                    })
                     .toList();
 
             dto.setAppointments(appointmentDTOs);

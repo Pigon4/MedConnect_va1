@@ -1,6 +1,5 @@
 package com.example.server.dto.CalendarDTO;
 
-import com.example.server.models.UserModels.Patient;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,7 +13,7 @@ public class AppointmentDTO {
     public LocalTime end;
     public String status;
 
-    public AppointmentDTO(LocalTime start, LocalTime end, String status, Patient patient, String comment) {
+    public AppointmentDTO(LocalTime start, LocalTime end, String status, PatientCalendarDTO patient, String comment) {
         this.start = start;
         this.end = end;
         this.status = status;
@@ -22,7 +21,7 @@ public class AppointmentDTO {
         this.comment = comment;
     }
 
-    private Patient patient;
+    private PatientCalendarDTO patient;
 
     private String comment;
 
