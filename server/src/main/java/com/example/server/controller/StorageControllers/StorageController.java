@@ -28,6 +28,10 @@ public class StorageController {
         // Fetch files for the user with the given ID
         Set<UserFile> userFiles = storageService.getFilesByUserId(userId);
 
+        if (userFiles == null || userFiles.isEmpty()) {
+            return List.of();  // return empty list instead of crashing
+        }
+
         // Map the UserFile entities to UserFileDTO
         List<UserFileExtractDTO> userFileDTOs = userFiles.stream()
                 .map(userFile -> new UserFileExtractDTO(

@@ -41,7 +41,6 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<?> createUser(@RequestBody User user) {
-
         try {
             baseUserService.saveUser(user);
             return new ResponseEntity<>(user, HttpStatus.CREATED);
