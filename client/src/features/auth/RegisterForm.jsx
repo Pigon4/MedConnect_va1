@@ -34,10 +34,10 @@ const transformFormToBackend = (form) => {
     case "doctor":
       return {
         ...baseUser,
-        specialization: form.specialization,
-        experience: Number(form.experience),
-        city: form.city,
-        hospital: form.hospital,
+        specialization: form.specialization || null,
+        yearsOfExperience: Number(form.experience) || 0,
+        city: form.city || null,
+        hospital: form.hospital || null,
       };
 
     case "guardian":
@@ -171,9 +171,25 @@ const RegisterForm = () => {
     // EXPERIENCE
     if (name === "experience") {
       newValue = value.replace(/\D/g, "");
-      const num = parseInt(newValue, 10);
-      newErrors.experienceError =
-        num < 1 || num > 50 ? "Опитът трябва да е между 1 и 50 г." : "";
+      const experience = Number(newValue);
+      const age = formData.age;
+
+      if (!age) {
+        newErrors.experienceError = "Моля, първо въведете дата на раждане.";
+      } else {
+        const maxExperience = age - 23;
+
+        if (age < 23) {
+          newErrors.experienceError =
+            "Лекарят не може да има професионален опит, ако е под 23 години.";
+        } else if (experience < 0) {
+          newErrors.experienceError = "Опитът не може да бъде отрицателен.";
+        } else if (experience > maxExperience) {
+          newErrors.experienceError = `Максималният възможен опит за тази възраст е ${maxExperience} години.`;
+        } else {
+          newErrors.experienceError = "";
+        }
+      }
     }
 
     // EMAIL
@@ -262,6 +278,22 @@ const RegisterForm = () => {
       return setMessage("Моля, проверете въведените данни за грешки.");
     if (formData.password !== formData.confirmPassword)
       return setMessage("Паролите не съвпадат.");
+
+    if (formData.role === "doctor") {
+      const age = formData.age;
+      const experience = Number(formData.experience);
+
+      if (age < 23) {
+        return setMessage("Лекарите трябва да бъдат поне на 23 години.");
+      }
+
+      const maxExperience = age - 23;
+      if (experience > maxExperience) {
+        return setMessage(
+          `Невалиден професионален опит. Максимум ${maxExperience} години за тази възраст.`
+        );
+      }
+    }
 
     setMessage("Регистрацията беше успешна! Пренасочване към Вход...");
     setLoading(true);

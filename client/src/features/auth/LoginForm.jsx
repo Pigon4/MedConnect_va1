@@ -15,15 +15,18 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
 
   const validateEmail = (email) => {
-    if (/[а-яА-Я]/.test(email)) return "Имейл адресът трябва да бъде само на латиница.";
+    if (/[а-яА-Я]/.test(email))
+      return "Имейл адресът трябва да бъде само на латиница.";
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) return "Моля, въведете валиден имейл адрес.";
     return "";
   };
 
   const validatePassword = (password) => {
-    if (/[а-яА-Я]/.test(password)) return "Паролата не може да съдържа кирилица.";
-    if (password.length < 8) return "Паролата трябва да съдържа поне 8 символа.";
+    if (/[а-яА-Я]/.test(password))
+      return "Паролата не може да съдържа кирилица.";
+    if (password.length < 8)
+      return "Паролата трябва да съдържа поне 8 символа.";
     return "";
   };
 
@@ -53,8 +56,20 @@ const LoginForm = () => {
         setTimeout(() => navigate("/"), 1500);
       }
     } catch (error) {
-      console.error(error);
-      setMessage("Грешен имейл или парола.");
+      console.error("Login error:", error);
+
+      if (error.status) {
+        if (error.status === 409) {
+          setMessage(error.body?.message || "Потребителят не е регистриран.");
+        } else if (error.status === 401) {
+          setMessage("Грешен имейл или парола.");
+        } else {
+          setMessage("Възникна грешка при вход. Моля, опитайте отново.");
+        }
+      } else {
+        // Реален network error (fetch не е стигнал до backend)
+        setMessage("Няма връзка със сървъра.");
+      }
     } finally {
       setLoading(false);
     }
