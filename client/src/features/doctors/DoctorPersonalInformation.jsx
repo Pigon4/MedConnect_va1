@@ -2,7 +2,7 @@ import { Container, Card, Row, Col, Image, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import profileImage from "../../images/profile.png";
 import { useAuth } from "../../context/AuthContext";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const DoctorPersonalInformation = () => {
   const navigate = useNavigate();

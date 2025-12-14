@@ -1,6 +1,7 @@
 package com.example.server.models.UserModels;
 
 import com.example.server.models.MedicalActionsModels.MedicalProcedure;
+import com.example.server.models.StorageModels.Storage;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -57,6 +58,9 @@ public class User {
     private String googleAccessToken;
 
     private String googleRefreshToken;
+
+    @OneToOne(mappedBy = "user")
+    private Storage storage;
 
     @ManyToMany(mappedBy = "users")
     private Set<MedicalProcedure> medicalProcedureSet;

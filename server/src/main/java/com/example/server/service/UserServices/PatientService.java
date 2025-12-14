@@ -3,6 +3,7 @@ package com.example.server.service.UserServices;
 import com.example.server.dto.ExposedUserDTO.PatientDTO;
 import com.example.server.mappers.UserMappers.PatientMapper;
 import com.example.server.models.UserModels.Patient;
+import com.example.server.repository.StorageRepositories.StorageRepository;
 import com.example.server.repository.UserRepositories.PatientRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,8 +17,8 @@ public class PatientService extends BaseUserServiceImpl<Patient> {
     private final PatientMapper patientMapper;
 
     public PatientService(PatientRepository patientRepository, PasswordEncoder passwordEncoder,
-            PatientRepository patientRepository1, PatientMapper patientMapper) {
-        super(patientRepository, passwordEncoder);
+                          PatientRepository patientRepository1, PatientMapper patientMapper, StorageRepository storageRepository) {
+        super(patientRepository, passwordEncoder,storageRepository);
         this.patientRepository = patientRepository1;
         this.patientMapper = patientMapper;
     }

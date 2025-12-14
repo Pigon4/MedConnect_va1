@@ -3,6 +3,7 @@ package com.example.server.service.UserServices;
 import java.util.List;
 import java.util.Optional;
 
+import com.example.server.repository.StorageRepositories.StorageRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -18,8 +19,8 @@ public class DoctorService extends BaseUserServiceImpl<Doctor> {
     private final DoctorRepository doctorRepository;  // Add this specific repository
 
 
-    public DoctorService(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, DoctorMapper doctorMapper, DoctorRepository doctorRepository1) {
-        super(doctorRepository, passwordEncoder);
+    public DoctorService(DoctorRepository doctorRepository, PasswordEncoder passwordEncoder, DoctorMapper doctorMapper, DoctorRepository doctorRepository1, StorageRepository storageRepository) {
+        super(doctorRepository, passwordEncoder,storageRepository);
         this.doctorMapper = doctorMapper;
         this.doctorRepository = doctorRepository1;
     }

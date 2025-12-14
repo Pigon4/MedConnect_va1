@@ -21,18 +21,13 @@ import java.util.Map;
 @RestController
 public class PatientController {
 
-//    private final PatientWithAppointmentsMapper patientWithAppointmentsMapper;
     private final PatientMapper patientMapper;
     private final PatientService patientService;
-    private final ModelMapperConfig modelMapperConfig;
 
     public PatientController(
-//            PatientWithAppointmentsMapper patientWithAppointmentsMapper,
-            PatientMapper patientMapper, PatientService patientService, ModelMapperConfig modelMapperConfig) {
-//        this.patientWithAppointmentsMapper = patientWithAppointmentsMapper;
+            PatientMapper patientMapper, PatientService patientService) {
         this.patientMapper = patientMapper;
         this.patientService = patientService;
-        this.modelMapperConfig = modelMapperConfig;
     }
 
     @PostMapping("/register")
