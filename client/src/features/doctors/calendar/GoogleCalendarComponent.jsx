@@ -15,7 +15,6 @@ import { useAuth } from "../../../context/AuthContext";
 
 const DEFAULT_START = "09:00:00";
 const DEFAULT_END = "17:00:00";
-const DOCTOR_ID = 6;
 const CALENDAR_START_RENDER_DATE = "2025-09-01";
 const CALENDAR_END_RENDER_DATE = "2026-01-31";
 

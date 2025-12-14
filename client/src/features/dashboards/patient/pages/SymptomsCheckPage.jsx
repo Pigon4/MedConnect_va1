@@ -1,18 +1,157 @@
-import React from "react";
-import { Container } from "react-bootstrap";
+import React, { useState } from "react";
+import { Container, Card, Button, Form, Row, Col } from "react-bootstrap";
+import { MicFill, ChatDots, ClockHistory } from "react-bootstrap-icons";
+import doctorImage from "../../../../images/doctor.png";
+import { callDoctorAdvice } from "../../../../api/geminiApi";
+import { useAuth } from "../../../../context/AuthContext";
+
+const formatBulletText = (text) => {
+  if (!text) return "";
+  return text.replace(/\*\*/g, " ").replace(/\*/g," ");
+};
 
 const SymptomCheck = () => {
+  const { user, token } = useAuth();
+  const [userInput, setUserInput] = useState("");
+  const [messages, setMessages] = useState([
+    {
+      role: "ai",
+      text: "Hello! I’m your AI Doctor. How can I help you today?",
+    },
+  ]);
+
+  const handleSend = async () => {
+    if (!userInput.trim()) return;
+
+    const question = userInput;
+
+    setMessages((prev) => [...prev, { role: "user", text: userInput }]);
+
+    setUserInput("");
+
+    try {
+      const aiReply = await callDoctorAdvice(token, question);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text: aiReply.answer,
+          date: aiReply.date,
+        },
+      ]);
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        { role: "ai", text: "Sorry, something went wrong. Please try again." },
+      ]);
+    }
+  };
+
   return (
-    <>
-      <Container className="py-5">
-        <h3 className="text-success text-left mb-5">🩺 Проверка на симптоми</h3>{" "}
-        <iframe
-          title="Symptom Checker"
-          src=""
-          style={{ border: 0, width: "100%", height: "400px" }}
-        />
-      </Container>
-    </>
+    <Container fluid className="p-0 vh-100">
+      <Card className="h-100 rounded-0 border-0">
+        {/* Header */}
+        <Card.Header className="text-white" style={{ background: "#2e8b57" }}>
+          <Row className="align-items-center">
+            <Col xs="auto">
+              <img
+                src={doctorImage}
+                alt="Doctor Medconnect"
+                className="rounded-circle"
+                width="45"
+                height="45"
+              />
+            </Col>
+            <Col>
+              <div className="fw-bold">
+                Dr. Medconnect{" "}
+                <span className="badge bg-light text-dark">Chatbot</span>
+              </div>
+              <small>Your AI Medical Assistent</small>
+            </Col>
+          </Row>
+        </Card.Header>
+
+        {/* Chat Body (takes remaining height) */}
+        <Card.Body className="flex-grow-1 overflow-auto bg-light">
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`d-flex mb-3 ${
+                msg.role === "user"
+                  ? "justify-content-end"
+                  : "justify-content-start"
+              }`}
+            >
+              <div
+                className={`p-3 rounded shadow-sm ${
+                  msg.role === "user" ? "text-white" : "bg-white"
+                }`}
+                style={{
+                  background: msg.role === "user" ? "#2e8b57" : "white",
+                  maxWidth: "70%",
+                  whiteSpace: "pre-line", // 🔥 THIS IS THE KEY
+                  borderRadius:
+                    msg.role === "user"
+                      ? "12px 12px 0 12px"
+                      : "12px 12px 12px 0",
+                }}
+              >
+                {formatBulletText(msg.text)}
+              </div>
+            </div>
+          ))}
+        </Card.Body>
+
+        {/* Input + Footer */}
+        <Card.Footer className="bg-white">
+          {/* Input */}
+          <Form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+          >
+            <Row className="align-items-center g-2">
+              <Col>
+                <Form.Control
+                  type="text"
+                  placeholder="Type your medical question..."
+                  className="rounded-pill"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                />
+              </Col>
+              <Col xs="auto">
+                <Button variant="primary" className="rounded-circle">
+                  <MicFill />
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+
+          {/* Bottom Nav */}
+          <Row className="text-center mt-3 small text-muted">
+            <Col>
+              <ChatDots />
+              <div>Chat</div>
+            </Col>
+            <Col>
+              <MicFill />
+              <div>Voice</div>
+            </Col>
+            <Col>
+              <ClockHistory />
+              <div>History</div>
+            </Col>
+          </Row>
+
+          <div className="text-center mt-2 small">
+            Powered by <b>AI Doctor</b>
+          </div>
+        </Card.Footer>
+      </Card>
+    </Container>
   );
 };
 
