@@ -1,17 +1,27 @@
 package com.example.server.service.AIDoctorServices;
 
-import com.example.server.dto.GeminiDTO.*;
-import org.springframework.http.*;
+import java.util.List;
+
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
+import com.example.server.dto.GeminiDTO.AIDoctorResponseDTO;
+import com.example.server.dto.GeminiDTO.ContentDTO;
+import com.example.server.dto.GeminiDTO.GeminiRequestDTO;
+import com.example.server.dto.GeminiDTO.GeminiResponseDTO;
+import com.example.server.dto.GeminiDTO.PartDTO;
+import com.example.server.dto.GeminiDTO.SystemInstructionsDTO;
 
 @Service
 public class AIDoctorService {
 
         private final String aiDoctorURL = "https://aiplatform.googleapis.com/v1/projects/gen-lang-client-0975020993/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent";
-        private final String googleCloudToken = "ya29.a0Aa7pCA_Nb2vmRr_HX28LEam4pzDzIqkqjkw8XpB0RRMBYPEFk9OoJP857u6OpbHh2owkpy4fqVK4pryThgQfHAElsZPoVVpEFNSOcEQHgChf2aObCqvgpq46_BhKfKKYVtNVrxfD8v80bxoHw7VXVVCiombl-GgX9sK2dv8d0GbPHzS-ijcJddf_hnizrsGWkcZcAyfdDNWsaCgYKAb8SARQSFQHGX2MivVComt0UgHJxdeOlr_3xmQ0211";
+        private final String googleCloudToken = "ya29.a0Aa7pCA9crjioK_kPInxzNqDGZtm1OV--unP7alCf0G3x84IpeTzH3yEdpRNIDgVA2SXXUdWzuM2yNZBQCFGXFnnqs9dvPWGMe3XFBPbNPmgGtmaev1b9kYHmBEf7UoDE1FHTkRH55zWDXUbZOZn2wp3xjKx0zaWuUySm30o-Ne484fwjS8dEaffQtEyBpgzXcMgDNexQ_3j-aCgYKAaoSARUSFQHGX2MioLsaKnxKvSkvvrEzqr0tkg0211";
         private final String geminiUrl = "https://aiplatform.googleapis.com/v1/projects/gen-lang-client-0975020993/locations/us-central1/publishers/google/models/gemini-2.0-flash-001:generateContent";
 
         public ResponseEntity<AIDoctorResponseDTO> callGeminiDoctor(String userInputText) {
