@@ -45,6 +45,10 @@ const Routes = () => {
           element: token ? <Navigate to="/" replace /> : <LoginPage />,
         },
         {
+          path: "admin-login",
+          element: <AdminPanel/>,
+        },
+        {
           // same here
           path: "register",
           element: token ? <Navigate to="/" replace /> : <RegisterPage />,
