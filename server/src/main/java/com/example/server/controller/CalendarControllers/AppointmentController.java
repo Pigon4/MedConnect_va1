@@ -3,6 +3,7 @@ package com.example.server.controller.CalendarControllers;
 import com.example.server.dto.CalendarDTO.AppointmentCreateDTO;
 import com.example.server.dto.CalendarDTO.AppointmentFilterDTO;
 import com.example.server.dto.CalendarDTO.AppointmentReviewableDTO;
+import com.example.server.dto.ReviewRequestDTO;
 import com.example.server.dto.CalendarDTO.*;
 import com.example.server.models.CalendarModels.Appointment;
 import com.example.server.service.CalendarServices.AppointmentService;
@@ -15,7 +16,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/api/appointments")
@@ -59,6 +59,7 @@ public class AppointmentController {
                     dto.setId(appointment.getId());
                     dto.setStartTime(appointment.getStartingTime());
                     dto.setFeedback(appointment.getFeedback());
+                    dto.setRating(appointment.getRating());
 
                     if (appointment.getPatient() != null) {
                         dto.setPatientName(appointment.getPatient().getFirstName());
@@ -90,6 +91,7 @@ public class AppointmentController {
                     dto.setId(appointment.getId());
                     dto.setStartTime(appointment.getStartingTime());
                     dto.setFeedback(appointment.getFeedback());
+                    dto.setRating(appointment.getRating());
 
                     if (appointment.getPatient() != null) {
                         dto.setPatientName(appointment.getPatient().getFirstName());
@@ -108,8 +110,8 @@ public class AppointmentController {
     @PatchMapping("/{id}/feedback")
     public ResponseEntity<?> updateFeedback(
             @PathVariable Long id,
-            @RequestBody String feedback) {
-        service.updateFeedback(id, feedback);
+            @RequestBody ReviewRequestDTO reviewRequestDTO) {
+        service.updateFeedback(id, reviewRequestDTO.getFeedback(), reviewRequestDTO.getRating());
         return ResponseEntity.ok("Feedback updated");
     }
 
@@ -122,13 +124,14 @@ public class AppointmentController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
     @GetMapping("/patient/{patientId}")
     public ResponseEntity<?> getPatientAppointments(
-            @PathVariable Long patientId
-    ) {
+            @PathVariable Long patientId) {
         List<Appointment> appointmentList = service.getPatientAppointments(patientId);
 
-        List<PatientAppointmentDTO> appointmentDTOList = appointmentList.stream().map(this::convertToDTO).collect(Collectors.toList());
+        List<PatientAppointmentDTO> appointmentDTOList = appointmentList.stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
 
         return ResponseEntity.ok(appointmentDTOList);
     }
@@ -140,8 +143,7 @@ public class AppointmentController {
                 appointment.getPatient().getLastName(),
                 appointment.getPatient().getPhoneNumber(),
                 appointment.getPatient().getAllergies(),
-                appointment.getPatient().getDiseases()
-        );
+                appointment.getPatient().getDiseases());
 
         LocalDateTime start = appointment.getStartingTime();
         LocalDateTime end = appointment.getEndTime();
@@ -152,8 +154,12 @@ public class AppointmentController {
                 appointment.getStatus().name(),
                 patientDTO,
                 appointment.getComment(),
-                appointment.getDoctor()
-        );
+                appointment.getDoctor());
+    }
+
+    @GetMapping("/statistics/{doctorId}")
+    public ResponseEntity<?> getAppointmentStatistics(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(service.getAppointmentStatistics(doctorId));
     }
 
 }

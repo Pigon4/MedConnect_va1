@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import java.security.Guard;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -76,12 +78,12 @@ public class AppointmentService {
         appt.setStartingTime(startingTime);
         appt.setDurationInMinutes(30L);
 
-//        appt.setStatus(Appointment.Status.Requested);
+        // appt.setStatus(Appointment.Status.Requested);
 
         // Default status for new appointment
-//        appt.setStatus(Appointment.Status.Booked); // OR Requested if you add it
+        // appt.setStatus(Appointment.Status.Booked); // OR Requested if you add it
         appt.setStatus(Appointment.Status.Completed);
-// TODO: CHECK HERE LATER WHAT'S GOING ON
+        // TODO: CHECK HERE LATER WHAT'S GOING ON
         appt.setStatus(Appointment.Status.Requested);
         appt.setDoctor(doctor);
 
@@ -93,7 +95,7 @@ public class AppointmentService {
                 status);
 
         return appointments.stream()
-                .filter(a -> a.getStatus() != Appointment.Status.Completed)
+                .filter(a -> a.getStatus() == Appointment.Status.Completed)
                 .toList();
     }
 
@@ -107,15 +109,36 @@ public class AppointmentService {
         List<Appointment> allAppointments = new ArrayList<>(patientAppointments);
         allAppointments.addAll(guardianAppointments);
 
-        return allAppointments.stream().filter(appt -> appt.getStatus() != Appointment.Status.Completed).toList();
+        return allAppointments.stream().filter(appt -> appt.getStatus() == Appointment.Status.Completed).toList();
     }
 
-    public void updateFeedback(Long id, String feedback) {
-        Appointment a = appointmentRepository.findById(id)
+    public void updateFeedback(Long id, String feedback, Integer rating) {
+        Appointment appointment = appointmentRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
 
-        a.setFeedback(feedback);
-        appointmentRepository.save(a);
+        appointment.setFeedback(feedback);
+
+        if (rating != null) {
+            appointment.setRating(rating);
+        }
+
+        appointmentRepository.save(appointment);
+        updateDoctorAverageRating(appointment.getDoctor().getId());
+    }
+
+    public void updateDoctorAverageRating(Long doctorId) {
+        Double average = appointmentRepository.getAverageRatingByDoctorId(doctorId);
+
+        if (average == null) {
+            average = 0.0;
+        }
+
+        Doctor doctor = doctorRepository.findById(doctorId).orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        float roundedAvg = (float) (Math.round(average * 10.0) / 10.0);
+
+        doctor.setRating(roundedAvg);
+        doctorRepository.save(doctor);
     }
 
     public void completeAppointment(Long id) {
@@ -131,8 +154,20 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
-
-    public List<Appointment> getPatientAppointments(Long patientId){
+    public List<Appointment> getPatientAppointments(Long patientId) {
         return appointmentRepository.findByPatientIdAndStatus(patientId, Appointment.Status.Booked);
     }
+
+    public Map<String, Long> getAppointmentStatistics(Long doctorId) {
+        long totalAppointments = appointmentRepository.countByDoctorId(doctorId);
+        long completedAppointments = appointmentRepository.countByDoctorIdAndStatus(doctorId,
+                Appointment.Status.Completed);
+
+        Map<String, Long> stats = new HashMap<>();
+        stats.put("totalAppointments", totalAppointments);
+        stats.put("completedAppointments", completedAppointments);
+
+        return stats;
+    }
+
 }
