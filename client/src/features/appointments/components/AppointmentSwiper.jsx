@@ -15,7 +15,9 @@ export const AppointmentsSwiper = ({ days, refreshCalendar, doctorId }) => {
     handleHourClick, 
     createAppointment, 
     cancel 
-  } = useAppointment({days, doctorId, refreshCalendar});
+  } = useAppointment({days, refreshCalendar,doctorId});
+//   TODO: CHECK THIS AS WELL
+//   } = useAppointment({days, doctorId, refreshCalendar});
 
   return (
     <>

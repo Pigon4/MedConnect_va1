@@ -3,7 +3,6 @@ package com.example.server.models.UserModels;
 import com.example.server.models.MedicalActionsModels.MedicalProcedure;
 import com.example.server.models.StorageModels.Storage;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -9,6 +9,7 @@ import com.example.server.repository.CalendarRepositories.AppointmentRepository;
 import com.example.server.repository.UserRepositories.DoctorRepository;
 import com.example.server.repository.UserRepositories.GuardianRepository;
 import com.example.server.repository.UserRepositories.PatientRepository;
+import lombok.extern.slf4j.Slf4j;
 import com.twilio.type.App;
 
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class AppointmentService {
 
@@ -73,6 +75,13 @@ public class AppointmentService {
 
         appt.setStartingTime(startingTime);
         appt.setDurationInMinutes(30L);
+
+//        appt.setStatus(Appointment.Status.Requested);
+
+        // Default status for new appointment
+//        appt.setStatus(Appointment.Status.Booked); // OR Requested if you add it
+        appt.setStatus(Appointment.Status.Completed);
+// TODO: CHECK HERE LATER WHAT'S GOING ON
         appt.setStatus(Appointment.Status.Requested);
         appt.setDoctor(doctor);
 
@@ -122,4 +131,8 @@ public class AppointmentService {
         appointmentRepository.save(appointment);
     }
 
+
+    public List<Appointment> getPatientAppointments(Long patientId){
+        return appointmentRepository.findByPatientIdAndStatus(patientId, Appointment.Status.Booked);
+    }
 }

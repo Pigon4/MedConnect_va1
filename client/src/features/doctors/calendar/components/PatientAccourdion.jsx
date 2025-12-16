@@ -23,9 +23,18 @@ export const PatientAccourdion = ({ dayEvents, onComplete }) => {
     return date.toISOString().slice(11, 16); 
   };
 
+// const addTwoHours = (timeString) => {
+//     const date = new Date(timeString);
+//     date.setHours(date.getHours() + 2); // Add 2 hours to the current time
+//     return date.toISOString().slice(11, 16); // Format as HH:MM
+//   };
+
   return (
     <Accordion>
       {dayEvents.map((ev, index) => (
+        // TODO: CHECK THIS LATER AS WELL
+        // <Accordion.Item eventKey={index} key={index}>
+        //     {console.log(ev)}
         <Accordion.Item eventKey={index.toString()} key={ev.id || index}>
           
           <Accordion.Header>
@@ -34,7 +43,9 @@ export const PatientAccourdion = ({ dayEvents, onComplete }) => {
                 {ev?.patient?.firstName ? `${ev.patient.firstName} ${ev.patient.lastName}` : "Unknown Patient"}
               </span>
               <small className="text-muted">
-                {ev?.start ? addTwoHours(ev.start) : "?"}
+                {/* TODO: CHECK THIS LATER ME VS ANTON */}
+                {ev?.start ? addTwoHours(ev.start) : "?"} → {ev?.end ? addTwoHours(ev.end) : "?"}
+                {/* {ev?.start ? addTwoHours(ev.start) : "?"} */}
               </small>
             </div>
           </Accordion.Header>
