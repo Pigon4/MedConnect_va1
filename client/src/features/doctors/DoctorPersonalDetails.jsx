@@ -9,8 +9,7 @@ import DoctorReviews from "./components/DoctorReviews";
 import PersonalReview from "./components/DoctorPersonalReview";
 import { useAuth } from "../../context/AuthContext";
 
-export const DoctorPersonalDetails = () => {
-  // CRITICAL: Initialize as null so the map knows to wait
+export const DoctorPersonalDetails = () => { 
   const [coords, setCoords] = useState(null);
 
   const { slug } = useParams();
@@ -40,11 +39,8 @@ export const DoctorPersonalDetails = () => {
     };
   };
 
-  // --- FETCH COORDINATES EFFECT ---
-  // In DoctorPersonalDetails.jsx
-
-  useEffect(() => {
-    if (!doctor) return;
+useEffect(() => {
+  if (!doctor) return;
 
     const fetchCoords = async () => {
       // 1. Prepare URL
@@ -62,16 +58,12 @@ export const DoctorPersonalDetails = () => {
 
         const data = await res.json();
 
-        if (data && data.length > 0) {
-          // 2. Parse numbers
-          const lat = parseFloat(data[0].lat);
-          const lng = parseFloat(data[0].lon); // Note: Backend sends 'lon', we call it 'lng'
+      if (data && data.length > 0) {
+        const lat = parseFloat(data[0].lat);
+        const lng = parseFloat(data[0].lon); 
 
-          // 3. Check validity
-          if (!isNaN(lat) && !isNaN(lng)) {
-            // FIX: Save as an OBJECT explicitly
-            setCoords({ lat: lat, lng: lng });
-          }
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setCoords({ lat: lat, lng: lng });
         }
       } catch (e) {
         console.error("Error fetching coordinates:", e);
@@ -81,7 +73,6 @@ export const DoctorPersonalDetails = () => {
     fetchCoords();
   }, [doctor, token]);
 
-  // --- FETCH CALENDAR DATA EFFECT ---
   const refreshCalendar = async () => {
     const { from, to } = getDateRange();
     const updatedDays = await getAllWorkDays(doctor.id, from, to);
@@ -134,7 +125,6 @@ export const DoctorPersonalDetails = () => {
     };
   });
 
-  // --- FETCH DOCTOR DETAILS EFFECT ---
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -159,10 +149,8 @@ export const DoctorPersonalDetails = () => {
     return <div>Зареждане...</div>;
   }
 
-  // --- RENDER ---
   return (
     <>
-      {/* --- TOP SECTION: Doctor Card + Map --- */}
       <div
         className="doctor-map-container"
         style={{
@@ -177,12 +165,8 @@ export const DoctorPersonalDetails = () => {
           backgroundColor: "#f8f9fa",
         }}
       >
-        {/* Doctor Info Card */}
-        <div style={{ flex: "1 1 350px", minWidth: "300px" }}>
-          <DoctorDetailsCard doctor={doctor} />
-        </div>
+        <DoctorDetailsCard doctor={doctor} />
 
-        {/* Map Section */}
         <div
           className="map-info"
           style={{

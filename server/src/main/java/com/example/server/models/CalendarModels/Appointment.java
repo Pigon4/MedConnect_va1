@@ -46,7 +46,6 @@ public class Appointment {
         this.endTime = startingTime.plus(Duration.ofMinutes(durationInMinutes));
     }
 
-    // Appointment status
     @Enumerated(EnumType.STRING)
     private Status status = Status.Free;
 

@@ -3,10 +3,10 @@ import Button from "react-bootstrap/Button";
 import React from "react";
 
 export const PatientAccourdion = ({ dayEvents, onComplete }) => {
-  // 1. Филтрираме: Показваме само НЕЗАВЪРШЕНИТЕ часове.
-  // Така, щом лекарят натисне бутона, часът изчезва автоматично (защото става Completed).
-  const activeEvents =
-    dayEvents?.filter((ev) => ev.status?.toUpperCase() !== "COMPLETED") || [];
+  
+  const activeEvents = dayEvents?.filter(ev => 
+    ev.status?.toUpperCase() !== 'COMPLETED'
+  ) || [];
 
   if (activeEvents.length === 0) {
     return (
@@ -62,11 +62,10 @@ export const PatientAccourdion = ({ dayEvents, onComplete }) => {
               <strong>Статус:</strong> {ev?.status || "—"}
             </p>
 
-            {/* Лекарят само маркира като приключен. */}
-            <Button
-              variant="success"
-              className="w-100 mt-3"
-              onClick={() => onComplete(ev.id)}
+            <Button 
+                variant="success" 
+                className="w-100 mt-3"
+                onClick={() => onComplete(ev.id)} 
             >
               ✔ Маркирай като завършен преглед
             </Button>

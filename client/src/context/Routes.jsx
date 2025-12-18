@@ -58,7 +58,6 @@ const Routes = () => {
           path: "dashboard/*",
           element: (
             <ProtectedRoute>
-              {/* Redirect to role-specific dashboard */}
               <Navigate
                 to={
                   user?.role === "patient"
@@ -76,7 +75,6 @@ const Routes = () => {
           errorElement: <ErrorPage />,
         },
 
-        // routes for only authenticated users
         {
           path: "dashboard/patient/*",
           element: (
@@ -111,10 +109,9 @@ const Routes = () => {
           errorElement: <ErrorPage />,
         },
 
-        // NEWLY ADDED
         {
-          path: "doctor/:slug", // Dynamic route with slug
-          element: <DoctorPersonalDetails />, // New component to show doctor details
+          path: "doctor/:slug", 
+          element: <DoctorPersonalDetails />, 
           errorElement: <ErrorPage />,
         },
       ],

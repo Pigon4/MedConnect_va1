@@ -62,7 +62,6 @@ const SymptomCheck = ({ isPremium }) => {
     }
   };
 
-  // Ако не е премиум – показваме съобщение
   if (!isPremium) {
     return (
       <Container className="py-5">
@@ -83,7 +82,6 @@ const SymptomCheck = ({ isPremium }) => {
   return (
     <Container fluid className="p-0 vh-100">
       <Card className="h-100 rounded-0 border-0">
-        {/* Header */}
         <Card.Header className="text-white" style={{ background: "#2e8b57" }}>
           <Row className="align-items-center">
             <Col xs="auto">

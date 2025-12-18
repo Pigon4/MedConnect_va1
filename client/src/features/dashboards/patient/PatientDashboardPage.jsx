@@ -58,14 +58,14 @@ const PatientDashboardPage = () => {
 
         <Route
           path="symptom_check"
-          element={<SymptomCheck isPremium={user?.subscription == "free"} />} //developer (premium --> correct)
+          element={<SymptomCheck isPremium={user?.subscription == "premium"} />} 
         />
 
         <Route
           path="vaccines_profilactics"
           element={
             <VaccinesAndProfilactics
-              isPremium={user?.subscription == "free"} //developer (premium --> correct)
+              isPremium={user?.subscription == "premium"} 
               patientAge={user?.age}
               userEmail={user?.email}
             />
