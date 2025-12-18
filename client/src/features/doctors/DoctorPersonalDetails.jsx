@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { getAllWorkDays, getDoctorBySlug } from "../../api/doctorApi";
 import { AppointmentsSwiper } from "../appointments/components/AppointmentSwiper";
 import { DoctorMapLocation } from "./components/DoctorMapLocation";
@@ -10,13 +11,14 @@ import { useAuth } from "../../context/AuthContext";
 
 export const DoctorPersonalDetails = () => { 
   const [coords, setCoords] = useState(null);
-  
+
   const { slug } = useParams();
   const [doctor, setDoctor] = useState(null);
   const [calendar, setCalendar] = useState([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [refreshReviewsTrigger, setRefreshReviewsTrigger] = useState(0);
   const { token } = useAuth();
+  const navigate = useNavigate();
 
   const refreshDoctorReviews = () => {
     setRefreshReviewsTrigger((prev) => prev + 1);
@@ -40,21 +42,21 @@ export const DoctorPersonalDetails = () => {
 useEffect(() => {
   if (!doctor) return;
 
-  const fetchCoords = async () => {
-    // 1. Prepare URL
-    let query = encodeURIComponent(`${doctor.hospital} ${doctor.city}`);
-    let url = `http://localhost:8080/api/utils/geocode?address=${query}`;
+    const fetchCoords = async () => {
+      // 1. Prepare URL
+      let query = encodeURIComponent(`${doctor.hospital} ${doctor.city}`);
+      let url = `http://localhost:8080/api/utils/geocode?address=${query}`;
 
-    try {
-      const res = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      try {
+        const res = await fetch(url, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
       if (data && data.length > 0) {
         const lat = parseFloat(data[0].lat);
@@ -63,14 +65,13 @@ useEffect(() => {
         if (!isNaN(lat) && !isNaN(lng)) {
           setCoords({ lat: lat, lng: lng });
         }
+      } catch (e) {
+        console.error("Error fetching coordinates:", e);
       }
-    } catch (e) {
-      console.error("Error fetching coordinates:", e);
-    }
-  };
+    };
 
-  fetchCoords();
-}, [doctor, token]);
+    fetchCoords();
+  }, [doctor, token]);
 
   const refreshCalendar = async () => {
     const { from, to } = getDateRange();
@@ -90,9 +91,12 @@ useEffect(() => {
     };
 
     while (toMinutes(current) < toMinutes(endTime)) {
-      const next = new Date(0, 0, 0, ...current.split(":")).getTime() + 30 * 60000;
+      const next =
+        new Date(0, 0, 0, ...current.split(":")).getTime() + 30 * 60000;
       const nextStr = new Date(next).toTimeString().slice(0, 5);
-      const blocked = appointments?.some((a) => a.start.slice(0, 5) === current);
+      const blocked = appointments?.some(
+        (a) => a.start.slice(0, 5) === current
+      );
 
       if (!blocked) slots.push(current);
       current = nextStr;
@@ -102,7 +106,15 @@ useEffect(() => {
 
   const transformedCalendar = (calendar || []).map((day) => {
     const dateObj = new Date(day.date);
-    const weekdayNames = ["неделя", "понеделник", "вторник", "сряда", "четвъртък", "петък", "събота"];
+    const weekdayNames = [
+      "неделя",
+      "понеделник",
+      "вторник",
+      "сряда",
+      "четвъртък",
+      "петък",
+      "събота",
+    ];
 
     return {
       weekday: weekdayNames[dateObj.getDay()],
@@ -134,7 +146,7 @@ useEffect(() => {
   }, [slug]);
 
   if (!doctor) {
-    return <div>Loading...</div>;
+    return <div>Зареждане...</div>;
   }
 
   return (
@@ -143,7 +155,8 @@ useEffect(() => {
         className="doctor-map-container"
         style={{
           display: "flex",
-          alignItems: "flex-start",
+          flexWrap: "wrap",
+          gap: "20px",
           padding: "20px",
           paddingTop: "50px",
           paddingBottom: "50px",
@@ -157,28 +170,28 @@ useEffect(() => {
         <div
           className="map-info"
           style={{
-            width: "700px",
+            flex: "1 1 500px",
+            minWidth: "300px",
             height: "350px",
             borderRadius: "10px",
             overflow: "hidden",
-            marginRight: "20px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e9ecef", 
-            position: "relative"
+            backgroundColor: "#e9ecef",
+            position: "relative",
           }}
         >
           {coords ? (
             <DoctorMapLocation doctor={doctor} coords={coords} />
           ) : (
-            <div 
-              style={{ 
-                height: "100%", 
-                width: "100%", 
-                display: "flex", 
-                alignItems: "center", 
+            <div
+              style={{
+                height: "100%",
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
                 justifyContent: "center",
                 color: "#6c757d",
-                fontWeight: "500"
+                fontWeight: "500",
               }}
             >
               <p style={{ margin: 0 }}>📍 Зареждане на локацията...</p>
@@ -219,7 +232,7 @@ useEffect(() => {
             backgroundColor: "#ffffff",
             borderRadius: "10px",
             boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-            padding: "10px"
+            padding: "10px",
           }}
         >
           {calendar?.length > 0 ? (
@@ -229,9 +242,11 @@ useEffect(() => {
               doctorId={doctor.id}
             />
           ) : (
-             <div style={{ padding: "20px", textAlign: "center", color: "#666" }}>
-               Няма свободни часове за този период.
-             </div>
+            <div
+              style={{ padding: "20px", textAlign: "center", color: "#666" }}
+            >
+              Няма свободни часове за този период.
+            </div>
           )}
         </div>
       </div>

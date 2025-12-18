@@ -6,29 +6,28 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import { useAuth } from "../../context/AuthContext";
 import { fetchPrescriptionEvents } from "../../api/patientApi";
 
-
-const GuardianAndPatientCalendar = ({fetchAppointments}) => {
+const GuardianAndPatientCalendar = ({ fetchAppointments }) => {
   const { user, token } = useAuth();
   const [events, setEvents] = useState([]);
   const [backgroundEvents, setBackgroundEvents] = useState([]);
-  const [prescriptionEvents, setPrescriptionEvents] = useState([]); 
+  const [prescriptionEvents, setPrescriptionEvents] = useState([]);
 
   const loadAppointments = async () => {
     try {
       const appointments = await fetchAppointments(token, user.id);
       const formattedAppointments = appointments.map((appointment) => ({
-        title: `Appointment with Dr. ${appointment.doctor.lastName}`,
+        title: `Преглед при Д-р ${appointment.doctor.lastName}`,
         start: appointment.start,
         end: appointment.end,
-        backgroundColor: "green", 
+        backgroundColor: "green",
       }));
 
       setEvents(formattedAppointments);
 
       const backgroundAppointments = appointments.map((appointment) => ({
-        start: appointment.start.split("T")[0], 
+        start: appointment.start.split("T")[0],
         display: "background",
-        backgroundColor: "yellow", 
+        backgroundColor: "yellow",
       }));
 
       setBackgroundEvents(backgroundAppointments);
@@ -39,7 +38,7 @@ const GuardianAndPatientCalendar = ({fetchAppointments}) => {
 
   const loadPrescriptionEvents = async () => {
     try {
-      const prescriptions = await fetchPrescriptionEvents(user.id, token); 
+      const prescriptions = await fetchPrescriptionEvents(user.id, token);
       const formattedPrescriptionEvents = prescriptions.map((event) => ({
         title: event.title,
         start: event.startDateTime,
@@ -69,7 +68,6 @@ const GuardianAndPatientCalendar = ({fetchAppointments}) => {
 
     fetchAllData();
 
-
     const timer = setTimeout(() => {
       const eventTitles = document.querySelectorAll(".fc-event-title");
       eventTitles.forEach((eventTitle) => {
@@ -81,12 +79,9 @@ const GuardianAndPatientCalendar = ({fetchAppointments}) => {
         eventTitle.style.textOverflow = "ellipsis";
       });
     }, 1000);
-        return () => clearTimeout(timer);
-
+    return () => clearTimeout(timer);
   }, [token, user?.id]);
 
-
-  
   return (
     <div
       style={{
@@ -110,10 +105,7 @@ const GuardianAndPatientCalendar = ({fetchAppointments}) => {
         }}
         events={[...backgroundEvents, ...events, ...prescriptionEvents]}
       />
-
     </div>
-
- 
   );
 };
 
