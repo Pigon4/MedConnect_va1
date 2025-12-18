@@ -10,9 +10,8 @@ import {
   Alert,
 } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
-import profileImage from "../../images/profile.png"; // Увери се, че пътят е верен
+import profileImage from "../../images/profile.png"; 
 import { useAuth } from "../../context/AuthContext";
-// 👇 1. ВАЖНО: Импортираме функцията за качване
 import { uploadToCloudinary } from "../../api/cloudinaryApi"; 
 
 const DoctorEditInformation = () => {
@@ -23,7 +22,6 @@ const DoctorEditInformation = () => {
     ? "/test/doctor"
     : "/dashboard/doctor";
 
-  // Стейт за формата
   const [formData, setFormData] = useState({
     photo: user.photoURL,
     fname: user.firstName,
@@ -37,9 +35,7 @@ const DoctorEditInformation = () => {
     hospital: user.hospital,
   });
 
-  // 👇 2. ВАЖНО: Стейт за файла, който ще качваме
   const [photoFile, setPhotoFile] = useState(null);
-
   const [ageError, setAgeError] = useState("");
   const [experienceError, setExperienceError] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -90,12 +86,11 @@ const DoctorEditInformation = () => {
     fetchLatestData();
   }, [user.id]);
 
-  // Обработка на избор на снимка
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPhotoFile(file); // Запазваме файла за качване по-късно
-      setFormData({ ...formData, photo: URL.createObjectURL(file) }); // Само за превю
+      setPhotoFile(file);
+      setFormData({ ...formData, photo: URL.createObjectURL(file) }); 
     }
   };
 
@@ -117,12 +112,9 @@ const DoctorEditInformation = () => {
       else if (num > 70) setExperienceError("Въведете реален трудов стаж.");
       else setExperienceError("");
     }
-    // ... (Можеш да добавиш и другите валидации тук, ако ги имаш) ...
-
     setFormData((prev) => ({ ...prev, [name]: newValue }));
   };
 
-  // 👇 3. ВАЖНО: Тук е логиката за качване
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -134,26 +126,24 @@ const DoctorEditInformation = () => {
     setMessage("⏳ Обработка на данните...");
 
     try {
-      // А) Качване в Cloudinary (САМО ако има избран нов файл)
       let finalPhotoURL = formData.photo;
 
       if (photoFile) {
           const uploadedUrl = await uploadToCloudinary(photoFile);
           if (uploadedUrl) {
-              finalPhotoURL = uploadedUrl; // Взимаме новия линк от Cloudinary
+              finalPhotoURL = uploadedUrl; 
           } else {
               throw new Error("Неуспешно качване на снимка.");
           }
       }
 
-      // Б) Подготовка на данните за Backend-а
       const payload = {
         firstName: formData.fname,
         lastName: formData.lname,
         age: parseInt(formData.age) || 0,
         email: formData.email,
         phoneNumber: formData.phone,
-        photoURL: finalPhotoURL, // Изпращаме валидния URL (стария или новия от Cloudinary)
+        photoURL: finalPhotoURL, 
         specialization: formData.speciality,
         yearsOfExperience: parseInt(formData.experience) || 0,
         city: formData.city,
@@ -181,7 +171,6 @@ const DoctorEditInformation = () => {
 
       const updatedUserDTO = await response.json();
       
-      // Обновяваме само LocalStorage, за да не чупим навигацията
       const newUserData = { ...user, ...updatedUserDTO };
       localStorage.setItem("user", JSON.stringify(newUserData));
       

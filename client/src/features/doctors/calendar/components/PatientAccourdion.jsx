@@ -4,8 +4,6 @@ import React from 'react';
 
 export const PatientAccourdion = ({ dayEvents, onComplete }) => {
   
-  // 1. Филтрираме: Показваме само НЕЗАВЪРШЕНИТЕ часове.
-  // Така, щом лекарят натисне бутона, часът изчезва автоматично (защото става Completed).
   const activeEvents = dayEvents?.filter(ev => 
     ev.status?.toUpperCase() !== 'COMPLETED'
   ) || [];
@@ -49,7 +47,6 @@ export const PatientAccourdion = ({ dayEvents, onComplete }) => {
             <p className="mb-1"><strong>Comment:</strong> {ev?.comment || "No appointment comment"}</p>
             <p className="mb-1"><strong>Status:</strong> {ev?.status || "—"}</p>
 
-            {/* Лекарят само маркира като приключен. */}
             <Button 
                 variant="success" 
                 className="w-100 mt-3"

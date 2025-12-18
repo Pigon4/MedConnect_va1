@@ -7,24 +7,22 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [checkedItems, setCheckedItems] = useState({});
 
-  const storageKey = `checkedItems-${userEmail}`; // уникален ключ за текущия потребител
+  const storageKey = `checkedItems-${userEmail}`; 
 
-  // Зареждане на отметките при зареждане на компонента
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
-      setCheckedItems(JSON.parse(saved)); // само за текущия потребител
+      setCheckedItems(JSON.parse(saved)); 
     } else {
-      setCheckedItems({}); // започваме празно
+      setCheckedItems({}); 
     }
   }, [storageKey]);
 
-  // Съхраняване на отметките при промяна
+ 
   useEffect(() => {
     localStorage.setItem(storageKey, JSON.stringify(checkedItems));
   }, [checkedItems, storageKey]);
 
-  // Зареждане на ваксини
   useEffect(() => {
     if (isPremium) {
       fetch("/vaccines.json")
@@ -37,7 +35,6 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
     }
   }, [isPremium, patientAge]);
 
-  // Зареждане на профилактични прегледи
   useEffect(() => {
     if (isPremium) {
       fetch("/checks.json")
@@ -58,9 +55,8 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
     }
   }, [isPremium, patientAge]);
 
-  // Обработка на checkbox за отделен елемент
   const handleCheck = (type, age, name) => {
-    const key = `${type}-${age}-${name}`; // уникално за тип + възраст + име
+    const key = `${type}-${age}-${name}`; 
     setCheckedItems((prev) => ({
       ...prev,
       [key]: !prev[key],
@@ -90,7 +86,6 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
         Имунизации и профилактични прегледи
       </h3>
 
-      {/* PDF секция */}
       <Card className="mb-5 p-3 shadow-sm text-center">
         <h5 style={{ color: "#2E8B57", marginBottom: "15px" }}>
           Национален имунизационен календар (PDF)
@@ -123,7 +118,6 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
         </div>
       </Card>
 
-      {/* Ваксини */}
       <Card className="mb-5 p-3 shadow-sm">
         <h5 style={{ color: "#2E8B57" }}> 💉 Предстоящи ваксини</h5>
         {vaccines.length === 0 ? (
@@ -166,7 +160,6 @@ const VaccinesAndProfilactics = ({ isPremium, patientAge, userEmail }) => {
         )}
       </Card>
 
-      {/* Профилактични прегледи */}
       <Card className="mb-5 p-3 shadow-sm">
         <h5 style={{ color: "#2E8B57" }}>🩺 Право на профилактични прегледи</h5>
         {profilactics.length === 0 ? (

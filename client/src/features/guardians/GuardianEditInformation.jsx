@@ -110,7 +110,7 @@ const GuardianEditInformation = () => {
 
     
     if (name === "age" || name === "patientAge") {
-      newValue = value.replace(/\D/g, ""); // само цифри
+      newValue = value.replace(/\D/g, ""); 
       const num = parseInt(newValue, 10);
 
       if (name === "age") {
@@ -141,7 +141,6 @@ const GuardianEditInformation = () => {
       else setEmailError("");
     }
 
-    // Телефон
     if (name === "phone") {
       const onlyDigitsOrPlus = /^[0-9+]+$/;
       const bgMobileRegex = /^(\+359|0)8[7-9][0-9]{7}$/;
@@ -157,7 +156,6 @@ const GuardianEditInformation = () => {
       }
     }
 
-    // Проверка имена
     const namePattern = /^[А-Я][а-я]+(-[А-Я][а-я]+)?$/;
 
     if (name === "patientFName") {
@@ -258,7 +256,6 @@ const GuardianEditInformation = () => {
   }
 };
 
-  // Изчистване
   const handleClear = () => {
     setFormData({
       photo: null,
@@ -298,7 +295,6 @@ const GuardianEditInformation = () => {
 
         <Form onSubmit={handleSubmit}>
           <Row>
-            {/* Фото */}
             <Col md={4} className="text-center mb-3 mt-4">
               <div className="d-flex flex-column align-items-center">
                 <div
@@ -390,7 +386,6 @@ const GuardianEditInformation = () => {
                 )}
               </Form.Group>
 
-              {/* Медицински детайли */}
               <Form.Group className="mb-3">
                 <Form.Label>Увреждания</Form.Label>
                 <Form.Control
@@ -429,7 +424,6 @@ const GuardianEditInformation = () => {
           </Row>
 
           <hr />
-          {/* Детайли за настойник*/}
           <Form.Group className="mb-3">
             <Form.Label>Име на настойник</Form.Label>
             <Form.Control
@@ -500,7 +494,6 @@ const GuardianEditInformation = () => {
             )}
           </Form.Group>
 
-          {/* Бутони */}
           <div className="text-center">
             <Button variant="success" type="submit" className="px-4 me-2">
               💾 Запази
