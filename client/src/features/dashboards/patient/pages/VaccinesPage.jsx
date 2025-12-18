@@ -7,76 +7,70 @@ const VaccinesAndProfilactics = ({ isPremium, user }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [checkedItems, setCheckedItems] = useState({});
 
-  const storageKey = `checkedItems-${user?.email}`;
+  // Определяме възрастта според role
+  const patientAge = user.role === "guardian" ? user.wardAge : user.age;
 
-  // ВЗИМА ВЪЗРАСТ ОТ СЪРВЪРА И Я ПРАВИ NUMBER
-  const effectiveAgeRaw = user?.role === "guardian" ? user?.wardAge : user?.age;
+  const storageKey = `checkedItems-${user.email}`; // уникален ключ за текущия потребител
 
-  const effectiveAge = Number(effectiveAgeRaw);
-
-  /* -------------------- LOCAL STORAGE -------------------- */
-
+  // Зареждане на отметките при зареждане на компонента
   useEffect(() => {
-    if (!user?.email) return;
-
     const saved = localStorage.getItem(storageKey);
-    setCheckedItems(saved ? JSON.parse(saved) : {});
-  }, [storageKey, user?.email]);
+    if (saved) {
+      setCheckedItems(JSON.parse(saved)); // само за текущия потребител
+    } else {
+      setCheckedItems({}); // започваме празно
+    }
+  }, [storageKey]);
 
+  // Съхраняване на отметките при промяна
   useEffect(() => {
-    if (!user?.email) return;
     localStorage.setItem(storageKey, JSON.stringify(checkedItems));
-  }, [checkedItems, storageKey, user?.email]);
+  }, [checkedItems, storageKey]);
 
-  /* -------------------- FETCH VACCINES -------------------- */
-
+  // Зареждане на ваксини
   useEffect(() => {
-    if (isPremium || Number.isNaN(effectiveAge)) return;
+    if (isPremium) {
+      fetch("/vaccines.json")
+        .then((res) => res.json())
+        .then((data) => {
+          const upcoming = data.filter((v) => v.age >= patientAge);
+          setVaccines(upcoming);
+        })
+        .catch((err) => console.error("Failed to load vaccines:", err));
+    }
+  }, [isPremium, patientAge]);
 
-    fetch("/vaccines.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const upcoming = data.filter((v) => v.age >= effectiveAge);
-        setVaccines(upcoming);
-      })
-      .catch((err) => console.error("Failed to load vaccines:", err));
-  }, [isPremium, effectiveAge]);
-
-  /* -------------------- FETCH PROFILACTICS -------------------- */
-
+  // Зареждане на профилактични прегледи
   useEffect(() => {
-    if (isPremium || Number.isNaN(effectiveAge)) return;
+    if (isPremium) {
+      fetch("/checks.json")
+        .then((res) => res.json())
+        .then((data) => {
+          let groupFiltered;
+          if (patientAge < 18) {
+            groupFiltered = data.filter((p) => p.age < 18);
+          } else {
+            groupFiltered = data.filter((p) => p.age >= 18);
+          }
+          const finalFiltered = groupFiltered.filter(
+            (p) => p.age <= patientAge
+          );
+          setProfilactics(finalFiltered);
+        })
+        .catch((err) => console.error("Failed to load profilactics:", err));
+    }
+  }, [isPremium, patientAge]);
 
-    fetch("/checks.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const groupFiltered =
-          effectiveAge < 18
-            ? data.filter((p) => p.age < 18)
-            : data.filter((p) => p.age >= 18);
-
-        const finalFiltered = groupFiltered.filter(
-          (p) => p.age <= effectiveAge
-        );
-
-        setProfilactics(finalFiltered);
-      })
-      .catch((err) => console.error("Failed to load profilactics:", err));
-  }, [isPremium, effectiveAge]);
-
-  /* -------------------- CHECK HANDLER -------------------- */
-
+  // Обработка на checkbox за отделен елемент
   const handleCheck = (type, age, name) => {
-    const key = `${type}-${age}-${name}`;
+    const key = `${type}-${age}-${name}`; // уникално за тип + възраст + име
     setCheckedItems((prev) => ({
       ...prev,
       [key]: !prev[key],
     }));
   };
 
-  /* -------------------- PAYWALL -------------------- */
-
-  if (isPremium) {
+  if (!isPremium) {
     return (
       <Container className="py-5">
         <Alert variant="warning" className="text-center p-4">
@@ -93,15 +87,13 @@ const VaccinesAndProfilactics = ({ isPremium, user }) => {
     );
   }
 
-  /* -------------------- UI -------------------- */
-
   return (
     <Container className="py-5">
       <h3 className="mb-4" style={{ color: "#2E8B57" }}>
         Имунизации и профилактични прегледи
       </h3>
 
-      {/* PDF CALENDAR */}
+      {/* PDF секция */}
       <Card className="mb-5 p-3 shadow-sm text-center">
         <h5 style={{ color: "#2E8B57", marginBottom: "15px" }}>
           Национален имунизационен календар (PDF)
@@ -130,16 +122,15 @@ const VaccinesAndProfilactics = ({ isPremium, user }) => {
             width="100%"
             height="100%"
             style={{ border: "none" }}
-            title="Vaccination Calendar"
           />
         </div>
       </Card>
 
-      {/* VACCINES */}
+      {/* Ваксини */}
       <Card className="mb-5 p-3 shadow-sm">
-        <h5 style={{ color: "#2E8B57" }}>💉 Предстоящи ваксини</h5>
+        <h5 style={{ color: "#2E8B57" }}> 💉 Предстоящи ваксини</h5>
         {vaccines.length === 0 ? (
-          <p>Няма предстоящи ваксини за тази възраст.</p>
+          <p>Няма предстоящи ваксини за вашата възраст.</p>
         ) : (
           <Table striped bordered hover responsive>
             <thead>
@@ -178,11 +169,11 @@ const VaccinesAndProfilactics = ({ isPremium, user }) => {
         )}
       </Card>
 
-      {/* PROFILACTICS */}
+      {/* Профилактични прегледи */}
       <Card className="mb-5 p-3 shadow-sm">
         <h5 style={{ color: "#2E8B57" }}>🩺 Право на профилактични прегледи</h5>
         {profilactics.length === 0 ? (
-          <p>Няма налични прегледи за тази възраст.</p>
+          <p>Няма налични прегледи за вашата възраст.</p>
         ) : (
           <Table striped bordered hover responsive>
             <thead>
