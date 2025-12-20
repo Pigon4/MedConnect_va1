@@ -12,6 +12,7 @@ import { ChatDots, ArrowUp } from "react-bootstrap-icons";
 import doctorImage from "../../../../images/girl.png";
 import { callDoctorAdvice } from "../../../../api/geminiApi";
 import { useAuth } from "../../../../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const formatBulletText = (text) => {
   if (!text) return "";
@@ -62,7 +63,6 @@ const SymptomCheck = ({ isPremium }) => {
     }
   };
 
-  // Ако не е премиум – показваме съобщение
   if (!isPremium) {
     return (
       <Container className="py-5">
@@ -72,7 +72,17 @@ const SymptomCheck = ({ isPremium }) => {
             AI медицинският асистент е достъпен само за потребители с активен
             премиум абонамент.
           </p>
-          <Button variant="success" href="/subscriptions">
+          <Button
+            as={Link}
+            to={
+              user?.role === "patient"
+                ? "/dashboard/patient/subscriptions"
+                : user?.role === "guardian"
+                ? "/dashboard/guardian/subscriptions"
+                : "/dashboard/patient/subscriptions" // fallback
+            }
+            variant="success"
+          >
             Отиди към абонаментите
           </Button>
         </Alert>
@@ -83,7 +93,6 @@ const SymptomCheck = ({ isPremium }) => {
   return (
     <Container fluid className="p-0 vh-100">
       <Card className="h-100 rounded-0 border-0">
-        {/* Header */}
         <Card.Header className="text-white" style={{ background: "#2e8b57" }}>
           <Row className="align-items-center">
             <Col xs="auto">

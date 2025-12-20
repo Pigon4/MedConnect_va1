@@ -10,7 +10,6 @@ import {
 } from "../../../../api/storageApi";
 import fileDownload from "js-file-download";
 
-/* helper – премахва дубликати */
 const mergeUniqueFiles = (prev, next) => {
   const map = new Map();
   [...prev, ...next].forEach((file) => {
@@ -34,8 +33,6 @@ const StoragePage = () => {
     if (!user?.id) return;
     fetchFiles(user.id, token).then(setFiles);
   }, [user, token]);
-
-  /* ================= DRAG & DROP ================= */
 
   const handleDragOver = (e) => {
     e.preventDefault();
@@ -62,8 +59,6 @@ const StoragePage = () => {
     setTimeout(() => setDropSuccess(false), 800);
   };
 
-  /* ================= FILE SELECT ================= */
-
   const handleFileSelect = (e) => {
     const selected = Array.from(e.target.files);
     if (!selected.length) return;
@@ -73,8 +68,6 @@ const StoragePage = () => {
       ...new Set([...prev, ...selected.map((f) => f.name)]),
     ]);
   };
-
-  /* ================= UPLOAD ================= */
 
   const handleUpload = async () => {
     if (!newFiles.length) return;
@@ -114,8 +107,6 @@ const StoragePage = () => {
     setUploadProgress(0);
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
-
-  /* ================= ACTIONS ================= */
 
   const handleDownload = (file) => {
     const url = file.fileCloudinaryUrl.replace(
@@ -166,15 +157,12 @@ const StoragePage = () => {
   const isPreviewable = (type) =>
     type?.startsWith("image/") || type === "application/pdf";
 
-  /* ================= UI ================= */
-
   return (
     <Container className="py-5">
       <h3 className="mb-4" style={{ color: "#2E8B57" }}>
         📁 Хранилище
       </h3>
 
-      {/* DRAG & DROP */}
       <div
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
@@ -221,7 +209,6 @@ const StoragePage = () => {
         )}
       </div>
 
-      {/* FILE INPUT */}
       <Form className="mb-3 d-flex">
         <Form.Control
           type="file"
@@ -239,7 +226,6 @@ const StoragePage = () => {
         </Button>
       </Form>
 
-      {/* PROGRESS */}
       {uploadProgress > 0 && (
         <div className="mb-4">
           <h6>Качване... {uploadProgress}%</h6>
@@ -261,7 +247,6 @@ const StoragePage = () => {
         </div>
       )}
 
-      {/* TABLE */}
       {files.length === 0 ? (
         <p>Все още няма документи.</p>
       ) : (
