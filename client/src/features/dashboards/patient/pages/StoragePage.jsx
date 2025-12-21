@@ -117,13 +117,13 @@ const StoragePage = () => {
   };
 
   const handlePrint = (file) => {
-  const printWindow = window.open("", "_blank");
-  if (!printWindow) return;
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) return;
 
-  const isImage = file.type?.startsWith("image/");
+    const isImage = file.type?.startsWith("image/");
 
-  if (isImage) {
-    printWindow.document.write(`
+    if (isImage) {
+      printWindow.document.write(`
       <html>
         <head>
           <title>Print</title>
@@ -145,9 +145,9 @@ const StoragePage = () => {
         </body>
       </html>
     `);
-    printWindow.document.close();
-  }
-};
+      printWindow.document.close();
+    }
+  };
 
   const handleRemove = async (fileId) => {
     await deleteFileFromDatabase(fileId, token);
@@ -156,6 +156,8 @@ const StoragePage = () => {
 
   const isPreviewable = (type) =>
     type?.startsWith("image/") || type === "application/pdf";
+
+  const imageFiles = files.filter((file) => file.type?.startsWith("image/"));
 
   return (
     <Container className="py-5">
@@ -305,6 +307,68 @@ const StoragePage = () => {
             ))}
           </tbody>
         </Table>
+      )}
+      {imageFiles.length > 0 && (
+        <>
+          <h4 className="mt-5 mb-3" style={{ color: "#2E8B57" }}>
+            🖼️ Галерия
+          </h4>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+              gap: "16px",
+            }}
+          >
+            {imageFiles.map((file) => (
+              <div
+                key={file.id}
+                style={{
+                  borderRadius: "12px",
+                  overflow: "hidden",
+                  boxShadow: "0 4px 10px rgba(0,0,0,0.15)",
+                  cursor: "pointer",
+                  transition: "transform 0.3s, box-shadow 0.3s",
+                }}
+                onClick={() => window.open(file.fileCloudinaryUrl, "_blank")}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 8px 18px rgba(0,0,0,0.25)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 10px rgba(0,0,0,0.15)";
+                }}
+              >
+                <img
+                  src={file.fileCloudinaryUrl}
+                  alt={file.name}
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    objectFit: "cover",
+                  }}
+                />
+
+                <div
+                  style={{
+                    padding: "8px",
+                    background: "#fff",
+                    textAlign: "center",
+                    fontSize: "13px",
+                    color: "#2E8B57",
+                    fontWeight: "500",
+                  }}
+                >
+                  {file.name}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
       )}
     </Container>
   );

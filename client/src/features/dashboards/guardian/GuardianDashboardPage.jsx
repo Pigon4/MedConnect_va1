@@ -9,7 +9,6 @@ import GuardianEditInformation from "../../guardians/GuardianEditInformation";
 import Prescriptions from "../patient/pages/PrescriptionsPage";
 import Appointments from "../patient/pages/AppointmentsPage";
 import Storage from "../patient/pages/StoragePage";
-import PaymentPage from "../patient/pages/PaymentPage";
 import SymptomCheck from "../patient/pages/SymptomsCheckPage";
 import VaccinesAndProfilactics from "../patient/pages/VaccinesPage";
 import { DoctorPersonalDetails } from "../../doctors/DoctorPersonalDetails";
@@ -45,8 +44,6 @@ const GuardianDashboardPage = () => {
         <Route path="subscriptions" element={<SubscriptionsPage />} />
 
         <Route path="pharmacies_hospitals" element={<PharmacyMapPage />} />
-
-        <Route path="subscriptions/payment" element={<PaymentPage />} />
 
         <Route path="prescriptions" element={<Prescriptions />} />
 
