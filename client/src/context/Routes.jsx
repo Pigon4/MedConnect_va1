@@ -1,5 +1,10 @@
-import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
+import {
+  RouterProvider,
+  createBrowserRouter,
+  Navigate,
+} from "react-router-dom";
 import { useAuth } from "./AuthContext";
+import ErrorPage from "./ErrorPage";
 import { ProtectedRoleRoute } from "./ProtectedRoleRoute";
 import { ProtectedRoute } from "./ProtectedRoutes";
 import DashboardPatient from "../features/dashboards/patient/PatientDashboardPage";
@@ -13,38 +18,42 @@ import RegisterPage from "../features/auth/RegisterForm";
 import { useEffect, useState } from "react";
 import PaymentSuccess from "../features/subscriptions/PaymentSuccess";
 import { DoctorPersonalDetails } from "../features/doctors/DoctorPersonalDetails";
-import AdminLogin from "../modules/Admin/AdminLogin";
-import AdminPanel from "../modules/Admin/AdminPanel";
 
 const Routes = () => {
-  const { user, token } = useAuth();
-  const [isReady, setIsReady] = useState(false);
+  const { user } = useAuth();
+  const { token } = useAuth();
 
-  useEffect(() => setIsReady(true), [token]);
+  const [isReady, setIsReady] = useState(false);
+  useEffect(() => {
+    setIsReady(true);
+  }, [token]);
+
   if (!isReady) return null;
 
   const router = createBrowserRouter([
     {
       path: "/",
       element: <MainLayout />,
+      errorElement: <ErrorPage />,
       children: [
-        { index: true, element: <HomePage /> },
-        { path: "login", element: token ? <Navigate to="/" replace /> : <LoginPage /> },
-        { path: "register", element: token ? <Navigate to="/" replace /> : <RegisterPage /> },
-        { path: "logout", element: token ? <LogoutPage /> : <Navigate to="/" replace /> },
+        { index: true, element: <HomePage />, errorElement: <ErrorPage /> },
 
-        // Admin routes
-        { path: "admin/login", element: user?.role === "admin" ? <Navigate to="/admin" replace /> : <AdminLogin /> },
         {
-          path: "admin",
-          element: (
-            <ProtectedRoleRoute allowedRoles={["admin"]}>
-              <AdminPanel />
-            </ProtectedRoleRoute>
-          ),
+          path: "login",
+          element: token ? <Navigate to="/" replace /> : <LoginPage />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "register",
+          element: token ? <Navigate to="/" replace /> : <RegisterPage />,
+          errorElement: <ErrorPage />,
+        },
+        {
+          path: "logout",
+          element: token ? <LogoutPage /> : <Navigate to="/" replace />,
+          errorElement: <ErrorPage />,
         },
 
-        // Redirect dashboard based on role
         {
           path: "dashboard/*",
           element: (
@@ -57,24 +66,15 @@ const Routes = () => {
                     ? "/dashboard/doctor"
                     : user?.role === "guardian"
                     ? "/dashboard/guardian"
-                    : user?.role === "admin"
-                    ? "/admin"
                     : "/login"
                 }
                 replace
               />
             </ProtectedRoute>
           ),
+          errorElement: <ErrorPage />,
         },
 
-<<<<<<< HEAD
-        { path: "dashboard/patient/*", element: <ProtectedRoleRoute allowedRoles={["patient"]}><DashboardPatient /></ProtectedRoleRoute> },
-        { path: "dashboard/doctor/*", element: <ProtectedRoleRoute allowedRoles={["doctor"]}><DashboardDoctor /></ProtectedRoleRoute> },
-        { path: "dashboard/guardian/*", element: <ProtectedRoleRoute allowedRoles={["guardian"]}><DashboardGuardian /></ProtectedRoleRoute> },
-
-        { path: "payment-success", element: <PaymentSuccess /> },
-        { path: "doctor/:slug", element: <DoctorPersonalDetails /> },
-=======
         {
           path: "dashboard/patient/*",
           element: (
@@ -110,11 +110,10 @@ const Routes = () => {
         },
 
         {
-          path: "doctor/:slug", 
-          element: <DoctorPersonalDetails />, 
+          path: "doctor/:slug",
+          element: <DoctorPersonalDetails />,
           errorElement: <ErrorPage />,
         },
->>>>>>> 98b16e23575f8da0abb60ebd5119ae8a1c41d642
       ],
     },
   ]);
