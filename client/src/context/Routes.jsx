@@ -1,10 +1,5 @@
-import {
-  RouterProvider,
-  createBrowserRouter,
-  Navigate,
-} from "react-router-dom";
+import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
-import ErrorPage from "./ErrorPage";
 import { ProtectedRoleRoute } from "./ProtectedRoleRoute";
 import { ProtectedRoute } from "./ProtectedRoutes";
 import DashboardPatient from "../features/dashboards/patient/PatientDashboardPage";
@@ -18,47 +13,42 @@ import RegisterPage from "../features/auth/RegisterForm";
 import { useEffect, useState } from "react";
 import PaymentSuccess from "../features/subscriptions/PaymentSuccess";
 import { DoctorPersonalDetails } from "../features/doctors/DoctorPersonalDetails";
+import AdminLogin from "../modules/Admin/AdminLogin";
+import AdminPanel from "../modules/Admin/AdminPanel";
 
 const Routes = () => {
-  const { user } = useAuth();
-  const { token } = useAuth();
-
+  const { user, token } = useAuth();
   const [isReady, setIsReady] = useState(false);
-  useEffect(() => {
-    setIsReady(true);
-  }, [token]);
 
+  useEffect(() => setIsReady(true), [token]);
   if (!isReady) return null;
 
   const router = createBrowserRouter([
     {
       path: "/",
       element: <MainLayout />,
-      errorElement: <ErrorPage />,
       children: [
-        { index: true, element: <HomePage />, errorElement: <ErrorPage /> },
+        { index: true, element: <HomePage /> },
+        { path: "login", element: token ? <Navigate to="/" replace /> : <LoginPage /> },
+        { path: "register", element: token ? <Navigate to="/" replace /> : <RegisterPage /> },
+        { path: "logout", element: token ? <LogoutPage /> : <Navigate to="/" replace /> },
 
+        // Admin routes
+        { path: "admin/login", element: user?.role === "admin" ? <Navigate to="/admin" replace /> : <AdminLogin /> },
         {
-          path: "login",
-          element: token ? <Navigate to="/" replace /> : <LoginPage />,
-          errorElement: <ErrorPage />,
-        },
-        {
-          path: "register",
-          element: token ? <Navigate to="/" replace /> : <RegisterPage />,
-          errorElement: <ErrorPage />,
-        },
-        {
-          path: "logout",
-          element: token ? <LogoutPage /> : <Navigate to="/" replace />,
-          errorElement: <ErrorPage />,
+          path: "admin",
+          element: (
+            <ProtectedRoleRoute allowedRoles={["admin"]}>
+              <AdminPanel />
+            </ProtectedRoleRoute>
+          ),
         },
 
+        // Redirect dashboard based on role
         {
           path: "dashboard/*",
           element: (
             <ProtectedRoute>
-              {/* Redirect to role-specific dashboard */}
               <Navigate
                 to={
                   user?.role === "patient"
@@ -67,56 +57,22 @@ const Routes = () => {
                     ? "/dashboard/doctor"
                     : user?.role === "guardian"
                     ? "/dashboard/guardian"
+                    : user?.role === "admin"
+                    ? "/admin"
                     : "/login"
                 }
                 replace
               />
             </ProtectedRoute>
           ),
-          errorElement: <ErrorPage />,
         },
 
-        // routes for only authenticated users
-        {
-          path: "dashboard/patient/*",
-          element: (
-            <ProtectedRoleRoute allowedRoles={["patient"]}>
-              <DashboardPatient />
-            </ProtectedRoleRoute>
-          ),
-          errorElement: <ErrorPage />,
-        },
-        {
-          path: "dashboard/doctor/*",
-          element: (
-            <ProtectedRoleRoute allowedRoles={["doctor"]}>
-              <DashboardDoctor />
-            </ProtectedRoleRoute>
-          ),
-          errorElement: <ErrorPage />,
-        },
-        {
-          path: "dashboard/guardian/*",
-          element: (
-            <ProtectedRoleRoute allowedRoles={["guardian"]}>
-              <DashboardGuardian />
-            </ProtectedRoleRoute>
-          ),
-          errorElement: <ErrorPage />,
-        },
+        { path: "dashboard/patient/*", element: <ProtectedRoleRoute allowedRoles={["patient"]}><DashboardPatient /></ProtectedRoleRoute> },
+        { path: "dashboard/doctor/*", element: <ProtectedRoleRoute allowedRoles={["doctor"]}><DashboardDoctor /></ProtectedRoleRoute> },
+        { path: "dashboard/guardian/*", element: <ProtectedRoleRoute allowedRoles={["guardian"]}><DashboardGuardian /></ProtectedRoleRoute> },
 
-        {
-          path: "payment-success",
-          element: <PaymentSuccess />,
-          errorElement: <ErrorPage />,
-        },
-
-        // NEWLY ADDED
-        {
-          path: "doctor/:slug", // Dynamic route with slug
-          element: <DoctorPersonalDetails />, // New component to show doctor details
-          errorElement: <ErrorPage />,
-        },
+        { path: "payment-success", element: <PaymentSuccess /> },
+        { path: "doctor/:slug", element: <DoctorPersonalDetails /> },
       ],
     },
   ]);
