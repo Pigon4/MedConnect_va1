@@ -1,23 +1,24 @@
 import { useParams } from "react-router-dom";
+import { usersMock } from "../mock data/Users";
 import PersonalInformation from "../../../features/dashboards/patient/pages/PersonalInformation";
 import DoctorPersonalInformation from "../../../features/doctors/DoctorPersonalInformation";
-import { usersMock } from "../mock data/Users";
 
 const UserDetailsPage = () => {
   const { id } = useParams();
-  const userId = parseInt(id, 10);
+  const user = usersMock.find((u) => u.id === parseInt(id));
 
-  const user = usersMock.find(u => u.id === userId);
+  if (!user) return <p>Потребителят не е намерен.</p>;
 
-  if (!user) return <p>Потребителят не е намерен</p>;
+  const isPatientOrGuardian = user.roles.includes("PATIENT") || user.roles.includes("GUARDIAN");
+  const isDoctor = user.roles.includes("DOCTOR");
 
   return (
     <div>
-      {user.role === "DOCTOR" ? (
-        <DoctorPersonalInformation user={user} />
-      ) : (
-        <PersonalInformation user={user} />
+      <h2>Детайли за потребител</h2>
+      {isPatientOrGuardian && (
+        <PersonalInformation user={user} readOnly={true} />
       )}
+      {isDoctor && <DoctorPersonalInformation user={user} />}
     </div>
   );
 };

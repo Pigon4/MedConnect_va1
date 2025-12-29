@@ -2,7 +2,7 @@ export const usersMock = [
   {
     id: 1,
     email: "john.doe@example.com",
-    role: "PATIENT",
+    roles: ["PATIENT"],
     firstName: "John",
     lastName: "Doe",
     isActive: true,
@@ -11,7 +11,7 @@ export const usersMock = [
   {
     id: 2,
     email: "mary.smith@example.com",
-    role: "DOCTOR",
+    roles: ["DOCTOR"],
     firstName: "Mary",
     lastName: "Smith",
     isActive: true,
@@ -20,7 +20,7 @@ export const usersMock = [
   {
     id: 3,
     email: "ivan.petrov@example.com",
-    role: "GUARDIAN",
+    roles: ["GUARDIAN"],
     firstName: "Ivan",
     lastName: "Petrov",
     isActive: false,
@@ -29,7 +29,7 @@ export const usersMock = [
   {
     id: 4,
     email: "elena.georgieva@example.com",
-    role: "PATIENT",
+    roles: ["PATIENT", "GUARDIAN"],
     firstName: "Elena",
     lastName: "Georgieva",
     isActive: true,
@@ -38,7 +38,7 @@ export const usersMock = [
   {
     id: 5,
     email: "dr.ivanov@example.com",
-    role: "DOCTOR",
+    roles: ["DOCTOR"],
     firstName: "Georgi",
     lastName: "Ivanov",
     isActive: true,
@@ -47,7 +47,7 @@ export const usersMock = [
   {
     id: 6,
     email: "petar.nikolov@example.com",
-    role: "PATIENT",
+    roles: ["PATIENT"],
     firstName: "Petar",
     lastName: "Nikolov",
     isActive: false,
@@ -56,7 +56,7 @@ export const usersMock = [
   {
     id: 7,
     email: "maria.dimitrova@example.com",
-    role: "GUARDIAN",
+    roles: ["GUARDIAN"],
     firstName: "Maria",
     lastName: "Dimitrova",
     isActive: true,
@@ -65,7 +65,7 @@ export const usersMock = [
   {
     id: 8,
     email: "dr.stoyanov@example.com",
-    role: "DOCTOR",
+    roles: ["DOCTOR"],
     firstName: "Stoyan",
     lastName: "Stoyanov",
     isActive: false,
@@ -74,7 +74,7 @@ export const usersMock = [
   {
     id: 9,
     email: "kalina.popova@example.com",
-    role: "PATIENT",
+    roles: ["PATIENT"],
     firstName: "Kalina",
     lastName: "Popova",
     isActive: true,
@@ -83,7 +83,7 @@ export const usersMock = [
   {
     id: 10,
     email: "admin.test@example.com",
-    role: "PATIENT",
+    roles: ["PATIENT"],
     firstName: "Test",
     lastName: "User",
     isActive: true,
