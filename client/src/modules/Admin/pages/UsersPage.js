@@ -9,55 +9,51 @@ const roleVariant = {
   DOCTOR: "success",
 };
 
+const roleLabel = {
+  PATIENT: "Пациент",
+  GUARDIAN: "Настойник",
+  DOCTOR: "Лекар",
+};
+
 const UsersPage = () => {
   const [users, setUsers] = useState(usersMock);
-  const [editingUserId, setEditingUserId] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState([]);
 
   const toggleStatus = (id) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === id ? { ...u, isActive: !u.isActive } : u))
+    setUsers(prev =>
+      prev.map(u =>
+        u.id === id ? { ...u, isActive: !u.isActive } : u
+      )
     );
   };
 
   const startEditing = (user) => {
-    setEditingUserId(user.id);
+    setEditingId(user.id);
     setSelectedRoles(user.roles.filter(r => r !== "DOCTOR"));
   };
 
-  const cancelEditing = () => {
-    setEditingUserId(null);
-    setSelectedRoles([]);
-  };
-
-  const toggleRole = (role) => {
-    if (selectedRoles.includes(role)) {
-      setSelectedRoles(selectedRoles.filter(r => r !== role));
-    } else {
-      setSelectedRoles([...selectedRoles, role]);
-    }
-  };
-
   const saveRoles = (id) => {
-    if (selectedRoles.length === 0) {
-      alert("Трябва да изберете поне една роля!");
+    if (!selectedRoles.length) {
+      alert("Изберете поне една роля");
       return;
     }
-    setUsers((prev) =>
-      prev.map((u) =>
+    setUsers(prev =>
+      prev.map(u =>
         u.id === id
           ? { ...u, roles: [...selectedRoles, ...(u.roles.includes("DOCTOR") ? ["DOCTOR"] : [])] }
           : u
       )
     );
-    cancelEditing();
+    setEditingId(null);
+    setSelectedRoles([]);
   };
 
   return (
     <>
       <h2>Потребители</h2>
 
-      <Table striped bordered hover responsive className="mt-3">
+      <Table striped bordered hover className="mt-3">
         <thead>
           <tr>
             <th>ID</th>
@@ -69,11 +65,9 @@ const UsersPage = () => {
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => {
-            const rolesOrdered = [];
-            if (user.roles.includes("PATIENT")) rolesOrdered.push("PATIENT");
-            if (user.roles.includes("GUARDIAN")) rolesOrdered.push("GUARDIAN");
-            if (user.roles.includes("DOCTOR")) rolesOrdered.push("DOCTOR");
+          {users.map(user => {
+            const orderedRoles = ["PATIENT", "GUARDIAN", "DOCTOR"]
+              .filter(r => user.roles.includes(r));
 
             return (
               <tr key={user.id}>
@@ -81,40 +75,52 @@ const UsersPage = () => {
                 <td>{user.firstName} {user.lastName}</td>
                 <td>{user.email}</td>
                 <td>
-                  {rolesOrdered.map((role) => (
-                    <Badge key={role} bg={roleVariant[role]} className="me-1">
-                      {role === "PATIENT" ? "Пациент" : role === "GUARDIAN" ? "Настойник" : "Лекар"}
+                  {orderedRoles.map(r => (
+                    <Badge key={r} bg={roleVariant[r]} className="me-1">
+                      {roleLabel[r]}
                     </Badge>
                   ))}
 
-                  {editingUserId === user.id && (
+                  {editingId === user.id && (
                     <div className="mt-2">
                       <Form.Check
                         inline
-                        type="checkbox"
                         label="Пациент"
                         checked={selectedRoles.includes("PATIENT")}
-                        onChange={() => toggleRole("PATIENT")}
+                        onChange={() =>
+                          setSelectedRoles(prev =>
+                            prev.includes("PATIENT")
+                              ? prev.filter(r => r !== "PATIENT")
+                              : [...prev, "PATIENT"]
+                          )
+                        }
                       />
                       <Form.Check
                         inline
-                        type="checkbox"
                         label="Настойник"
                         checked={selectedRoles.includes("GUARDIAN")}
-                        onChange={() => toggleRole("GUARDIAN")}
+                        onChange={() =>
+                          setSelectedRoles(prev =>
+                            prev.includes("GUARDIAN")
+                              ? prev.filter(r => r !== "GUARDIAN")
+                              : [...prev, "GUARDIAN"]
+                          )
+                        }
                       />
-                      <div className="mt-1">
+                      <div className="mt-2">
                         <Button size="sm" variant="success" onClick={() => saveRoles(user.id)} className="me-2">
                           Запази
                         </Button>
-                        <Button size="sm" variant="secondary" onClick={cancelEditing}>
+                        <Button size="sm" variant="secondary" onClick={() => setEditingId(null)}>
                           Откажи
                         </Button>
                       </div>
                     </div>
                   )}
                 </td>
-                <td>{user.isActive ? "Активен" : "Блокиран"}</td>
+                <td>
+                  {user.isActive ? "Активен" : "Блокиран"}
+                </td>
                 <td>
                   <Link to={`/admin/users/${user.id}`}>
                     <Button size="sm" variant="outline-secondary" className="me-2">
@@ -122,27 +128,18 @@ const UsersPage = () => {
                     </Button>
                   </Link>
 
-                  {!user.roles.includes("DOCTOR") && editingUserId !== user.id && (
+                  {!user.roles.includes("DOCTOR") && editingId !== user.id && (
                     <Button size="sm" variant="outline-primary" onClick={() => startEditing(user)} className="me-2">
                       Промяна на роля
                     </Button>
                   )}
 
-                  <Button
-                    size="sm"
-                    variant={user.isActive ? "outline-danger" : "outline-success"}
-                    onClick={() => toggleStatus(user.id)}
-                    className="me-2"
-                  >
-                    {user.isActive ? "Блокирай" : "Активирай"}
+                  <Button size="sm" variant="outline-danger" onClick={() => {}}>
+                    Изтрий
                   </Button>
 
-                  <Button
-                    size="sm"
-                    variant="outline-danger"
-                    onClick={() => console.log(`Трябва да изтрием потребител с id=${user.id}`)}
-                  >
-                    Изтрий
+                  <Button size="sm" variant={user.isActive ? "outline-danger" : "outline-success"} onClick={() => toggleStatus(user.id)} className="ms-2">
+                    {user.isActive ? "Блокирай" : "Активирай"}
                   </Button>
                 </td>
               </tr>

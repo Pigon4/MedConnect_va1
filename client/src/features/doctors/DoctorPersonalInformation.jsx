@@ -1,27 +1,30 @@
+import { useState, useEffect } from "react";
 import { Container, Card, Row, Col, Image, Button } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import profileImage from "../../images/profile.png";
 import { useAuth } from "../../context/AuthContext";
-import { useEffect, useState } from "react";
 
-const DoctorPersonalInformation = () => {
-  const { user } = useAuth();
+const DoctorPersonalInformation = ({ user: mockUser, readOnly = false }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user: authUser } = useAuth();
+  const [displayUser, setDisplayUser] = useState(mockUser || authUser || {});
+
   const basePath = location.pathname.startsWith("/test")
     ? "/test/doctor"
     : "/dashboard/doctor";
 
-  const [displayUser, setDisplayUser] = useState(user || {});
-
   useEffect(() => {
+    // Ако вече имаме mockUser, няма нужда да fetch-ваме
+    if (mockUser || !authUser?.id) return;
+
     const fetchLatestData = async () => {
       const token = localStorage.getItem("token");
-      if (!user?.id || !token) return;
+      if (!token) return;
 
       try {
         const response = await fetch(
-          `http://localhost:8080/api/user/doctor/${user.id}`,
+          `http://localhost:8080/api/user/doctor/${authUser.id}`,
           {
             method: "GET",
             headers: {
@@ -33,7 +36,7 @@ const DoctorPersonalInformation = () => {
 
         if (response.ok) {
           const data = await response.json();
-          setDisplayUser(data); 
+          setDisplayUser(data);
         }
       } catch (error) {
         console.error("Грешка при зареждане на профила:", error);
@@ -41,7 +44,7 @@ const DoctorPersonalInformation = () => {
     };
 
     fetchLatestData();
-  }, [user?.id]);
+  }, [authUser?.id, mockUser]);
 
   return (
     <Container className="mt-4">
@@ -68,40 +71,59 @@ const DoctorPersonalInformation = () => {
                 src={displayUser?.photoURL || profileImage}
                 alt="Доктор"
                 fluid
-                style={{
-                  width: "150px",
-                  height: "150px",
-                  objectFit: "cover",
-                }}
+                style={{ width: "150px", height: "150px", objectFit: "cover" }}
               />
             </div>
           </Col>
 
           <Col md={8}>
-            <p><strong>Име:</strong> {displayUser?.firstName || "—"}</p>
-            <p><strong>Фамилия:</strong> {displayUser?.lastName || "—"}</p>
-            <p><strong>Възраст:</strong> {displayUser?.age || "—"}</p>
-            <p><strong>Имейл:</strong> {displayUser?.email || "—"}</p>
-            <p><strong>Телефон:</strong> {displayUser?.phoneNumber || "—"}</p>
+            <p>
+              <strong>Име:</strong> {displayUser?.firstName || "—"}
+            </p>
+            <p>
+              <strong>Фамилия:</strong> {displayUser?.lastName || "—"}
+            </p>
+            <p>
+              <strong>Възраст:</strong> {displayUser?.age || "—"}
+            </p>
+            <p>
+              <strong>Имейл:</strong> {displayUser?.email || "—"}
+            </p>
+            <p>
+              <strong>Телефон:</strong> {displayUser?.phoneNumber || "—"}
+            </p>
           </Col>
         </Row>
 
         <hr />
+        <p>
+          <strong>Специализация:</strong>{" "}
+          {displayUser?.specialization || "—"}
+        </p>
+        <p>
+          <strong>Опит (години):</strong>{" "}
+          {displayUser?.yearsOfExperience || "—"}
+        </p>
+        <p>
+          <strong>Град:</strong> {displayUser?.city || "—"}
+        </p>
+        <p>
+          <strong>Кабинет:</strong> {displayUser?.hospital || "—"}
+        </p>
 
-        <p><strong>Специализация:</strong> {displayUser?.specialization || "—"}</p>
-        <p><strong>Опит (години):</strong> {displayUser?.yearsOfExperience || "—"}</p>
-        <p><strong>Град:</strong> {displayUser?.city || "—"}</p>
-        <p><strong>Кабинет:</strong> {displayUser?.hospital || "—"}</p>
-
-        <div className="text-center mt-4">
-          <Button
-            variant="success"
-            className="px-4"
-            onClick={() => navigate(`${basePath}/personal_information/edit`)}
-          >
-            ✏️ Редактирай
-          </Button>
-        </div>
+        {!readOnly && (
+          <div className="text-center mt-4">
+            <Button
+              variant="success"
+              className="px-4"
+              onClick={() =>
+                navigate(`${basePath}/personal_information/edit`)
+              }
+            >
+              ✏️ Редактирай
+            </Button>
+          </div>
+        )}
       </Card>
     </Container>
   );
