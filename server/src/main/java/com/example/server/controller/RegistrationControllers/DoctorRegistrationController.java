@@ -4,6 +4,7 @@ import com.example.server.service.RegistrationServices.DoctorRegistrationService
 import com.example.server.models.RegistrationModels.DoctorRegisterRequest;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,13 @@ public class DoctorRegistrationController {
 
     @PostMapping("/doctor/register")
     public ResponseEntity<?> create(@RequestBody DoctorRegisterRequest dto){
+            try {
+            service.createRequest(dto);
 
-        return null;
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
+        }
     }
 
 }

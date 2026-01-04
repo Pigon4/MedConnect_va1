@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DoctorRegistrationRequestRepository<T> extends JpaRepository<DoctorRegisterRequest, Long>{
+public interface DoctorRegistrationRequestRepository extends JpaRepository<DoctorRegisterRequest, Long>{
     Optional<DoctorRegisterRequest> findByEmail(String email);
     boolean existsByEmailAndStatus(String email, DoctorRegisterRequest.Status status);
 
