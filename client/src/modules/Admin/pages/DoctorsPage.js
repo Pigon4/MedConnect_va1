@@ -1,14 +1,8 @@
 import { Table, Button, Badge } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { getAllRegisterRequests } from "../../../api/adminApi";
-import { pendingDoctorsMock } from "../mock data/PendingDoctors";
+import { getAllRegisterRequests, acceptRegisterRequest } from "../../../api/adminApi";
 import { useEffect, useState } from "react";
 
-const statusVariant = {
-  "непотвърден": "warning",
-  "потвърден": "success",
-  "отхвърлен": "danger",
-};
 
 const DoctorsPage = () => {
   const [doctors, setDoctors] = useState([]);
@@ -40,23 +34,25 @@ const DoctorsPage = () => {
     };
   }, []);
 
-  const updateStatus = (id, newStatus) => {
-    // optimistic UI update
-    setDoctors(prev =>
-      prev.map(doc => (doc.id === id ? { ...doc, status: newStatus } : doc))
-    );
+const updateStatus = async (id, newStatus) => {
+  setDoctors(prev =>
+    prev.map(doc => (doc.id === id ? { ...doc, status: newStatus } : doc))
+  );
 
-    // optionally persist change to server:
-    // (async () => {
-    //   try {
-    //     await updateRegisterRequestStatus(id, newStatus);
-    //   } catch (err) {
-    //     console.error("Failed to persist status change:", err);
-    //     // optionally revert optimistic update or show error
-    //   }
-    // })();
-  };
+    try {
 
+        await acceptRegisterRequest(id);
+      
+    } catch (err) {
+      console.error(err);
+      setError("Грешка при потвърждаване на заявката.");
+
+      // rollback on error
+      setDoctors(prev =>
+        prev.map(doc => (doc.id === id ? { ...doc, status: "PENDING" } : doc))
+      );
+  }
+};
   return (
     <>
       <h2>Непотвърдени лекари</h2>
@@ -79,7 +75,7 @@ const DoctorsPage = () => {
 
           <tbody>
             {doctors.map((doctor) => {
-              const status = doctor?.status ?? "непотвърден";
+              const status = doctor?.status ?? "PENDING";
 
               return (
                 <tr key={doctor.id}>
@@ -87,30 +83,25 @@ const DoctorsPage = () => {
                   <td>{doctor.firstName} {doctor.lastName}</td>
                   <td>{doctor.email}</td>
                   <td>
-                    <Badge bg={statusVariant[status] || "secondary"}>
+                    <Badge>
                       {status}
                     </Badge>
                   </td>
                   <td>
-                    <Link to={`/admin/doctors/${doctor.id}`}>
-                      <Button size="sm" variant="outline-secondary" className="me-2">
-                        Детайли
-                      </Button>
-                    </Link>
-                    {status === "непотвърден" && (
+                    {status === "PENDING" && (
                       <>
                         <Button
                           size="sm"
                           variant="success"
                           className="me-2"
-                          onClick={() => updateStatus(doctor.id, "потвърден")}
+                          onClick={() => updateStatus(doctor.id, "ACCEPTED")}
                         >
                           Потвърди
                         </Button>
                         <Button
                           size="sm"
                           variant="danger"
-                          onClick={() => updateStatus(doctor.id, "отхвърлен")}
+                          onClick={() => updateStatus(doctor.id, "DENIED")}
                         >
                           Отхвърли
                         </Button>

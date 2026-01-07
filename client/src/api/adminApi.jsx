@@ -3,7 +3,7 @@ const ADMIN_API_BASE = "http://localhost:8080/api/admin";
 
 export const getAllRegisterRequests = async () => {
   try {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("token");
 
     const res = await fetch(`${ADMIN_API_BASE}/doctor_register_requests`, {
       headers: {
@@ -17,6 +17,28 @@ export const getAllRegisterRequests = async () => {
     console.error(error);
     return [];
   }
+};
+
+const authHeader = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+export const acceptRegisterRequest = async (id) => {
+  const response = await fetch(`${ADMIN_API_BASE}/${id}/accept`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...authHeader(),
+    },
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "Failed to accept register request");
+  }
+
+  return true;
 };
 
 
@@ -43,6 +65,8 @@ export const adminLogIn = ({ email, password }) => {
       return responseBody;
     });
 };
+
+
 
 
 

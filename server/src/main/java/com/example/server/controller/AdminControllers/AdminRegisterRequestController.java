@@ -68,6 +68,12 @@ public class AdminRegisterRequestController {
         return service.getPendingRequestsDTO();
     }
 
+    @PostMapping("/{id}/accept")
+    public ResponseEntity<Void> accept(@PathVariable Long id) {
+        service.acceptRequest(id);
+        return ResponseEntity.ok().build();
+    }
+
 
 }
 
